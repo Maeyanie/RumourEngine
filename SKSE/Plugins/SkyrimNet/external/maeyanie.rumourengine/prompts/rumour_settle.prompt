@@ -1,0 +1,38 @@
+{# ============================================================================
+RUMOUR SETTLE — ADR-001, "Lifecycle"
+One call per rumour promoted to world knowledge, when it has gone stale
+everywhere: what people came to know of it, from how it was being told by then.
+Built by Promote::Send in the DLL. The DLL puts "Old news from <month>, talked
+about <where>:" in front of the answer, and makes the world-knowledge entry
+for those the rumour had reached.
+
+Tested on this save's rumours with GLM 5.3 Flash (2026-11-20): it kept the
+core most tellings shared, dropped what only one telling had (a bedroom
+story's detail among them) and said where people disagreed (who killed the
+Silver-Blood courier).
+============================================================================ #}
+{% if settleText and settleText != "" %}
+[ system ]
+You write down what became common knowledge in Skyrim once a rumour had run its course.
+
+{{ render_template("submodules\\system_head\\0010_setting") }}
+
+You are given what happened as it was first told, and how it was being told in different places after it had travelled. Write the account most people who heard it would now give: the core of it that most of the tellings share.
+
+- Keep what most tellings agree on. Leave out details that only one or two tellings have, and anything private or intimate that most tellings had dropped.
+- Keep a name only where most tellings still name the person; otherwise describe them as the tellings do ("a Breton", "a Khajiit caravan guard").
+- If the tellings disagree on something that matters, such as who was to blame or how it ended, say that people disagree.
+- Add nothing that no telling has.
+
+Write one to three sentences of plain third-person past tense, as a fact people know and talk about, not as a telling: no "I heard", no "they say", no quotation marks.
+Answer with the account only.
+[ end system ]
+
+[ user ]
+What happened, as it was first told:
+{{ settleText }}
+
+How it was being told, place by place:
+{% if settleVersions and settleVersions != "" %}{{ settleVersions }}{% else %}(nowhere else: only as it was first told){% endif %}
+[ end user ]
+{% endif %}

@@ -1,0 +1,41 @@
+{
+  "_note": "First tellings hand-written from real high-importance SkyrimNet memories (save 1788253036966), as the memory's owner would pass them on. Paths are plausible walks over the merged mill graph.",
+  "seeds": [
+    {
+      "id": "haldyn",
+      "owner": "Adelaisa Vendicci",
+      "telling": "Haldyn's dead, the wizard behind the Blood Horker pirates. A Breton sellsword called Rennard broke that cursed fog of his at Japhet's Folly and cut him down, and the Company's ships went in and finished the rest. The pirate trouble on this coast is over.",
+      "path": ["windhelm.commons", "windhelm.garrison", "kynesgrove", "dawnstar", "morthal", "solitude.commons", "solitude.court"]
+    },
+    {
+      "id": "jenassa-debt",
+      "owner": "Stig Salt-Plank",
+      "telling": "That Breton who paid me 308 gold for the way to Japhet's Folly, I heard him at the Windpeak grilling his hired Dunmer, Jenassa. She admitted she owes the East Empire Company a debt, and she wouldn't say what for.",
+      "path": ["dawnstar", "morthal", "solitude.commons", "solitude.garrison", "dragonbridge", "markarth.commons", "markarth.underworld"]
+    },
+    {
+      "id": "helgen",
+      "owner": "Ralof",
+      "telling": "Helgen's gone. The Imperials had us at the block, Ulfric too, and a dragon came out of the sky and burned the whole town down around them. I got out alongside a Breton called Rennard, and my sister's sent him on to warn the Jarl.",
+      "path": ["riverwood", "whiterun.commons", "whiterun.court", "whiterun.garrison", "rorikstead", "markarth.commons", "markarth.underworld"]
+    },
+    {
+      "id": "sanguine-ledger",
+      "owner": "Vesyra",
+      "telling": "That Breton, Rennard, has his hands on a ledger of Sanguine's, the Daedric prince of revelry, and he's talked Delphine into letting him use the Sleeping Giant's back rooms for private entertainments. She takes a cut of the coin.",
+      "path": ["riverwood", "whiterun.commons", "whiterun.garrison", "ivarstead", "riften.commons", "riften.underworld", "riften.garrison"]
+    },
+    {
+      "id": "arcadia",
+      "owner": "Arcadia",
+      "telling": "The Breton adventurer, Rennard, bought nine hundred and ten gold of ingredients off me in one go. And then, well. He's devoted to Dibella, and he showed me how devoted, right there by my shop door.",
+      "path": ["whiterun.commons", "whiterun.garrison", "whiterun.court", "riverwood", "falkreath", "riverwood", "ivarstead"]
+    },
+    {
+      "id": "temple",
+      "owner": "a wounded soldier at the Temple of Kynareth",
+      "telling": "Danica pulled a Breton and his Dunmer mercenary back from the edge at the temple. Both were carried in half dead, ribs crushed and arms broken, and she had the healing light pouring out of her for hours.",
+      "path": ["whiterun.commons", "whiterun.court", "windhelm.commons", "windhelm.garrison", "kynesgrove", "winterhold", "winterholdcollege"]
+    }
+  ]
+}

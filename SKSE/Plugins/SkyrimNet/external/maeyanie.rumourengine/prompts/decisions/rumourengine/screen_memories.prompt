@@ -1,0 +1,100 @@
+{# Decision template: RumourEngine's harvest screening (ADR-001, "Harvest and screening"). One
+   request per person with new memories, sent by Harvest.cpp. For each memory m<k>, four questions,
+   whose ids and keys the DLL reads:
+     spread_m<k>   (noul)   would they pass it on;
+     tell_m<k>     (choice) how much of it: everything, or the gist without the private details. The seed
+                            writer follows it, so how discreet someone is comes from their profile here;
+     interest_m<k> (score)  how much people around them would want to hear it, 1 to 5 (the game reports
+                            the level counted from 0);
+     same_m<k>     (choice) whether it is talk already going round (r<i>), or the same happening as an
+                            earlier memory of theirs in this batch (m<j>), or new. Left out when there is
+                            nothing to compare with, which the DLL reads as new.
+   A memory becomes a rumour when spread clears the person's threshold, interest is high enough, and
+   same is new; a match with going-round talk reinforces that rumour instead.
+
+   Context: screen_npc (UUID, a JSON number), screen_name, screen_gossip (how much of a gossip, in
+   words), screen_group (the line describing their group), screen_memories ([{key, content,
+   earlier: [{key, content}]}], each content one line), screen_rumours ([{key, content}]), screen_count.
+   The person is their bio's summary and personality, not short_inline: other layers add to
+   short_inline (BodyLanguage's body description), and the personality is what decides whether
+   someone tells. Replaying this save's 87 screened memories on d3:4b (2026-11-12), the
+   personality moved the answers where it says something (Ahlam's own nights went from about
+   0.48 to 0.15); relationships and aspirations only moved them by a few hundredths and
+   doubled the prompt.
+   A criterion is exactly one line. #}
+{% set _npc = decnpc(screen_npc) %}
+{# The player's setting, as the seed and retell prompts have it: what counts as ordinary in their
+   Skyrim. On this save's 87 screened memories it moved spread +0.04 and interest +0.10 on average,
+   most where people would talk about their own nights; a setting further from the usual Skyrim
+   moves more. #}
+[ state setting ]
+{{ render_template("submodules\\system_head\\0010_setting") }}
+[ end state ]
+
+[ state person ]
+{{ screen_name }}, {{ _npc.gender }} {{ _npc.race }}. {{ screen_gossip }}
+Lives among: {{ screen_group }}
+{% if screen_back %}
+Just back from travelling with the player. These memories are from their time on the road, and they are among people who haven't heard any of it.
+{% endif %}
+{{ render_character_profile("bio_summary", screen_npc) }}
+Personality: {{ render_character_profile("bio_personality", screen_npc) }}
+[ end state ]
+
+[ state talk_going_round ]
+{% if length(screen_rumours) > 0 %}
+{% for r in screen_rumours %}
+{{ r.key }}: {{ r.content }}
+{% endfor %}
+{% else %}
+(nothing in particular)
+{% endif %}
+[ end state ]
+
+{% for m in screen_memories %}
+[ question spread_{{ m.key }} noul ]
+One of {{ screen_name }}'s recent memories: {{ m.content }}
+Would {{ screen_name }} pass this on to the people they know? Judge by who they are (`person`): how open or discreet, how fond of talk, and how they would feel about this getting around. Things worth telling are news, something they saw happen, a fight, a theft, a death, a deal, a scandal, a stranger's doings, something about the player. Their own private life is theirs to tell or not, as their character would. No when they would keep it to themselves, when it is routine (their daily work, small talk, a purchase like any other), or when nobody else would care.
+[ criteria ]
+true: Yes: they would tell people about this.
+false: No: they would keep it to themselves, or there is nothing in it to tell.
+[ end criteria ]
+[ end question ]
+
+[ question tell_{{ m.key }} choice ]
+One of {{ screen_name }}'s recent memories: {{ m.content }}
+If {{ screen_name }} did talk about this, how much would they tell, being who they are (`person`)? Some people share every juicy detail; some say only that something happened and keep the private part to themselves.
+[ criteria ]
+everything: All of it, the private or intimate details included.
+gist: What happened, but not the private or intimate details, their own feelings, or anything said in confidence.
+[ end criteria ]
+[ end question ]
+
+[ question interest_{{ m.key }} score ]
+One of {{ screen_name }}'s recent memories: {{ m.content }}
+If someone told this to the people around {{ screen_name }} (`person`, "lives among"), how much would they want to hear it and pass it on?
+[ criteria ]
+1: Nobody would care: everyday business.
+2: A few might find it mildly interesting.
+3: Worth a mention: people would listen and repeat it.
+4: Real news: people would stop to hear it and pass it on.
+5: Everyone would be talking about it for days.
+[ end criteria ]
+[ end question ]
+
+{% if length(screen_rumours) > 0 or length(m.earlier) > 0 %}
+[ question same_{{ m.key }} choice ]
+One of {{ screen_name }}'s recent memories: {{ m.content }}
+Is this memory about something already in `talk_going_round`, or about the same happening as one of their earlier memories listed below? Pick it when it is the same event seen from their side (the same fight, the same deal, the same stranger's visit), even if the details differ. Otherwise pick new.
+[ criteria ]
+{% for r in screen_rumours %}
+{{ r.key }}: The talk {{ r.key }} in `talk_going_round`.
+{% endfor %}
+{% for e in m.earlier %}
+{{ e.key }}: The same happening as their memory: {{ e.content }}
+{% endfor %}
+new: Something not already going round.
+[ end criteria ]
+[ end question ]
+{% endif %}
+{% endfor %}

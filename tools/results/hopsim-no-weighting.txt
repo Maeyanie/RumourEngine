@@ -1,0 +1,30 @@
+
+== merged: 53 mills, 10 trials x 60 days, 1.5 rumours/day ==
+  mills reached      median 4, p90 15, max 34
+  own town, all mills 62% of rumours; p50 1.9 days
+  holds reached          1     2     3   4-5    6+   next hold (p50 days)
+    minor      209    81%   16%    3%    0%    0%    20% (2.9)
+    moderate   107    22%   26%   22%   23%    6%    79% (2.6)
+    major       36     6%   11%   11%   31%   42%    97% (1.9)
+  hold crossings by  road 72%, carriage 15%, shared 9%, ship 2%
+  hops deep          median 2, p90 3
+  sameness mills, same town   mean 0.44
+  sameness mills, same hold   mean 0.23
+  sameness people, same mill  mean 0.99
+  sameness people, same town  mean 0.90
+  retell calls       eager 181/trial, lazy 42/trial writing 57 versions
+
+== merged10: 31 mills, 10 trials x 60 days, 1.5 rumours/day ==
+  mills reached      median 4, p90 11, max 25
+  own town, all mills 67% of rumours; p50 1.4 days
+  holds reached          1     2     3   4-5    6+   next hold (p50 days)
+    minor      208    74%   23%    3%    0%    0%    26% (2.6)
+    moderate   113    14%   34%   30%   16%    6%    86% (3.1)
+    major       42     0%    5%   14%   40%   40%   100% (1.8)
+  hold crossings by  road 83%, carriage 14%, ship 1%
+  hops deep          median 2, p90 3
+  sameness mills, same town   mean 0.40
+  sameness mills, same hold   mean 0.25
+  sameness people, same mill  mean 1.00
+  sameness people, same town  mean 0.88
+  retell calls       eager 144/trial, lazy 37/trial writing 46 versions

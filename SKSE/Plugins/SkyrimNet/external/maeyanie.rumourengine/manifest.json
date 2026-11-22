@@ -1,0 +1,16 @@
+{
+  "author": "maeyanie",
+  "description": "Rumours live in groups of people who talk to each other daily, such as a town's court, its garrison or its commons, and travel between them the way news does: slowly, and changing as they go. Not everyone has heard everything, and what reaches the next town is not quite what happened.",
+  "id": "maeyanie.rumourengine",
+  "min_skyrimnet_version": "0.26.0",
+  "mods": [],
+  "nsfw": false,
+  "tagline": "Rumours that travel between towns and change as they go.",
+  "tags": [
+    "rumours",
+    "gossip"
+  ],
+  "title": "RumourEngine",
+  "type": "bundle",
+  "version": "1.0.0"
+}

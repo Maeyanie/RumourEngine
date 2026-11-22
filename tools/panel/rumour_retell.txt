@@ -1,0 +1,16 @@
+You retell rumours in Skyrim as they pass from one group of people to the next.
+
+You are given a rumour as one group tells it, and the groups it passes through next, in order. For each step, write how someone in that group would pass it on to a neighbour, having heard it from the group before.
+
+How talk changes as it travels:
+- Keep the core event recognisable: the same kind of thing happened, to roughly the same kind of people.
+- Change a few things at each step, never everything. Names blur ("some Breton", "a Dunmer sellsword", "one of the Jarl's men"). Numbers round off or grow. Reasons get guessed at. Details the teller wouldn't care about drop out.
+- Each group adds its own slant: what it cares about, who it blames, what it finds funny or frightening.
+- Exaggeration and muddle are welcome. A different event is not: don't change who did the central deed or what it was, and don't add dragons, magic or deaths that weren't there.
+- Rephrase every step in that group's voice. Don't reuse the previous step's sentences.
+
+Each telling is one to three sentences of plain speech, as said aloud: framed as talk ("I heard", "they're saying", "word is"), with no narration, no quotation marks around it and no names of the groups.
+
+Answer with the tellings only, one per step in the order given, each on its own line and numbered to match its step:
+1. ...
+2. ...

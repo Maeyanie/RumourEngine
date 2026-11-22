@@ -1,0 +1,50 @@
+{# ============================================================================
+RUMOUR SCREEN (chat fallback) — ADR-001, "Harvest and screening"
+Only used when SkyrimNet has no decision provider; normally screening goes
+through decisions/rumourengine/screen_memories. The same questions, answered
+as one line per memory, which Harvest.cpp parses:
+  m1: spread yes; tell gist; interest 4; same new
+Context as screen_memories.prompt.
+============================================================================ #}
+{% if screen_count and screen_count > 0 %}
+[ system ]
+You judge which of a Skyrim character's memories would become talk among the people around them.
+
+{# The player's setting, as in screen_memories. #}
+{{ render_template("submodules\\system_head\\0010_setting") }}
+
+For each memory, answer four things:
+- spread: would this person pass it on to the people they know? Judge by who they are: how open or discreet, how fond of talk, how they'd feel about it getting around. Worth telling: news, something they saw happen, a fight, a theft, a death, a deal, a scandal, a stranger's doings, something about the player. Their own private life is theirs to tell or not, as their character would. no when they'd keep it to themselves, when it's routine (daily work, small talk, an ordinary purchase), or when nobody would care.
+- tell: if they did talk about it, how much: everything (the private or intimate details included) or gist (what happened, without the private details, their feelings, or anything said in confidence).
+- interest: how much the people around them would want to hear it, from 1 (nobody would care) to 5 (everyone would be talking about it for days).
+- same: if the memory is about talk already going round, its key (r1, r2, ...); if it is the same happening as an earlier memory in the list, that memory's key (m1, m2, ...); otherwise new.
+
+Answer with one line per memory, in order, and nothing else:
+m1: spread yes; tell gist; interest 3; same new
+[ end system ]
+
+[ user ]
+{% set _npc = decnpc(screen_npc) %}
+Who: {{ screen_name }}, {{ _npc.gender }} {{ _npc.race }}. {{ screen_gossip }}
+Lives among: {{ screen_group }}
+{% if screen_back %}
+Just back from travelling with the player. These memories are from their time on the road, and they are among people who haven't heard any of it.
+{% endif %}
+{{ render_character_profile("bio_summary", screen_npc) }}
+Personality: {{ render_character_profile("bio_personality", screen_npc) }}
+
+Talk already going round:
+{% if length(screen_rumours) > 0 %}
+{% for r in screen_rumours %}
+{{ r.key }}: {{ r.content }}
+{% endfor %}
+{% else %}
+(nothing in particular)
+{% endif %}
+
+Their memories:
+{% for m in screen_memories %}
+{{ m.key }}: {{ m.content }}
+{% endfor %}
+[ end user ]
+{% endif %}

@@ -1,0 +1,50 @@
+{# Decision template: will word of how one of the player's quests ended get out? (ADR-001, "Quest endings")
+   One request per quest the player finishes, unless quests.ini says always or never for it, sent
+   by Quests.cpp. `heard` must reach quests.heard (0.5) for the ending to become a rumour; `far`
+   sets how far it travels, as notability 0.5 + 0.4 x far (0.5 to 0.9).
+
+   The quest is its name and type ("Waking Nightmare (a Daedric quest)"); the type tells guild and
+   Brotherhood work from the rest. The journal is the first entry the player had and the one the
+   journal shows at the end, with the game's alias tags filled in; when the ending restates the
+   first entry, as many do, it is the ending alone.
+
+   Calibrated with tools/quest_panel.py on 60 vanilla endings, each labelled as news across Skyrim
+   (8), talked of where it happened (20), private (20) or a judgement call (12) (2026-11-21):
+     Jev 1.14   heard >= 0.5 tells all 8 wide and all 20 local endings and 2 of the 20 private
+                ones (the Ebony Warrior defeated 0.82, defending Sinding 0.58); every other private
+                ending reads 0.47 or less, the Thieves Guild's work 0.16 to 0.35. Waking Nightmare
+                0.55 to 0.62 by its ending. far: wide 0.71 on average, local 0.35, private 0.26.
+                Leaving out the type let 8 private endings through at 0.4 instead of 3.
+     d3:4b      about 0.6: all 8 wide, 16 local and 5 private (it takes becoming the Thieves
+                Guild's master for news, 0.73).
+     Kev-4B     (kev:4b-q8_0) squeezes every answer into 0.2 to 0.65; about 0.45, poorly: at 0.5
+                it tells 5 wide, 8 local and 1 private ending, at 0.4 11 private ones.
+
+   Context: quest_text, journal_text. A criterion is exactly one line. #}
+[ state setting ]
+{{ render_template("submodules\\system_head\\0010_setting") }}
+[ end state ]
+
+[ state quest ]
+{{ quest_text }}
+[ end state ]
+
+[ state journal ]
+{{ journal_text }}
+[ end state ]
+
+[ question heard noul ]
+`journal` is the player's own record of `quest`: how it began and how it ended. Will word of how it ended get out beyond the people who took part, so that ordinary folk around there talk about it?
+[ criteria ]
+true: Yes: it happened in the open, changed something people can see, or those involved will tell of it.
+false: No: it stays with the people who took part, or is kept secret.
+[ end criteria ]
+[ end question ]
+
+[ question far noul ]
+`journal` is the player's own record of `quest`: how it began and how it ended. Will people in other holds of Skyrim hear how it ended and talk about it too?
+[ criteria ]
+true: Yes: it is news well beyond the hold where it happened.
+false: No: if anyone talks of it, it is only near where it happened.
+[ end criteria ]
+[ end question ]

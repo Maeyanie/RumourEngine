@@ -1,0 +1,10 @@
+{% if render_mode == "full" or render_mode == "static" %}
+{# RumourEngine: the talk going round this NPC's mills (the groups of people they
+   talk to every day), as their mill tells it. Built in C++ (Delivery::BuildTalk):
+   up to a few fresh rumours, a gossip's freshest marked as most on their mind,
+   and nothing at all for anyone travelling with the player. ADR-001, "Delivery". #}
+{% set re_talk = get_rumourengine_talk(npc.UUID) %}
+{% if length(re_talk) > 0 %}
+{{ re_talk }}
+{% endif %}
+{% endif %}

@@ -1,0 +1,12 @@
+# CMake and vcpkg output
+SKSE/build/
+
+# Compiled scripts
+Output/
+
+# Stage 0 tool caches and panel results
+tools/cache/
+tools/**/__pycache__/
+
+# Seed panel results hold the memories of whoever ran it
+tools/panel/results/seed-*

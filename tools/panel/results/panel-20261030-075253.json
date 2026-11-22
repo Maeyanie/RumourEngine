@@ -1,0 +1,316 @@
+{
+ "args": {
+  "models": [
+   "z-ai/glm-5.3-flash"
+  ],
+  "seeds": [
+   "temple",
+   "arcadia",
+   "jenassa-debt"
+  ],
+  "n": 1,
+  "steps_per_call": 2,
+  "temperature": 1.0,
+  "max_tokens": 3000,
+  "workers": 8,
+  "keep_raw": false,
+  "reasoning": "low",
+  "dry_run": false
+ },
+ "runs": [
+  {
+   "model": "z-ai/glm-5.3-flash",
+   "seed": "jenassa-debt",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "dawnstar",
+     "text": "That Breton who paid me 308 gold for the way to Japhet's Folly, I heard him at the Windpeak grilling his hired Dunmer, Jenassa. She admitted she owes the East Empire Company a debt, and she wouldn't say what for."
+    },
+    {
+     "mill": "morthal",
+     "text": "Word from the north is a Breton was asking questions at Dawnstar, and his dark-elf hired blade owed the East Empire Company coin she wouldn't talk about. Hush money, I say \u2014 outsiders and their Company debts, and her refusing to speak plain? Smells like something a witch would bargain over, and I'd not let either of them near the marsh."
+    },
+    {
+     "mill": "solitude.commons",
+     "text": "They're saying in that dreary little marsh town a Breton caught out his own sellsword \u2014 a Dunmer, apparently \u2014 over debts to the East Empire Company, and the woman flatly refused to explain herself. Honestly, the scandal of it: a hired blade with hidden Company obligations, and her employer none the wiser until he pressed her in public. One imagines the Bards will have a verse about it by week's end."
+    },
+    {
+     "mill": "solitude.garrison",
+     "text": "Some tale from the marsh town, is it? A Breton employer caught his sellsword holding secret debts to the East Empire Company, and she wouldn't say a word when he pressed her. Earnest business, that \u2014 obligations like that ought to be declared, not hidden from the man paying her wages."
+    },
+    {
+     "mill": "dragonbridge",
+     "text": "Word coming down the road from Solitude \u2014 over near the marsh town, a sellsword working for a Breton turned out to owe money to the Company and wouldn't explain herself when he asked. Burden on the trade routes, that kind of thing, debts chasing armed folk up and down the road. Makes you glad the Emperor's men keep watch on the bridge."
+    },
+    {
+     "mill": "markarth.commons",
+     "text": "You hear what happened out toward Morthal? Some hired blade took coin from a Breton, then wouldn't say why she was in debt \u2014 turned out she owed the Company. The Silver-Bloods will be rubbing their hands; debts like that are how they hook people, mark my words."
+    },
+    {
+     "mill": "markarth.underworld",
+     "text": "That story from up north, the sellsword owing the Company \u2014 you think that's a coincidence? A Breton hires her, she won't talk, and suddenly it's debts. The Silver-Bloods use outsiders like that, get them bound by money so they can't refuse, and then the rest of us pay for it down here."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 2.5,
+     "prompt": 520,
+     "completion": 180,
+     "cost": 6.408e-05,
+     "cached": 0,
+     "reasoning": 9,
+     "raw": null
+    },
+    {
+     "secs": 2.1,
+     "prompt": 554,
+     "completion": 143,
+     "cost": 0.00012082,
+     "cached": 0,
+     "reasoning": 1,
+     "raw": null
+    },
+    {
+     "secs": 2.23,
+     "prompt": 559,
+     "completion": 137,
+     "cost": 5.7266e-05,
+     "cached": 320,
+     "reasoning": 1,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.22,
+     "content": 0.13333333333333333,
+     "words": 61
+    },
+    {
+     "seq": 0.183206106870229,
+     "content": 0.13333333333333333,
+     "words": 70
+    },
+    {
+     "seq": 0.31666666666666665,
+     "content": 0.2765957446808511,
+     "words": 50
+    },
+    {
+     "seq": 0.26785714285714285,
+     "content": 0.13725490196078433,
+     "words": 62
+    },
+    {
+     "seq": 0.16363636363636364,
+     "content": 0.09259259259259259,
+     "words": 48
+    },
+    {
+     "seq": 0.19801980198019803,
+     "content": 0.1111111111111111,
+     "words": 53
+    }
+   ],
+   "names_kept": 0.2222222222222222,
+   "origin_sim": 0.047619047619047616
+  },
+  {
+   "model": "z-ai/glm-5.3-flash",
+   "seed": "arcadia",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "The Breton adventurer, Rennard, bought nine hundred and ten gold of ingredients off me in one go. And then, well. He's devoted to Dibella, and he showed me how devoted, right there by my shop door."
+    },
+    {
+     "mill": "whiterun.garrison",
+     "text": "Ha, you hear about the foreign mage boy who dropped near a thousand gold on that herb-seller's stall? Then, gods laugh, he went and worshiped at Dibella's altar right by her shop door while half the market watched. Wrapped up in her own apron, she was, I heard."
+    },
+    {
+     "mill": "whiterun.court",
+     "text": "They're saying one of these wandering Breton devotees caused a disturbance at a market stall in the plains district \u2014 a matter of public indecency, by the steward's account, though it seems no blades were drawn. The household finds it more diverting than threatening, though one wonders whether such Dibella followers passing through carry coin enough to be worth the guards' attention."
+    },
+    {
+     "mill": "riverwood",
+     "text": "Word from Whiterun is some robed Breton pilgrimage type got himself in trouble at the market \u2014 stripped near bare at a stall, by the sound of it, right in the plains district. No blades drawn, no harm done, but the guards had a good laugh over it, and I'd wager he was carrying more than the usual wandering sort."
+    },
+    {
+     "mill": "falkreath",
+     "text": "A traveller brought word of a Dibella follower gone mad at the Whiterun market \u2014 flung his clothes off in front of everyone, they say. Probably wine, or the gods take some that way. No one died at least, which is more than most folk passing through can claim."
+    },
+    {
+     "mill": "riverwood",
+     "text": "Word came up the road with a traveller \u2014 some priest of Dibella lost his wits at the Whiterun market, stripped himself bare right there among the stalls. Too much mead, most likely. Just goes to show the sort that comes down that road \u2014 luckily nobody was robbed and nobody killed."
+    },
+    {
+     "mill": "ivarstead",
+     "text": "There's talk of a holy man gone mad in Whiterun, shouting and baring himself at the market before all the pilgrims. Some say the gods touch certain folk that way, like those who climb the mountain seeking the Greybeards. Makes you wonder what sort passes through here heading up the Seven Thousand Steps."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 2.31,
+     "prompt": 528,
+     "completion": 147,
+     "cost": 5.7592e-05,
+     "cached": 320,
+     "reasoning": 1,
+     "raw": null
+    },
+    {
+     "secs": 2.14,
+     "prompt": 557,
+     "completion": 138,
+     "cost": 0.0001144125,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 2.3,
+     "prompt": 553,
+     "completion": 157,
+     "cost": 6.0942e-05,
+     "cached": 320,
+     "reasoning": 24,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.1411764705882353,
+     "content": 0.1,
+     "words": 49
+    },
+    {
+     "seq": 0.07272727272727272,
+     "content": 0.03225806451612903,
+     "words": 61
+    },
+    {
+     "seq": 0.26666666666666666,
+     "content": 0.15254237288135594,
+     "words": 59
+    },
+    {
+     "seq": 0.1308411214953271,
+     "content": 0.05660377358490566,
+     "words": 48
+    },
+    {
+     "seq": 0.20408163265306123,
+     "content": 0.10204081632653061,
+     "words": 50
+    },
+    {
+     "seq": 0.038834951456310676,
+     "content": 0.07017543859649122,
+     "words": 53
+    }
+   ],
+   "names_kept": 0.0,
+   "origin_sim": 0.0
+  },
+  {
+   "model": "z-ai/glm-5.3-flash",
+   "seed": "temple",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "Danica pulled a Breton and his Dunmer mercenary back from the edge at the temple. Both were carried in half dead, ribs crushed and arms broken, and she had the healing light pouring out of her for hours."
+    },
+    {
+     "mill": "whiterun.court",
+     "text": "Word around the keep is the temple took in a Breton and his dark-elf hired blade, both near gone, and Danica spent half the night with her restoration work keeping them alive. Whoever they crossed, they came off the worse for it \u2014 and the court wants to know what business brings strangers like that to the city in such a state."
+    },
+    {
+     "mill": "windhelm.commons",
+     "text": "They're saying in Whiterun a Breton had himself a Dunmer bodyguard, and between them they got so battered the priestess had to work miracles to pull them back. That's what comes of keeping with those dark-elf sellswords \u2014 they draw trouble wherever they go, and it's the Nords who end up dealing with the mess."
+    },
+    {
+     "mill": "windhelm.garrison",
+     "text": "Soldiers at the barracks are saying a Breton down Whiterun way hired himself a Dunmer blade to watch his back, and the pair of them got worked over so badly the temple priestess had to mend them half from death. Goes to show what kind of trouble follows those grey-skinned sellswords around \u2014 a man can't trust one of them at his shoulder, and I'd wager there's more behind it than anyone's letting on."
+    },
+    {
+     "mill": "kynesgrove",
+     "text": "Travellers off the road to Windhelm are telling it that a Breton and his dark-elf bodyguard got so torn up somewhere near Whiterun that the priestess there had to work miracles to pull them back to life. Hired the wrong sort of protection, if you ask me \u2014 my advice is keep your coin and your health, and mind the road, since trouble like that travels this way easy enough."
+    },
+    {
+     "mill": "winterhold",
+     "text": "Word from travellers up the road is some Breton and his dark-elf guard got near torn to pieces round Whiterun way, and only the temple healing pulled them back. Probably the College stirring up trouble again \u2014 ever since that place came down on us, the whole province's gone to ruin, and now strangers getting mauled on the roads is just more of it."
+    },
+    {
+     "mill": "winterholdcollege",
+     "text": "There's talk of a Breton and a Dunmer bodyguard left near dead out past Whiterun, brought back whole by the temple's healing arts. Restoring life to the grievously wounded is no small feat \u2014 I'd very much like to know what restorative methods the temple priests are working with."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 6.32,
+     "prompt": 544,
+     "completion": 318,
+     "cost": 3.34206e-05,
+     "cached": 0,
+     "reasoning": 169,
+     "raw": null
+    },
+    {
+     "secs": 5.53,
+     "prompt": 566,
+     "completion": 405,
+     "cost": 3.94059e-05,
+     "cached": 0,
+     "reasoning": 224,
+     "raw": null
+    },
+    {
+     "secs": 1.31,
+     "prompt": 555,
+     "completion": 145,
+     "cost": 5.865e-05,
+     "cached": 320,
+     "reasoning": 1,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.14,
+     "content": 0.10416666666666667,
+     "words": 62
+    },
+    {
+     "seq": 0.17094017094017094,
+     "content": 0.09090909090909091,
+     "words": 55
+    },
+    {
+     "seq": 0.26356589147286824,
+     "content": 0.16666666666666666,
+     "words": 74
+    },
+    {
+     "seq": 0.18055555555555555,
+     "content": 0.1267605633802817,
+     "words": 70
+    },
+    {
+     "seq": 0.2537313432835821,
+     "content": 0.20967741935483872,
+     "words": 64
+    },
+    {
+     "seq": 0.10714285714285714,
+     "content": 0.1111111111111111,
+     "words": 48
+    }
+   ],
+   "names_kept": 1.0,
+   "origin_sim": 0.13043478260869565
+  }
+ ]
+}

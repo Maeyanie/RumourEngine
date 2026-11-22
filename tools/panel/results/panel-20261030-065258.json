@@ -1,0 +1,2301 @@
+{
+ "args": {
+  "models": [
+   "~z-ai/glm-flash-latest",
+   "meta/muse-spark-1.2-contributor",
+   "aion-labs/aion-3.5-mini",
+   "nvidia/nemotron-3.5-super-vl:free"
+  ],
+  "seeds": null,
+  "n": 2,
+  "steps_per_call": 2,
+  "temperature": 1.0,
+  "max_tokens": 900,
+  "workers": 4,
+  "keep_raw": false,
+  "dry_run": false
+ },
+ "runs": [
+  {
+   "model": "~z-ai/glm-flash-latest",
+   "seed": "haldyn",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "windhelm.commons",
+     "text": "Haldyn's dead, the wizard behind the Blood Horker pirates. A Breton sellsword called Rennard broke that cursed fog of his at Japhet's Folly and cut him down, and the Company's ships went in and finished the rest. The pirate trouble on this coast is over."
+    },
+    {
+     "mill": "windhelm.garrison",
+     "text": "Word in the docks is some sellsword \u2014 a Breton, they said \u2014 broke a wizard's trickery up at Japhet's Folly and killed the pirate chief Haldyn himself, and the Company burned the rest of them out. Good riddance. If there's Empire gold behind pirates on our coast, we'll be watching for spies in the Grey Quarter next."
+    },
+    {
+     "mill": "kynesgrove",
+     "text": "Heard in Windhelm they've done for the pirate wizard \u2014 some sellsword got through his cursed fog and cut him down, and that was the end of the raiding on our coast, they say. Reckon the road to Windhelm will be safer for the ore carts now, though I'd still keep an eye on the sky coming past the barrow."
+    },
+    {
+     "mill": "dawnstar",
+     "text": "Word from down the coast is some sellsword finished off that wizard pirate who's been troubling shipping \u2014 cut through his spell-fog and did for him, so the East Empire ships should sail easier now. If you ask me, maybe it'll lift whatever's been giving us these damned dreams too."
+    },
+    {
+     "mill": "morthal",
+     "text": "There's talk of a wizard on the water, a sorcerer raiding ships until a blade got through his mists and killed him. Good riddance, I say, but mind who you trust out there \u2014 anyone muddled enough with charms and fogs is no friend of ours."
+    },
+    {
+     "mill": "solitude.commons",
+     "text": "Have you heard the tale from the swamps? Some hedge-wizard conjured mists on the water and preyed on shipping until a swordsman cut through his fog and ran him through \u2014 the sort of story the Bards College should be writing ballads about already."
+    },
+    {
+     "mill": "solitude.court",
+     "text": "Word from the docks is a rogue conjurer was waylaying vessels on the coast until the Legion finally put an end to it \u2014 exactly the kind of unlicensed magic that breeds trouble, and proof the Empire's arm keeps order where it matters."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 1.86,
+     "prompt": 537,
+     "completion": 158,
+     "cost": 0.00015955,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 1.94,
+     "prompt": 545,
+     "completion": 125,
+     "cost": 0.0001129,
+     "cached": 0,
+     "reasoning": 1,
+     "raw": null
+    },
+    {
+     "secs": 4.32,
+     "prompt": 544,
+     "completion": 239,
+     "cost": 2.97887e-05,
+     "cached": 0,
+     "reasoning": 128,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.25742574257425743,
+     "content": 0.2127659574468085,
+     "words": 56
+    },
+    {
+     "seq": 0.22608695652173913,
+     "content": 0.05172413793103448,
+     "words": 59
+    },
+    {
+     "seq": 0.1834862385321101,
+     "content": 0.19607843137254902,
+     "words": 50
+    },
+    {
+     "seq": 0.12631578947368421,
+     "content": 0.0784313725490196,
+     "words": 45
+    },
+    {
+     "seq": 0.24719101123595505,
+     "content": 0.14285714285714285,
+     "words": 44
+    },
+    {
+     "seq": 0.13953488372093023,
+     "content": 0.021739130434782608,
+     "words": 42
+    }
+   ],
+   "names_kept": 0.0,
+   "origin_sim": 0.04081632653061224
+  },
+  {
+   "model": "~z-ai/glm-flash-latest",
+   "seed": "haldyn",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "windhelm.commons",
+     "text": "Haldyn's dead, the wizard behind the Blood Horker pirates. A Breton sellsword called Rennard broke that cursed fog of his at Japhet's Folly and cut him down, and the Company's ships went in and finished the rest. The pirate trouble on this coast is over."
+    },
+    {
+     "mill": "windhelm.garrison",
+     "text": "They're saying some sellsword \u2014 a Breton, Rennard or some such \u2014 broke the pirate wizard's fog at Japhet's Folly and killed him, and the Company ships burnt the rest. Haldyn's dead, so good riddance, though I'd sooner it'd been proper Nord steel than mercenaries. At least the docks are quiet, and if any of those pirate scum come sniffing round the Grey Quarter, we'll know what to do."
+    },
+    {
+     "mill": "kynesgrove",
+     "text": "You heard what happened off Japhet's Folly? Word is the pirate wizard Haldyn's been killed \u2014 some sellsword cut through his fog and the ships finished them off. If that trouble's really done with, maybe the coast roads to Windhelm will be safe for the ore carts again."
+    },
+    {
+     "mill": "dawnstar",
+     "text": "They're saying in from the coast that the pirate wizard off Japhet's Folly is dead \u2014 some sellsword broke through all his mist and the ships burned the lot of them. Good news if it's true, that stretch of shore's been a curse for the fishing boats; maybe the Company will send us more ships now without worrying about pirates."
+    },
+    {
+     "mill": "morthal",
+     "text": "Word comes from the north coast that some wizard out there was killed, fog and all. Sailors say a sellsword walked right through his magic like it was nothing, and I don't like the sound of that \u2014 a blade that cuts through a wizard's spells? There's a tale behind that, and I'd sooner lock my door. Still, if it keeps the roads safe, I suppose."
+    },
+    {
+     "mill": "solitude.commons",
+     "text": "Have you heard what they're saying from the north coast? Some wizard got himself killed, and the soldier who did it walked straight through all his spells like they were stage tricks. The whole thing's got such a dramatic air about it \u2014 fog, magic, one blade against sorcery \u2014 you couldn't ask for a better tale over dinner, though I'm told the bards are already fighting over who gets to write it up."
+    },
+    {
+     "mill": "solitude.court",
+     "text": "There's been talk of an incident on the north coast \u2014 a wizard of some kind slain, and by all accounts a single sellsword, no court mage, no escort, cut him down and shrugged off whatever spells were thrown at him. If one blade can nock out hedge wizards that easily, it's worth asking whether the College and its kind are as much of a shield as they claim, what with the Thalmor mages about and the war going on."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 1.92,
+     "prompt": 537,
+     "completion": 165,
+     "cost": 0.00016305,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 4.98,
+     "prompt": 552,
+     "completion": 237,
+     "cost": 2.98821e-05,
+     "cached": 0,
+     "reasoning": 78,
+     "raw": null
+    },
+    {
+     "secs": 2.96,
+     "prompt": 546,
+     "completion": 188,
+     "cost": 6.7084e-05,
+     "cached": 0,
+     "reasoning": 1,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.30357142857142855,
+     "content": 0.23214285714285715,
+     "words": 67
+    },
+    {
+     "seq": 0.14035087719298245,
+     "content": 0.13793103448275862,
+     "words": 47
+    },
+    {
+     "seq": 0.32075471698113206,
+     "content": 0.20454545454545456,
+     "words": 59
+    },
+    {
+     "seq": 0.12903225806451613,
+     "content": 0.07142857142857142,
+     "words": 65
+    },
+    {
+     "seq": 0.145985401459854,
+     "content": 0.19642857142857142,
+     "words": 72
+    },
+    {
+     "seq": 0.07947019867549669,
+     "content": 0.08823529411764706,
+     "words": 79
+    }
+   ],
+   "names_kept": 0.0,
+   "origin_sim": 0.1016949152542373
+  },
+  {
+   "model": "~z-ai/glm-flash-latest",
+   "seed": "jenassa-debt",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "dawnstar",
+     "text": "That Breton who paid me 308 gold for the way to Japhet's Folly, I heard him at the Windpeak grilling his hired Dunmer, Jenassa. She admitted she owes the East Empire Company a debt, and she wouldn't say what for."
+    },
+    {
+     "mill": "morthal",
+     "text": "Word from Dawnstar is some Breton hired a Dunmer woman to take him out to that Folly, and when he pressed her she let slip she's beholden to the East Empire Company \u2014 and wouldn't breathe a word of why. A Dunmer who owes a company coin and won't say for what? That's not the sort of magic you'd want drifting through our marsh, I'll tell you."
+    },
+    {
+     "mill": "solitude.commons",
+     "text": "They're saying in the west that a Breton gentleman caught out his hired dark elf on a sea voyage \u2014 she owed the East Empire Company a fortune, over three hundred gold, apparently, and refused to say a word of how she got into it. Scandalous, isn't it? The Company's debts dogging people all the way up the coast like that, and everyone's too frightened to talk."
+    },
+    {
+     "mill": "solitude.garrison",
+     "text": "Some sailor's tale about a Breton and his Dunmer crewwoman \u2014 Company debt, three hundred gold or so, and her clammed up tight about it. Messy ledgers, if you ask me, nothing worth repeating on patrol."
+    },
+    {
+     "mill": "dragonbridge",
+     "text": "Someone passing through from the city was saying a Breton aboard a ship caught his dark elf hire owing the Company a pile of coin and she wouldn't breathe a word why. Probably hoping to duck the Company men at the outpost, I'd wager."
+    },
+    {
+     "mill": "markarth.commons",
+     "text": "There's talk come up the road from the bridge of some Breton on a ship who's owed a fistful of coin by a Dunmer woman working for the Company, and she's saying nothing about what for. Mark my words, anyone keeping their mouth shut like that has someone like the Silver-Bloods behind them."
+    },
+    {
+     "mill": "markarth.underworld",
+     "text": "Word passes down the cells: a Dunmer woman who does the Silver-Bloods' dirty work with the Company's coin got caught owing some Breton a debt she won't explain. That's how they all do it \u2014 the bosses borrow gold and the little folk get thrown in here when it comes due."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 5.08,
+     "prompt": 540,
+     "completion": 297,
+     "cost": 3.33045e-05,
+     "cached": 0,
+     "reasoning": 124,
+     "raw": null
+    },
+    {
+     "secs": 2.33,
+     "prompt": 547,
+     "completion": 105,
+     "cost": 0.00013455,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 2.4,
+     "prompt": 534,
+     "completion": 135,
+     "cost": 5.5516e-05,
+     "cached": 320,
+     "reasoning": 1,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.19047619047619047,
+     "content": 0.2564102564102564,
+     "words": 66
+    },
+    {
+     "seq": 0.19696969696969696,
+     "content": 0.08620689655172414,
+     "words": 66
+    },
+    {
+     "seq": 0.1782178217821782,
+     "content": 0.10638297872340426,
+     "words": 35
+    },
+    {
+     "seq": 0.10126582278481013,
+     "content": 0.047619047619047616,
+     "words": 44
+    },
+    {
+     "seq": 0.1836734693877551,
+     "content": 0.10869565217391304,
+     "words": 54
+    },
+    {
+     "seq": 0.11428571428571428,
+     "content": 0.10204081632653061,
+     "words": 51
+    }
+   ],
+   "names_kept": 0.2222222222222222,
+   "origin_sim": 0.09302325581395349
+  },
+  {
+   "model": "~z-ai/glm-flash-latest",
+   "seed": "jenassa-debt",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "dawnstar",
+     "text": "That Breton who paid me 308 gold for the way to Japhet's Folly, I heard him at the Windpeak grilling his hired Dunmer, Jenassa. She admitted she owes the East Empire Company a debt, and she wouldn't say what for."
+    },
+    {
+     "mill": "morthal",
+     "text": "Word from Dawnstar is some Breton gentleman got a Dunmer woman to confess she's in debt to the East Empire Company \u2014 and she went quiet as a grave about what for. A dark elf hiding a debt like that? Sounds like something she was sworn to under a spell, if you ask me, and no good comes of strangers prodding at that."
+    },
+    {
+     "mill": "solitude.commons",
+     "text": "They're saying in Morthal a mysterious Breton uncovered a scandal \u2014 a Dunmer sellsword secretly owing a fortune to the East Empire Company, and she refused to say why. Over three hundred gold, no less! It's the talk of the docks, a debt that dark and that buried. The Company should be ashamed, keeping its people bound like that."
+    },
+    {
+     "mill": "solitude.garrison",
+     "text": "Some drunk at the Winking Skeever swears there's a Dunmer woman up in Morthal owing the East Empire Company three hundred septims, and a Breton who dug it all up. Stormcloak-style rabble-rousing, if you ask me \u2014 the Company pays its debts and so should she. Nothing for honest soldiers to worry about."
+    },
+    {
+     "mill": "dragonbridge",
+     "text": "Fellas came through on the road from Solitude going on about trouble in Morthal \u2014 some sellsword woman three hundred gold in the hole to the Company, and they're making a scandal of it. All I know is the Oculatus lot at the outpost keep their ledgers straight, and if she owes that much she ought to pay it instead of muttering about secrets."
+    },
+    {
+     "mill": "markarth.commons",
+     "text": "Word coming up the road says a sellsword woman's in debt to the Company for near three hundred gold, and they're dragging her name through the mud over it out of Solitude way. A woman like that, running up debts she can't pay and muttering about secrets \u2014 folk with powerful friends don't get hounded like that, so either she crossed someone big, or someone big wants her shamed."
+    },
+    {
+     "mill": "markarth.underworld",
+     "text": "That sellsword in Morthal? The Silver-Bloods put her up to the debt, mark it. The Company doesn't chase one woman for three hundred gold unless the mine bosses want her broken and thrown in here with the rest of us. They ruin who they like and call it debt \u2014 same as they did half the poor sods swinging picks down this hole."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 5.08,
+     "prompt": 540,
+     "completion": 274,
+     "cost": 3.1867e-05,
+     "cached": 0,
+     "reasoning": 120,
+     "raw": null
+    },
+    {
+     "secs": 3.06,
+     "prompt": 538,
+     "completion": 181,
+     "cost": 6.5252e-05,
+     "cached": 0,
+     "reasoning": 25,
+     "raw": null
+    },
+    {
+     "secs": 3.73,
+     "prompt": 562,
+     "completion": 166,
+     "cost": 0.00014712,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.1782178217821782,
+     "content": 0.15,
+     "words": 62
+    },
+    {
+     "seq": 0.23333333333333334,
+     "content": 0.14583333333333334,
+     "words": 58
+    },
+    {
+     "seq": 0.23214285714285715,
+     "content": 0.19148936170212766,
+     "words": 54
+    },
+    {
+     "seq": 0.10256410256410256,
+     "content": 0.09259259259259259,
+     "words": 63
+    },
+    {
+     "seq": 0.1984732824427481,
+     "content": 0.2222222222222222,
+     "words": 68
+    },
+    {
+     "seq": 0.16793893129770993,
+     "content": 0.11864406779661017,
+     "words": 63
+    }
+   ],
+   "names_kept": 0.1111111111111111,
+   "origin_sim": 0.06382978723404255
+  },
+  {
+   "model": "~z-ai/glm-flash-latest",
+   "seed": "helgen",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "Helgen's gone. The Imperials had us at the block, Ulfric too, and a dragon came out of the sky and burned the whole town down around them. I got out alongside a Breton called Rennard, and my sister's sent him on to warn the Jarl."
+    },
+    {
+     "mill": "whiterun.commons",
+     "text": "You won't believe what's coming up the road \u2014 Helgen's burned clean to the ground, a dragon they're saying, straight out of the sky mid-execution. Some Riverwood folk turned up half scorched, and one of them swears Ulfric Stormcloak himself was at the block when it happened. The sister's sent some Breton feller up here to bend the Jarl's ear about it all."
+    },
+    {
+     "mill": "whiterun.court",
+     "text": "Word from the Riverwood trader's people, my lord \u2014 Helgen destroyed, and by a dragon, no less. It struck while the Imperials were executing prisoners, Ulfric Stormcloak among them, though he seems to have fled the flames. Their messenger, a Breton, brings warning to Dragonsreach, and I'd urge we treat this as no mere rumour \u2014 a living dragon bodes ill for the hold and the war alike."
+    },
+    {
+     "mill": "whiterun.garrison",
+     "text": "Ha! You hear the maddest things on this wall \u2014 they're saying a dragon flew down on Helgen while the Imperials were lining up their prisoners, and offed the lot. That Stormcloak fella was in the line too, and somehow walked away. So now there's a fire-breathing lizard loose and Ulfric loose with it, and we're stuck on the walls for men who've got to deal with both."
+    },
+    {
+     "mill": "rorikstead",
+     "text": "A trader's lad come through said Helgen burnt to the ground, a dragon they say, though I've heard enough city tales to fill a barn. Supposedly it hit while the Imperials were doing executions, and that Ulfric got out of the smoke alive, which some call a miracle and some call convenient. Dragon or lightning or what-have-you, keep your eyes up on the west road, that's what I say."
+    },
+    {
+     "mill": "markarth.commons",
+     "text": "Word from the west road says Helgen's been razed, burned clean through, and they're blaming a dragon of all things. It happened right in the middle of an Imperial execution, and Ulfric Stormcloak walked out of the flames somehow \u2014 nothing walks away from that unless someone wanted him to, and I'd not be surprised who. If there's dragons about now, the Silver-Bloods will find a way to make it cost us."
+    },
+    {
+     "mill": "markarth.underworld",
+     "text": "They're whispering up top that Helgen burnt to nothing, whole town gone, and of course the story they're fed is a dragon did it. Funny how the Imperials had Ulfric strung up for execution that very day and he's the only soul to stroll out alive, eh? The Silver-Bloods and their Nord friends arranged that well enough \u2014 same as they arranged us down here."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 3.53,
+     "prompt": 546,
+     "completion": 207,
+     "cost": 7.0564e-05,
+     "cached": 320,
+     "reasoning": 24,
+     "raw": null
+    },
+    {
+     "secs": 2.71,
+     "prompt": 563,
+     "completion": 184,
+     "cost": 6.6882e-05,
+     "cached": 320,
+     "reasoning": 1,
+     "raw": null
+    },
+    {
+     "secs": 1.49,
+     "prompt": 573,
+     "completion": 181,
+     "cost": 6.6822e-05,
+     "cached": 320,
+     "reasoning": 1,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.25925925925925924,
+     "content": 0.19148936170212766,
+     "words": 63
+    },
+    {
+     "seq": 0.13953488372093023,
+     "content": 0.07936507936507936,
+     "words": 66
+    },
+    {
+     "seq": 0.14925373134328357,
+     "content": 0.1076923076923077,
+     "words": 68
+    },
+    {
+     "seq": 0.14388489208633093,
+     "content": 0.09375,
+     "words": 71
+    },
+    {
+     "seq": 0.15384615384615385,
+     "content": 0.07462686567164178,
+     "words": 72
+    },
+    {
+     "seq": 0.1897810218978102,
+     "content": 0.09230769230769231,
+     "words": 65
+    }
+   ],
+   "names_kept": 0.2,
+   "origin_sim": 0.14
+  },
+  {
+   "model": "~z-ai/glm-flash-latest",
+   "seed": "helgen",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "Helgen's gone. The Imperials had us at the block, Ulfric too, and a dragon came out of the sky and burned the whole town down around them. I got out alongside a Breton called Rennard, and my sister's sent him on to warn the Jarl."
+    },
+    {
+     "mill": "whiterun.commons",
+     "text": "You've heard about Helgen, surely? Burned clean to the ground, they're saying, dragon or some such out of the sky mid-execution \u2014 Imperials had a whole batch of prisoners on the block, Ulfric Stormcloak among them, and half of them scattered in the fire. One of the ones that got away came down the road through Riverwood, some Breton, and they've gone and sent him up here to the Jarl, of all things."
+    },
+    {
+     "mill": "whiterun.court",
+     "text": "Word from the market is Helgen has been destroyed, and the cause is said to be a dragon \u2014 which, if true, confirms what the court has long suspected. Reportedly the town was hosting an Imperial execution, with Ulfric Stormcloak among the condemned, and the confusion allowed him and several others to escape. A traveller who witnessed it, a Breton by some accounts, has been sent ahead with word; the steward should expect him and prepare a report on what this means for the hold."
+    },
+    {
+     "mill": "whiterun.garrison",
+     "text": "Ha, you hear that? Whole of Helgen's gone \u2014 burned flat, they say, by an actual dragon! Ulfric Stormcloak was up on the block there, and the big scaly bugger gave him a way out. Now the Jarl's lot are fussing over some traveller what saw it all, sending him round with reports like he's the Ta'agrai himself."
+    },
+    {
+     "mill": "rorikstead",
+     "text": "A dragon, is it? That's what the city folk are saying, but they'll swallow anything. Word came down the road that Helgen burned to the ground and Ulfric slipped loose in all the mess. Some traveller's supposed to be carrying the tale \u2014 we'll believe it when he walks through here and not a scale sooner."
+    },
+    {
+     "mill": "markarth.commons",
+     "text": "They laugh at the farmers for doubting, but down here we're not so sure ourselves. Still, they say Helgen's nothing but ash and Ulfric walked out of the flames \u2014 and a dragon overhead, if you can credit it. Mark my words, the Silver-Bloods knew before anyone; nothing burns like that without someone powerful looking the other way."
+    },
+    {
+     "mill": "markarth.underworld",
+     "text": "Knew? They arranged it, mark that. Word in the mine is the Silver-Bloods paid to have Helgen burned and Ulfric set loose \u2014 Ulfric's their man, see, one Nord king doing another's bidding, and us Forsworn rotting in the dark either way. A dragon, a burning town, an Ulfric free \u2014 all one bargain, and we'll pay the price of it."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 1.83,
+     "prompt": 546,
+     "completion": 206,
+     "cost": 7.0172e-05,
+     "cached": 512,
+     "reasoning": 1,
+     "raw": null
+    },
+    {
+     "secs": 2.13,
+     "prompt": 574,
+     "completion": 156,
+     "cost": 0.00011568,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 2.22,
+     "prompt": 553,
+     "completion": 328,
+     "cost": 0.00024695,
+     "cached": 0,
+     "reasoning": 158,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.2711864406779661,
+     "content": 0.32608695652173914,
+     "words": 73
+    },
+    {
+     "seq": 0.15286624203821655,
+     "content": 0.13846153846153847,
+     "words": 84
+    },
+    {
+     "seq": 0.0851063829787234,
+     "content": 0.08196721311475409,
+     "words": 57
+    },
+    {
+     "seq": 0.10714285714285714,
+     "content": 0.07692307692307693,
+     "words": 55
+    },
+    {
+     "seq": 0.08849557522123894,
+     "content": 0.05454545454545454,
+     "words": 58
+    },
+    {
+     "seq": 0.13559322033898305,
+     "content": 0.12280701754385964,
+     "words": 60
+    }
+   ],
+   "names_kept": 0.2,
+   "origin_sim": 0.07547169811320754
+  },
+  {
+   "model": "~z-ai/glm-flash-latest",
+   "seed": "sanguine-ledger",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "That Breton, Rennard, has his hands on a ledger of Sanguine's, the Daedric prince of revelry, and he's talked Delphine into letting him use the Sleeping Giant's back rooms for private entertainments. She takes a cut of the coin."
+    },
+    {
+     "mill": "whiterun.commons",
+     "text": "They're saying some Breton fellow down Riverwood way got hold of a Daedric prince's ledger \u2014 Sanguine, the party one \u2014 and now he's running secret entertainments out of the back of that inn, and the innkeeper woman's pocketing coin to look the other way. Outsiders, every one of them."
+    },
+    {
+     "mill": "whiterun.garrison",
+     "text": "Ha, heard the market lot going on about it \u2014 some foreign mage type's turned a Riverwood tavern into a den of vice, with a book from one of them Daedric princes, and the innkeeper's taking her slice of the take. If he waves that book about on my watch I'll confiscate it. For, er, safekeeping."
+    },
+    {
+     "mill": "ivarstead",
+     "text": "Pilgrim told me at the inn there's a foreign wizard gone and set up some devil-worship down in Riverwood \u2014 got a Daedric book and everything, and the innkeeper's mixed up in it. Strange folk coming up this mountain already, and now this."
+    },
+    {
+     "mill": "riften.commons",
+     "text": "You hear the one about the wizard in Riverwood? Word is he's got some Daedric book working the tavern, splitting the coin with the innkeeper \u2014 course she's taking her cut, smart woman. If the Black-Briars hear there's gold in it, they'll have the whole racket before the week's out."
+    },
+    {
+     "mill": "riften.underworld",
+     "text": "Word from the docks is there's a conjurer in Riverwood pulling coin out of a book in the tavern \u2014 splitting it with the innkeeper, which is the only clever part of the whole arrangement. Decent take for a travelling mark, if the Black-Briars don't move in first and take the lot."
+    },
+    {
+     "mill": "riften.garrison",
+     "text": "Some lads were saying there's a wizard down Riverwood way running some book-and-coin racket out of the tavern with the innkeeper in on it. Nothing for us to shake down here, but if the Black-Briars get a whiff of coin, there'll be trouble rolling through the docks before the week's out."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 1.56,
+     "prompt": 549,
+     "completion": 148,
+     "cost": 5.8926e-05,
+     "cached": 320,
+     "reasoning": 1,
+     "raw": null
+    },
+    {
+     "secs": 1.97,
+     "prompt": 557,
+     "completion": 131,
+     "cost": 0.00014905,
+     "cached": 0,
+     "reasoning": 1,
+     "raw": null
+    },
+    {
+     "secs": 1.78,
+     "prompt": 541,
+     "completion": 139,
+     "cost": 0.00010662,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.22988505747126436,
+     "content": 0.14285714285714285,
+     "words": 48
+    },
+    {
+     "seq": 0.13592233009708737,
+     "content": 0.04081632653061224,
+     "words": 55
+    },
+    {
+     "seq": 0.16326530612244897,
+     "content": 0.11363636363636363,
+     "words": 43
+    },
+    {
+     "seq": 0.21505376344086022,
+     "content": 0.14285714285714285,
+     "words": 50
+    },
+    {
+     "seq": 0.3137254901960784,
+     "content": 0.2564102564102564,
+     "words": 52
+    },
+    {
+     "seq": 0.32075471698113206,
+     "content": 0.21951219512195122,
+     "words": 54
+    }
+   ],
+   "names_kept": 0.0,
+   "origin_sim": 0.021739130434782608
+  },
+  {
+   "model": "~z-ai/glm-flash-latest",
+   "seed": "sanguine-ledger",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "That Breton, Rennard, has his hands on a ledger of Sanguine's, the Daedric prince of revelry, and he's talked Delphine into letting him use the Sleeping Giant's back rooms for private entertainments. She takes a cut of the coin."
+    },
+    {
+     "mill": "whiterun.commons",
+     "text": "They're saying some Breton down in Riverwood's got hold of a ledger belonging to that Daedra lord of drink and debauchery, and now Delphine's renting him the back of the Sleeping Giant for his little parties \u2014 and taking a slice of the coin for herself, mind. I always said that woman wasn't just a trader."
+    },
+    {
+     "mill": "whiterun.garrison",
+     "text": "Ha, heard the one about the bookman in Riverwood? Got himself a page out of the Prince of Booze's own ledger, so now he's running whores and wine out of the inn's back rooms while the tavern lass skims the top. Half the village must be lining up at the door."
+    },
+    {
+     "mill": "ivarstead",
+     "text": "A pilgrim passing through heard it from a guard on the walls \u2014 some bookish fellow down in Riverwood's found a page torn from a daedra's own book, and now he's got wine and worse flowing at the inn while the barmaid takes her cut. Queer doings. He'll be wanting to climb the Seven Thousand Steps next, mark me, to hide from whatever he's called down on himself."
+    },
+    {
+     "mill": "riften.commons",
+     "text": "Word from up the road is some quill-pusher in Riverwood got his hands on a page of a daedric ledger \u2014 and you know what a ledger like that's worth. Now he's running wine and beds out the back of the inn, with the innkeep's girl wetting her beak on every sale. Cleverer than he looks. Mind you, anyone doing business that slick without the Black-Briars taking a share won't be doing it long."
+    },
+    {
+     "mill": "riften.underworld",
+     "text": "I heard there's a soft clerk in Riverwood sitting on a page of a daedric ledger, and he's using it to run a little side trade out of the inn \u2014 wine, beds, the innkeep's girl skimming her cut off every sale. Now that's the kind of setup I like: a mark with a prize he doesn't even know how to guard. Anyone with goods moving like that, no protection, no backing, is just a purse waiting to be lifted."
+    },
+    {
+     "mill": "riften.garrison",
+     "text": "Word is some clerk down in Riverwood's smuggling drink and worse out the back of an inn, dealing in papers from a daedric ledger besides, and the innkeep's girl's in on the take too. That's the sort of thing that starts knife-fights on the docks, mark me. If he's moving goods through here with no protection money paid, then whatever he's carrying is fair game for us to shake loose."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 3.08,
+     "prompt": 549,
+     "completion": 143,
+     "cost": 5.8246e-05,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 1.4,
+     "prompt": 549,
+     "completion": 191,
+     "cost": 0.00013846,
+     "cached": 0,
+     "reasoning": 1,
+     "raw": null
+    },
+    {
+     "secs": 3.85,
+     "prompt": 591,
+     "completion": 297,
+     "cost": 3.46968e-05,
+     "cached": 0,
+     "reasoning": 102,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.2765957446808511,
+     "content": 0.13333333333333333,
+     "words": 55
+    },
+    {
+     "seq": 0.1509433962264151,
+     "content": 0.07692307692307693,
+     "words": 51
+    },
+    {
+     "seq": 0.22033898305084745,
+     "content": 0.11864406779661017,
+     "words": 67
+    },
+    {
+     "seq": 0.2112676056338028,
+     "content": 0.07042253521126761,
+     "words": 75
+    },
+    {
+     "seq": 0.33766233766233766,
+     "content": 0.2222222222222222,
+     "words": 79
+    },
+    {
+     "seq": 0.24,
+     "content": 0.13432835820895522,
+     "words": 71
+    }
+   ],
+   "names_kept": 0.14285714285714285,
+   "origin_sim": 0.05454545454545454
+  },
+  {
+   "model": "~z-ai/glm-flash-latest",
+   "seed": "arcadia",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "The Breton adventurer, Rennard, bought nine hundred and ten gold of ingredients off me in one go. And then, well. He's devoted to Dibella, and he showed me how devoted, right there by my shop door."
+    },
+    {
+     "mill": "whiterun.garrison",
+     "text": "Ha, you hear this? Some Breton dropped near a thousand septims on herbs and whatnot from one of the stallkeepers, then got so thankful to ol' Dibella he gave her his thanks right there in the street. Got a good chuckle watching him jog off before the guards could have a word."
+    },
+    {
+     "mill": "whiterun.court",
+     "text": "Word from the market is a Breton, name of Rennard, spent a tidy sum on alchemical goods, then committed some indiscretion in honour of Dibella in the open street. The guards found it amusing; I find it a distraction \u2014 if a stranger's that flush with gold, one wonders where it's from and whether he'll be heading to join the fighting next."
+    },
+    {
+     "mill": "riverwood",
+     "text": "Traders coming up from Whiterun are saying some Breton fellow with more coin than sense bought out half an apothecary's stock, then stripped off and did something shameful right in the street for that Dibella of his. Guards just laughed at him. Hired sword, most like \u2014 sellswords get strange notions in their heads, and I'd sooner he loitered in Whiterun than came loitering down our road."
+    },
+    {
+     "mill": "falkreath",
+     "text": "The mill folk passing through say a foreigner went mad in the streets of Whiterun \u2014 spent a fortune on potions, then carried on indecent in broad daylight, some heathen rite to a love goddess. It's the drink, I'd wager, or worse. Poor soul, ending up like that. My cousin in the Whiterun guard says the Jarl's own court took no end of glee in the telling, which tells you how things stand up there."
+    },
+    {
+     "mill": "riverwood",
+     "text": "Travellers off the north road swear a stranger went raving mad in Whiterun \u2014 spent all their coin on potions, then carried on shameful right there in the street for everyone to see. Bandits could've made off with them easy, wandering like that. Just what the road brings up from Whiterun these days, I don't know."
+    },
+    {
+     "mill": "ivarstead",
+     "text": "A pilgrim fresh off the road says some foreigner took leave of their senses in Whiterun \u2014 bought up half the potions in the city, then made a spectacle of themselves out in the open, like it was some offering to one of the heathen gods. Must be why the gods send strangers up to the mountain, to be tested. We see all sorts come through for the Throat, but that one sounds like they need the Greybeards' prayers more than most."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 4.27,
+     "prompt": 548,
+     "completion": 223,
+     "cost": 2.88979e-05,
+     "cached": 0,
+     "reasoning": 74,
+     "raw": null
+    },
+    {
+     "secs": 2.71,
+     "prompt": 558,
+     "completion": 197,
+     "cost": 6.9212e-05,
+     "cached": 320,
+     "reasoning": 1,
+     "raw": null
+    },
+    {
+     "secs": 5.09,
+     "prompt": 612,
+     "completion": 357,
+     "cost": 3.90201e-05,
+     "cached": 0,
+     "reasoning": 181,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.1590909090909091,
+     "content": 0.07894736842105263,
+     "words": 52
+    },
+    {
+     "seq": 0.1592920353982301,
+     "content": 0.0784313725490196,
+     "words": 61
+    },
+    {
+     "seq": 0.12598425196850394,
+     "content": 0.0625,
+     "words": 66
+    },
+    {
+     "seq": 0.07142857142857142,
+     "content": 0.02666666666666667,
+     "words": 74
+    },
+    {
+     "seq": 0.27906976744186046,
+     "content": 0.0967741935483871,
+     "words": 55
+    },
+    {
+     "seq": 0.16176470588235295,
+     "content": 0.0847457627118644,
+     "words": 81
+    }
+   ],
+   "names_kept": 0.0,
+   "origin_sim": 0.019230769230769232
+  },
+  {
+   "model": "~z-ai/glm-flash-latest",
+   "seed": "arcadia",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "The Breton adventurer, Rennard, bought nine hundred and ten gold of ingredients off me in one go. And then, well. He's devoted to Dibella, and he showed me how devoted, right there by my shop door."
+    },
+    {
+     "mill": "whiterun.garrison",
+     "text": "Ha, hear this \u2014 some Breton wanderer dropped near a thousand gold on herbs at one of the market stalls, and then couldn't keep his hands off the seller right out in the open, by her own door. Too much coin and too much mead in a man, if you ask me."
+    },
+    {
+     "mill": "whiterun.court",
+     "text": "Word from the walls is a foreigner of means, a Breton by the name of Rennard, made a large purchase from a tradeswoman here \u2014 several hundred gold at least \u2014 and then caused something of a public disturbance at her doorstep. The steward should know there are outsiders flush with gold walking the streets with no clear business in the hold."
+    },
+    {
+     "mill": "riverwood",
+     "text": "There was some wealthy Breton fellow passing through Whiterun \u2014 dropped a few hundred gold buying from some trader woman, then kicked up a fuss right at her door. With the roads the way they are, I don't like the sound of rich strangers wandering about with no business to speak of."
+    },
+    {
+     "mill": "falkreath",
+     "text": "They're saying a rich Breton down Whiterun way bought half a shop off some woman, hundreds of gold, then made a scene in the street over it. Folk with that much coin and no reason for being here \u2014 ends up in the graveyard eventually, strangers like that, mark me."
+    },
+    {
+     "mill": "riverwood",
+     "text": "A trader came through with word of a rich Breton down in Whiterun who dropped hundreds of septims buying half some woman's shop, then kicked up a fuss in the street after. Sounds like the kind of coin a bandit would love \u2014 hope he's got guards on him, anyone flashing that much on the road is asking for trouble."
+    },
+    {
+     "mill": "ivarstead",
+     "text": "Pilgrims coming up from the south are talking about a wealthy Breton in Whiterun who paid some poor woman a fortune for half her shop and then made a spectacle of himself over it. Strange folk with strange coin, that's all I'll say \u2014 we get enough odd visitors climbing for the Greybeards without merchants squabbling over gold."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 2.63,
+     "prompt": 548,
+     "completion": 152,
+     "cost": 2.3186e-05,
+     "cached": 531,
+     "reasoning": 14,
+     "raw": null
+    },
+    {
+     "secs": 1.87,
+     "prompt": 550,
+     "completion": 126,
+     "cost": 5.458e-05,
+     "cached": 320,
+     "reasoning": 1,
+     "raw": null
+    },
+    {
+     "secs": 5.4,
+     "prompt": 573,
+     "completion": 298,
+     "cost": 3.42679e-05,
+     "cached": 0,
+     "reasoning": 149,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.11494252873563218,
+     "content": 0.10810810810810811,
+     "words": 51
+    },
+    {
+     "seq": 0.16216216216216217,
+     "content": 0.0392156862745098,
+     "words": 60
+    },
+    {
+     "seq": 0.23423423423423423,
+     "content": 0.09803921568627451,
+     "words": 51
+    },
+    {
+     "seq": 0.1,
+     "content": 0.16279069767441862,
+     "words": 49
+    },
+    {
+     "seq": 0.2777777777777778,
+     "content": 0.21739130434782608,
+     "words": 59
+    },
+    {
+     "seq": 0.1206896551724138,
+     "content": 0.0847457627118644,
+     "words": 57
+    }
+   ],
+   "names_kept": 0.3333333333333333,
+   "origin_sim": 0.06666666666666667
+  },
+  {
+   "model": "~z-ai/glm-flash-latest",
+   "seed": "temple",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "Danica pulled a Breton and his Dunmer mercenary back from the edge at the temple. Both were carried in half dead, ribs crushed and arms broken, and she had the healing light pouring out of her for hours."
+    },
+    {
+     "mill": "whiterun.court",
+     "text": "Word from the temple is that Danica Pure-Spring had to work one of her long healings \u2014 some Breton traveler and his Dunmer hired blade came in half dead, ribs crushed and arms broke, and she spent half the night pouring her restoration into them before they were out of danger. Can't say what they were doing to get themselves that smashed, but with the roads the way they are, I'd wager bandits or worse caught them."
+    },
+    {
+     "mill": "windhelm.commons",
+     "text": "They're saying a Breton and his Dunmer bodyguard got themselves beaten near to death out there \u2014 one of the Windhelm folk heard it from a Whiterun traveler \u2014 crushed ribs and shattered arms, and it took a priestess the whole night to pull them back. Sounds like the two of them got in over their heads with someone, and knowing the way those sellswords work, I wouldn't be surprised they brought it on themselves. What a Breton wants with a Dunmer blade anyway, that's what I'd like to know."
+    },
+    {
+     "mill": "windhelm.garrison",
+     "text": "The guards are saying some Breton and his Dark Elf hired blade got worked over bad outside the walls \u2014 arms broke, ribs caved in, priestess worked on them all night to save them. Asking around, I say if you wander with a Dunmer shadow at your back, you're either a spy or asking for exactly that kind of trouble."
+    },
+    {
+     "mill": "kynesgrove",
+     "text": "Word from Windhelm is a stranger and the elf he kept with him got beaten near to death \u2014 broken arms, cracked ribs, a priestess spending half the night on them. That's the road for you, past Windhelm; there's folk out there who'll do that to a traveler, so keep to the mine and don't be walking alone after dark."
+    },
+    {
+     "mill": "winterhold",
+     "text": "They're saying two travelers got set upon on the road by Windhelm \u2014 a man and his elf companion, near beat to death, both arms broke. Probably some drunken Nords at it again, and the College'll get blamed for that too somehow, you mark me."
+    },
+    {
+     "mill": "winterholdcollege",
+     "text": "Apparently there was an assault on the road near Windhelm \u2014 a Nord and an elf, both badly hurt, healed by a priestess through the night. We wonder what the attackers wanted; no mention of any spellcraft, sadly, or the priestess would be worth talking to."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 4.09,
+     "prompt": 544,
+     "completion": 295,
+     "cost": 3.32887e-05,
+     "cached": 0,
+     "reasoning": 86,
+     "raw": null
+    },
+    {
+     "secs": 4.86,
+     "prompt": 605,
+     "completion": 333,
+     "cost": 3.7329e-05,
+     "cached": 0,
+     "reasoning": 182,
+     "raw": null
+    },
+    {
+     "secs": 1.08,
+     "prompt": 543,
+     "completion": 118,
+     "cost": 0.00011,
+     "cached": 0,
+     "reasoning": 1,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.3130434782608696,
+     "content": 0.20833333333333334,
+     "words": 77
+    },
+    {
+     "seq": 0.12121212121212122,
+     "content": 0.18461538461538463,
+     "words": 88
+    },
+    {
+     "seq": 0.20408163265306123,
+     "content": 0.14754098360655737,
+     "words": 59
+    },
+    {
+     "seq": 0.13559322033898305,
+     "content": 0.12962962962962962,
+     "words": 59
+    },
+    {
+     "seq": 0.11650485436893204,
+     "content": 0.14285714285714285,
+     "words": 44
+    },
+    {
+     "seq": 0.1797752808988764,
+     "content": 0.11363636363636363,
+     "words": 45
+    }
+   ],
+   "names_kept": 0.0,
+   "origin_sim": 0.023809523809523808
+  },
+  {
+   "model": "~z-ai/glm-flash-latest",
+   "seed": "temple",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "Danica pulled a Breton and his Dunmer mercenary back from the edge at the temple. Both were carried in half dead, ribs crushed and arms broken, and she had the healing light pouring out of her for hours."
+    },
+    {
+     "mill": "whiterun.court",
+     "text": "The steward's heard it from the temple priestess \u2014 some Breton outlander and his Dark Elf hired blade came crawling in near dead, ribs stove in and arms busted, and Danica spent half the night with her hands glowing over them. Whoever beat them that badly left them for the crows, and the Jarl's men are wondering whether it's war trouble spilling into our streets."
+    },
+    {
+     "mill": "windhelm.commons",
+     "text": "Word from Whiterun is a Nord caught a Breton and his Dunmer bodyguard doing something they shouldn't, and gave them the thrashing they deserved \u2014 cracked ribs, shattered arms, the pair of them dragging themselves to the temple for an elf-witch to mend. Serves them right, coming here and hiring Dark Elves; that's what happens to outsiders who think they can do as they please."
+    },
+    {
+     "mill": "windhelm.garrison",
+     "text": "Some Nord caught a Breton and his Dark Elf bodyguard up to no good in Whiterun and beat them half to death \u2014 good on him. If you ask me, anyone who hires a Dunmer to stand at his shoulder is either Empire business or planning some, and it serves them right either way."
+    },
+    {
+     "mill": "kynesgrove",
+     "text": "Travellers coming up the road say a man got a proper thrashing in Whiterun \u2014 cracked his ribs and broke his arms, both of them crawling off to the temple after. Word is the fellow who did it was defending himself against some Breton and his elven bodyguard, so no great loss if the pair came asking for trouble."
+    },
+    {
+     "mill": "winterhold",
+     "text": "You hear what they're saying down the road? Some poor fool in Whiterun got his arms broken and ribs caved in by a Breton and one of those elf minders of his \u2014 sounds like College business to me, them spellcasters and their bodyguards thinking they can thrash honest Nords wherever they like and hide behind their temple healers after."
+    },
+    {
+     "mill": "winterholdcollege",
+     "text": "There's talk of an altercation in Whiterun involving, apparently, a Breton of some learning with an elven retainer \u2014 a college-trained duellist, one suspects, though the tale has it the other man started it. If the fellow's ribs were truly cracked without so much as a visible spell, that would be worth looking into."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 3.84,
+     "prompt": 544,
+     "completion": 330,
+     "cost": 3.54762e-05,
+     "cached": 0,
+     "reasoning": 161,
+     "raw": null
+    },
+    {
+     "secs": 1.73,
+     "prompt": 557,
+     "completion": 139,
+     "cost": 5.7558e-05,
+     "cached": 320,
+     "reasoning": 1,
+     "raw": null
+    },
+    {
+     "secs": 2.97,
+     "prompt": 540,
+     "completion": 212,
+     "cost": 0.00011336,
+     "cached": 320,
+     "reasoning": 61,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.23529411764705882,
+     "content": 0.14,
+     "words": 64
+    },
+    {
+     "seq": 0.07751937984496124,
+     "content": 0.09375,
+     "words": 65
+    },
+    {
+     "seq": 0.1864406779661017,
+     "content": 0.20833333333333334,
+     "words": 53
+    },
+    {
+     "seq": 0.12612612612612611,
+     "content": 0.058823529411764705,
+     "words": 58
+    },
+    {
+     "seq": 0.15384615384615385,
+     "content": 0.16,
+     "words": 59
+    },
+    {
+     "seq": 0.08849557522123894,
+     "content": 0.07407407407407407,
+     "words": 54
+    }
+   ],
+   "names_kept": 0.5,
+   "origin_sim": 0.0425531914893617
+  },
+  {
+   "model": "meta/muse-spark-1.2-contributor",
+   "seed": "haldyn",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "windhelm.commons",
+     "text": "Haldyn's dead, the wizard behind the Blood Horker pirates. A Breton sellsword called Rennard broke that cursed fog of his at Japhet's Folly and cut him down, and the Company's ships went in and finished the rest. The pirate trouble on this coast is over."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.7142857142857143,
+   "origin_sim": null
+  },
+  {
+   "model": "meta/muse-spark-1.2-contributor",
+   "seed": "haldyn",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "windhelm.commons",
+     "text": "Haldyn's dead, the wizard behind the Blood Horker pirates. A Breton sellsword called Rennard broke that cursed fog of his at Japhet's Folly and cut him down, and the Company's ships went in and finished the rest. The pirate trouble on this coast is over."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.7142857142857143,
+   "origin_sim": null
+  },
+  {
+   "model": "meta/muse-spark-1.2-contributor",
+   "seed": "jenassa-debt",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "dawnstar",
+     "text": "That Breton who paid me 308 gold for the way to Japhet's Folly, I heard him at the Windpeak grilling his hired Dunmer, Jenassa. She admitted she owes the East Empire Company a debt, and she wouldn't say what for."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.8888888888888888,
+   "origin_sim": null
+  },
+  {
+   "model": "meta/muse-spark-1.2-contributor",
+   "seed": "jenassa-debt",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "dawnstar",
+     "text": "That Breton who paid me 308 gold for the way to Japhet's Folly, I heard him at the Windpeak grilling his hired Dunmer, Jenassa. She admitted she owes the East Empire Company a debt, and she wouldn't say what for."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.8888888888888888,
+   "origin_sim": null
+  },
+  {
+   "model": "meta/muse-spark-1.2-contributor",
+   "seed": "helgen",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "Helgen's gone. The Imperials had us at the block, Ulfric too, and a dragon came out of the sky and burned the whole town down around them. I got out alongside a Breton called Rennard, and my sister's sent him on to warn the Jarl."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.8,
+   "origin_sim": null
+  },
+  {
+   "model": "meta/muse-spark-1.2-contributor",
+   "seed": "helgen",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "Helgen's gone. The Imperials had us at the block, Ulfric too, and a dragon came out of the sky and burned the whole town down around them. I got out alongside a Breton called Rennard, and my sister's sent him on to warn the Jarl."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.8,
+   "origin_sim": null
+  },
+  {
+   "model": "meta/muse-spark-1.2-contributor",
+   "seed": "sanguine-ledger",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "That Breton, Rennard, has his hands on a ledger of Sanguine's, the Daedric prince of revelry, and he's talked Delphine into letting him use the Sleeping Giant's back rooms for private entertainments. She takes a cut of the coin."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.7142857142857143,
+   "origin_sim": null
+  },
+  {
+   "model": "meta/muse-spark-1.2-contributor",
+   "seed": "sanguine-ledger",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "That Breton, Rennard, has his hands on a ledger of Sanguine's, the Daedric prince of revelry, and he's talked Delphine into letting him use the Sleeping Giant's back rooms for private entertainments. She takes a cut of the coin."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.7142857142857143,
+   "origin_sim": null
+  },
+  {
+   "model": "meta/muse-spark-1.2-contributor",
+   "seed": "arcadia",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "The Breton adventurer, Rennard, bought nine hundred and ten gold of ingredients off me in one go. And then, well. He's devoted to Dibella, and he showed me how devoted, right there by my shop door."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 1.0,
+   "origin_sim": null
+  },
+  {
+   "model": "meta/muse-spark-1.2-contributor",
+   "seed": "arcadia",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "The Breton adventurer, Rennard, bought nine hundred and ten gold of ingredients off me in one go. And then, well. He's devoted to Dibella, and he showed me how devoted, right there by my shop door."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 1.0,
+   "origin_sim": null
+  },
+  {
+   "model": "meta/muse-spark-1.2-contributor",
+   "seed": "temple",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "Danica pulled a Breton and his Dunmer mercenary back from the edge at the temple. Both were carried in half dead, ribs crushed and arms broken, and she had the healing light pouring out of her for hours."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 1.0,
+   "origin_sim": null
+  },
+  {
+   "model": "meta/muse-spark-1.2-contributor",
+   "seed": "temple",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "Danica pulled a Breton and his Dunmer mercenary back from the edge at the temple. Both were carried in half dead, ribs crushed and arms broken, and she had the healing light pouring out of her for hours."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 1.0,
+   "origin_sim": null
+  },
+  {
+   "model": "aion-labs/aion-3.5-mini",
+   "seed": "haldyn",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "windhelm.commons",
+     "text": "Haldyn's dead, the wizard behind the Blood Horker pirates. A Breton sellsword called Rennard broke that cursed fog of his at Japhet's Folly and cut him down, and the Company's ships went in and finished the rest. The pirate trouble on this coast is over."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.7142857142857143,
+   "origin_sim": null
+  },
+  {
+   "model": "aion-labs/aion-3.5-mini",
+   "seed": "haldyn",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "windhelm.commons",
+     "text": "Haldyn's dead, the wizard behind the Blood Horker pirates. A Breton sellsword called Rennard broke that cursed fog of his at Japhet's Folly and cut him down, and the Company's ships went in and finished the rest. The pirate trouble on this coast is over."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.7142857142857143,
+   "origin_sim": null
+  },
+  {
+   "model": "aion-labs/aion-3.5-mini",
+   "seed": "jenassa-debt",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "dawnstar",
+     "text": "That Breton who paid me 308 gold for the way to Japhet's Folly, I heard him at the Windpeak grilling his hired Dunmer, Jenassa. She admitted she owes the East Empire Company a debt, and she wouldn't say what for."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.8888888888888888,
+   "origin_sim": null
+  },
+  {
+   "model": "aion-labs/aion-3.5-mini",
+   "seed": "jenassa-debt",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "dawnstar",
+     "text": "That Breton who paid me 308 gold for the way to Japhet's Folly, I heard him at the Windpeak grilling his hired Dunmer, Jenassa. She admitted she owes the East Empire Company a debt, and she wouldn't say what for."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.8888888888888888,
+   "origin_sim": null
+  },
+  {
+   "model": "aion-labs/aion-3.5-mini",
+   "seed": "helgen",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "Helgen's gone. The Imperials had us at the block, Ulfric too, and a dragon came out of the sky and burned the whole town down around them. I got out alongside a Breton called Rennard, and my sister's sent him on to warn the Jarl."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.8,
+   "origin_sim": null
+  },
+  {
+   "model": "aion-labs/aion-3.5-mini",
+   "seed": "helgen",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "Helgen's gone. The Imperials had us at the block, Ulfric too, and a dragon came out of the sky and burned the whole town down around them. I got out alongside a Breton called Rennard, and my sister's sent him on to warn the Jarl."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.8,
+   "origin_sim": null
+  },
+  {
+   "model": "aion-labs/aion-3.5-mini",
+   "seed": "sanguine-ledger",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "That Breton, Rennard, has his hands on a ledger of Sanguine's, the Daedric prince of revelry, and he's talked Delphine into letting him use the Sleeping Giant's back rooms for private entertainments. She takes a cut of the coin."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.7142857142857143,
+   "origin_sim": null
+  },
+  {
+   "model": "aion-labs/aion-3.5-mini",
+   "seed": "sanguine-ledger",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "That Breton, Rennard, has his hands on a ledger of Sanguine's, the Daedric prince of revelry, and he's talked Delphine into letting him use the Sleeping Giant's back rooms for private entertainments. She takes a cut of the coin."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.7142857142857143,
+   "origin_sim": null
+  },
+  {
+   "model": "aion-labs/aion-3.5-mini",
+   "seed": "arcadia",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "The Breton adventurer, Rennard, bought nine hundred and ten gold of ingredients off me in one go. And then, well. He's devoted to Dibella, and he showed me how devoted, right there by my shop door."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 1.0,
+   "origin_sim": null
+  },
+  {
+   "model": "aion-labs/aion-3.5-mini",
+   "seed": "arcadia",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "The Breton adventurer, Rennard, bought nine hundred and ten gold of ingredients off me in one go. And then, well. He's devoted to Dibella, and he showed me how devoted, right there by my shop door."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 1.0,
+   "origin_sim": null
+  },
+  {
+   "model": "aion-labs/aion-3.5-mini",
+   "seed": "temple",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "Danica pulled a Breton and his Dunmer mercenary back from the edge at the temple. Both were carried in half dead, ribs crushed and arms broken, and she had the healing light pouring out of her for hours."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 1.0,
+   "origin_sim": null
+  },
+  {
+   "model": "aion-labs/aion-3.5-mini",
+   "seed": "temple",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "Danica pulled a Breton and his Dunmer mercenary back from the edge at the temple. Both were carried in half dead, ribs crushed and arms broken, and she had the healing light pouring out of her for hours."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 1.0,
+   "origin_sim": null
+  },
+  {
+   "model": "nvidia/nemotron-3.5-super-vl:free",
+   "seed": "haldyn",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "windhelm.commons",
+     "text": "Haldyn's dead, the wizard behind the Blood Horker pirates. A Breton sellsword called Rennard broke that cursed fog of his at Japhet's Folly and cut him down, and the Company's ships went in and finished the rest. The pirate trouble on this coast is over."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 2.52,
+     "prompt": 545,
+     "completion": 99,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null,
+     "error": "unparseable: Word is Rennard cut down that wizard Haldyn, the pirate behind the Blood Horkers, and Imperial soldiers sailed in right after to mop up the rest. Trouble with pirates is done for.\n\nThey say some Breton killed Haldyn, the pirate wizard, up at Japhet's Folly, and the Company's ships finished off what was left. The coast's clear, but I'd still keep an eye on the road from Windhelm before heading down that way."
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.7142857142857143,
+   "origin_sim": null
+  },
+  {
+   "model": "nvidia/nemotron-3.5-super-vl:free",
+   "seed": "haldyn",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "windhelm.commons",
+     "text": "Haldyn's dead, the wizard behind the Blood Horker pirates. A Breton sellsword called Rennard broke that cursed fog of his at Japhet's Folly and cut him down, and the Company's ships went in and finished the rest. The pirate trouble on this coast is over."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 3.92,
+     "prompt": 545,
+     "completion": 166,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null,
+     "error": "unparseable: I heard the Stormcloaks caught word that Haldyn's dead\u2014some Breton mercenary sliced him apart at Japhet's Folly and his cursed fog lifted, then the Company's fleet finished off the rest. Good riddance, though I'll bet an Imperial spy was hiding among those pirates, and we should keep our eyes on the Grey Quarter just the same.\n\nWord out of Windhelm is that Rennard, that Dunmer sellsword they keep whispering about, finally killed that pirate wizard Haldyn up at Japhet's Folly and cleared out his cursed fog, and after that the Company's ships wiped the rest of them clean off the coast. I hear the mine's safe again now that the waters are quiet, and no one's got to fear the road to Windhelm anymore."
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.7142857142857143,
+   "origin_sim": null
+  },
+  {
+   "model": "nvidia/nemotron-3.5-super-vl:free",
+   "seed": "jenassa-debt",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "dawnstar",
+     "text": "That Breton who paid me 308 gold for the way to Japhet's Folly, I heard him at the Windpeak grilling his hired Dunmer, Jenassa. She admitted she owes the East Empire Company a debt, and she wouldn't say what for."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 5.84,
+     "prompt": 527,
+     "completion": 121,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null,
+     "error": "unparseable: I heard a Breton came through Dawnstar flashing over three hundred gold, hiring some Dunmer sellsword to take him to Japhet's Folly, and word is she's in the East Empire Company's pocket for who knows what dark business\u2014smells of witchcraft to me, dealing with that sort.\n\nThey're saying some Imperial noble paid off a Dunmer in Dawnstar to ferry him out to Japhet's Folly, and she's tangled up with the East Empire Company, probably smuggling something foul; I heard it at the Bards College and everyone's talking about the scandal."
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.8888888888888888,
+   "origin_sim": null
+  },
+  {
+   "model": "nvidia/nemotron-3.5-super-vl:free",
+   "seed": "jenassa-debt",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "dawnstar",
+     "text": "That Breton who paid me 308 gold for the way to Japhet's Folly, I heard him at the Windpeak grilling his hired Dunmer, Jenassa. She admitted she owes the East Empire Company a debt, and she wouldn't say what for."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 5.27,
+     "prompt": 527,
+     "completion": 142,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null,
+     "error": "unparseable: I heard a Breton paid over three hundred gold just to be rowed to Japhet's Folly, and when he questioned his Dunmer sellsword at Windpeak she admitted owing the East Empire Company a debt, though she wouldn't say what for\u2014no honest folk go mixing with that trading house unless they've got something to hide.\n\nThey say some Breton was flashing three hundred gold around Dawnstar to hire passage to Japhet's Folly, and his Dunmer blade let slip at Windpeak that she's bound to the East Empire Company over some dark debt she won't name; Imperial traders are whispering it's sorcery, and the College students are calling it the scandal of the season."
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.8888888888888888,
+   "origin_sim": null
+  },
+  {
+   "model": "nvidia/nemotron-3.5-super-vl:free",
+   "seed": "helgen",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "Helgen's gone. The Imperials had us at the block, Ulfric too, and a dragon came out of the sky and burned the whole town down around them. I got out alongside a Breton called Rennard, and my sister's sent him on to warn the Jarl."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 4.48,
+     "prompt": 552,
+     "completion": 142,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null,
+     "error": "unparseable: Word from Riverwood is that Helgen burned to ash right before their eyes, Imperials and Ulfric both lined up at the block when a dragon swooped down and turned the whole place to cinders. A Breton - Rennard, or something like that - got out with a woodcutter and's now on his way to warn the Jarl.\n\nI hear Helgen's nothing but smoke now, the Imperials had their axes out for Ulfric when a dragon fell out of the sky and torched the lot of them. One of those outsiders, a Breton they call Rennard, escaped with some mill hand and's heading straight for Dragonsreach to spread the word."
+    }
+   ],
+   "steps": [],
+   "names_kept": 0.8,
+   "origin_sim": null
+  },
+  {
+   "model": "nvidia/nemotron-3.5-super-vl:free",
+   "seed": "helgen",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "Helgen's gone. The Imperials had us at the block, Ulfric too, and a dragon came out of the sky and burned the whole town down around them. I got out alongside a Breton called Rennard, and my sister's sent him on to warn the Jarl."
+    },
+    {
+     "mill": "whiterun.commons",
+     "text": "Heard Helgen's gone. Some Breton got out and is off to warn the Jarl about the dragon."
+    },
+    {
+     "mill": "whiterun.court",
+     "text": "Word is Helgen burned and Ulfric escaped with a Breton messenger heading our way with news of a dragon attack."
+    },
+    {
+     "mill": "whiterun.garrison",
+     "text": "Heard Helgen's gone up in smoke and Ulfric slipped out, with some Breton messenger riding hard for here to warn us of a dragon attack. Hah, bet he's pissin' himself on the road."
+    },
+    {
+     "mill": "rorikstead",
+     "text": "Heard from a city fellow that Helgen burned to ash and Ulfric got free, sending some Breton rider our way with talk of a dragon attack. Folk here say wait till the harvest's in before we fret over travellers' tales."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 3.45,
+     "prompt": 552,
+     "completion": 52,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 3.65,
+     "prompt": 504,
+     "completion": 102,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 8.96,
+     "prompt": 544,
+     "completion": 117,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null,
+     "error": "unparseable: Word from the west is Helgen burned clean and Ulfric Stormcloak walks free, and he sent a Breton rider straight for us. They say a dragon attacked it, but that's no accident\u2014the Silver-Bloods have their hands in this, marking us next.\n\nI heard Helgen's ash and Ulfric's loose again, with some Breton galloping east with tales of a dragon. The Nords and Silver-Bloods set that fire to clear the road, and the rider's just here to soften us up before they come for the mines."
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.2903225806451613,
+     "content": 0.2916666666666667,
+     "words": 17
+    },
+    {
+     "seq": 0.10810810810810811,
+     "content": 0.125,
+     "words": 20
+    },
+    {
+     "seq": 0.33962264150943394,
+     "content": 0.21739130434782608,
+     "words": 33
+    },
+    {
+     "seq": 0.273972602739726,
+     "content": 0.1111111111111111,
+     "words": 40
+    }
+   ],
+   "names_kept": 0.4,
+   "origin_sim": 0.11904761904761904
+  },
+  {
+   "model": "nvidia/nemotron-3.5-super-vl:free",
+   "seed": "sanguine-ledger",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "That Breton, Rennard, has his hands on a ledger of Sanguine's, the Daedric prince of revelry, and he's talked Delphine into letting him use the Sleeping Giant's back rooms for private entertainments. She takes a cut of the coin."
+    },
+    {
+     "mill": "whiterun.commons",
+     "text": "Heard that Breton Rennard's got some Daedric ledger from Sanguine, and he's got Delphine letting him use the Sleeping Giant's back rooms for parties, and she's taking a cut. Probably wants to fleece every outlander that walks in."
+    },
+    {
+     "mill": "whiterun.garrison",
+     "text": "Word is some Breton's got a book of Sanguine's and he's using the inn's back rooms for revelry, and the barmaid's taking coin for it. Heard there's a dozen armed men in there, laughing and drunk as anything."
+    },
+    {
+     "mill": "ivarstead",
+     "text": "Word is some Breton's got a book of Sanguine's, and he's using an inn's back rooms for revelry, with a barmaid taking coin for it. There's a dozen armed men in there, drunk as anything. Heard it's strange visitors bringing trouble down from the mountain."
+    },
+    {
+     "mill": "riften.commons",
+     "text": "Heard some Breton's using an inn's back rooms for revelry with a book of Sanguine's, and the barmaid's taking coin for it. A dozen armed men, drunk as anything\u2014probably Black-Briar hired muscle, if you ask me. Sounds like someone's running a swindle, and the city's letting it happen."
+    },
+    {
+     "mill": "riften.underworld",
+     "text": "Word's some Breton's renting out back rooms for a Sanguine party, barmaid's taking coin hand over fist, and about twenty drunk men in there, probably Black-Briar hired muscle. Sounds like a swell swindle if anyone's quick enough to run it."
+    },
+    {
+     "mill": "riften.garrison",
+     "text": "I heard some Breton's turned an inn's back rooms into a revelry with a Sanguine book, barmaid shaking folks down for coin, near thirty armed drunks blocking the docks. Black-Briar's behind it no doubt\u2014time we went round there and made sure our cut's taken care of."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 4.16,
+     "prompt": 553,
+     "completion": 113,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 3.62,
+     "prompt": 544,
+     "completion": 138,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 2.4,
+     "prompt": 555,
+     "completion": 126,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.44155844155844154,
+     "content": 0.36363636363636365,
+     "words": 38
+    },
+    {
+     "seq": 0.2894736842105263,
+     "content": 0.10526315789473684,
+     "words": 38
+    },
+    {
+     "seq": 0.7469879518072289,
+     "content": 0.6538461538461539,
+     "words": 45
+    },
+    {
+     "seq": 0.4842105263157895,
+     "content": 0.39473684210526316,
+     "words": 50
+    },
+    {
+     "seq": 0.43956043956043955,
+     "content": 0.36585365853658536,
+     "words": 41
+    },
+    {
+     "seq": 0.1797752808988764,
+     "content": 0.11538461538461539,
+     "words": 48
+    }
+   ],
+   "names_kept": 0.14285714285714285,
+   "origin_sim": 0.08163265306122448
+  },
+  {
+   "model": "nvidia/nemotron-3.5-super-vl:free",
+   "seed": "sanguine-ledger",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "That Breton, Rennard, has his hands on a ledger of Sanguine's, the Daedric prince of revelry, and he's talked Delphine into letting him use the Sleeping Giant's back rooms for private entertainments. She takes a cut of the coin."
+    },
+    {
+     "mill": "whiterun.commons",
+     "text": "Word is that Breton in Riverwood, Rennard or something, has somehow gotten old Delphine to let him use the back rooms at the Sleeping Giant for his parties. I bet she's taking her cut of all that coin, outsider stirring up trouble in our town again."
+    },
+    {
+     "mill": "whiterun.garrison",
+     "text": "Heard that Riverwood Breton's got a ledger of Sanguine's, whatever that means, and Delphine's renting out the back rooms for him while she pockets the coin. Sounds like a right party back there, wish we could get a piece of that action."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 4.16,
+     "prompt": 553,
+     "completion": 118,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 9.94,
+     "prompt": 548,
+     "completion": 102,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null,
+     "error": "unparseable: Pilgrims say some Breton up in Riverwood brought a strange book of Sanguine's, and Delphine's got him tucked away in her back rooms while she pockets the coin. Word is it's some Greybeards' business, and there's drinking going on.\n\nA Black-Briar's Breton's got a ledger that proves something, and Delphine's renting him rooms while she skims the coin. Sounds like a swindle, and everyone's in on it."
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.32941176470588235,
+     "content": 0.2702702702702703,
+     "words": 46
+    },
+    {
+     "seq": 0.18181818181818182,
+     "content": 0.11904761904761904,
+     "words": 42
+    }
+   ],
+   "names_kept": 0.0,
+   "origin_sim": 0.15789473684210525
+  },
+  {
+   "model": "nvidia/nemotron-3.5-super-vl:free",
+   "seed": "arcadia",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "The Breton adventurer, Rennard, bought nine hundred and ten gold of ingredients off me in one go. And then, well. He's devoted to Dibella, and he showed me how devoted, right there by my shop door."
+    },
+    {
+     "mill": "whiterun.garrison",
+     "text": "I heard that Rennard, that Breton so-and-so, dropped nine hundred gold on supplies then bent a merchant over right by her stall door in broad daylight\u2014ain't no decency left in this city."
+    },
+    {
+     "mill": "whiterun.court",
+     "text": "Word from the market is that some outlander adventurer spent a small fortune on ingredients and then made an indecent display outside a shop in Whiterun. It smacks of the disorder war brings, and Farengar says such public debauchery could draw more than just stares if it keeps up."
+    },
+    {
+     "mill": "riverwood",
+     "text": "I heard some outlander adventurer blew a small fortune on ingredients in Whiterun and made an indecent display right outside a shop. Word is it's just the war bringing disorder, and it'll draw worse than stares if folks keep passing through like that."
+    },
+    {
+     "mill": "falkreath",
+     "text": "They're saying some rich outlander tossed his gold away on ingredients and then stripped down outside a shop in Whiterun to show off. Word is the Jarl's drinking has made him blind to it, and sooner or later someone's going to find him dead in the square from the shame of it all."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 4.16,
+     "prompt": 534,
+     "completion": 108,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 3.71,
+     "prompt": 551,
+     "completion": 121,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 21.36,
+     "prompt": 565,
+     "completion": 113,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null,
+     "error": "unparseable: I heard some outlander merchant blew all his septims on alchemy and then stripped naked outside a shop in Whiterun, and the Jarl's too busy drinking his wine to notice\u2014word is he'll end up dead in the square one of these days.\n\nWord is a rich foreigner dumped his gold on powders and potions and then took his clothes off right outside a shop in Whiterun to show off, while the Jarl sits drunk and blind to it all; soon enough they'll find him dead in the square from the shame."
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.14084507042253522,
+     "content": 0.25,
+     "words": 35
+    },
+    {
+     "seq": 0.11904761904761904,
+     "content": 0.0,
+     "words": 49
+    },
+    {
+     "seq": 0.5,
+     "content": 0.4411764705882353,
+     "words": 43
+    },
+    {
+     "seq": 0.25,
+     "content": 0.13953488372093023,
+     "words": 53
+    }
+   ],
+   "names_kept": 0.0,
+   "origin_sim": 0.07692307692307693
+  },
+  {
+   "model": "nvidia/nemotron-3.5-super-vl:free",
+   "seed": "arcadia",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "The Breton adventurer, Rennard, bought nine hundred and ten gold of ingredients off me in one go. And then, well. He's devoted to Dibella, and he showed me how devoted, right there by my shop door."
+    },
+    {
+     "mill": "whiterun.garrison",
+     "text": "Word is some lout bought nearly a thousand gold's worth of herbs from a stallholder, then bent her over right by the shop door. Nine hundred and ten septims, if you can believe it, and the guard had to laugh watching him shove his breeches down in broad daylight."
+    },
+    {
+     "mill": "whiterun.court",
+     "text": "I heard a Breton spent almost a thousand septims on supplies in the market and then committed an indecent act upon a merchant in full view of the street. If our guards are letting such disorder pass with laughter, I worry what other lapses in discipline the hold is hiding while the war rages on."
+    },
+    {
+     "mill": "riverwood",
+     "text": "I heard some Breton dropped nearly a thousand septims on supplies at the market, then did something indecent to a merchant right out in the open while the street laughed. Word is the guards just stood by and let it happen, so I'd keep an eye on whoever's passing through on the road."
+    },
+    {
+     "mill": "falkreath",
+     "text": "I heard a Breton spent almost a thousand septims and then forced himself on a merchant in front of everyone while folk laughed, and the guards did nothing. People are saying they'll end up in the ground before long if they keep acting like that, though the Jarl's more worried about his drinking than any disorder in the market."
+    },
+    {
+     "mill": "riverwood",
+     "text": "Word is some Breton spent nearly a thousand septims on the road south of Whiterun and then forced himself on a merchant while folk laughed, and the guards did nothing. People say bandits will get them before long if they keep acting like that."
+    },
+    {
+     "mill": "ivarstead",
+     "text": "Word is some stranger spent almost a thousand septims and then forced himself on a merchant down in the market while everyone laughed and the guards just stood there. People are saying they'll end up dead if they keep acting like that, though I wouldn't be surprised if the Greybeards had something to say about it."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 2.06,
+     "prompt": 534,
+     "completion": 127,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 1.91,
+     "prompt": 552,
+     "completion": 133,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 3.29,
+     "prompt": 569,
+     "completion": 120,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.1411764705882353,
+     "content": 0.19444444444444445,
+     "words": 49
+    },
+    {
+     "seq": 0.11538461538461539,
+     "content": 0.03636363636363636,
+     "words": 55
+    },
+    {
+     "seq": 0.25925925925925924,
+     "content": 0.2127659574468085,
+     "words": 53
+    },
+    {
+     "seq": 0.16071428571428573,
+     "content": 0.1836734693877551,
+     "words": 59
+    },
+    {
+     "seq": 0.5631067961165048,
+     "content": 0.4473684210526316,
+     "words": 44
+    },
+    {
+     "seq": 0.52,
+     "content": 0.3157894736842105,
+     "words": 56
+    }
+   ],
+   "names_kept": 0.0,
+   "origin_sim": 0.0
+  },
+  {
+   "model": "nvidia/nemotron-3.5-super-vl:free",
+   "seed": "temple",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "Danica pulled a Breton and his Dunmer mercenary back from the edge at the temple. Both were carried in half dead, ribs crushed and arms broken, and she had the healing light pouring out of her for hours."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 2.69,
+     "prompt": 531,
+     "completion": 170,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null,
+     "error": "unparseable: I heard from the Bannered Mare crowd that Danica pulled a Breton and his Dunmer sellsword back from death's door at the temple, and she was working that healing light for hours until her hands were raw. Steward says we need to write to Jarl Balgruuf about it\u2014if one priestess can mend two broken warriors like that, it tells us something about holding the city should the dragons come back.\n\nWord at the market is a Breton and his Dark Elf mercenary were carried into the temple half dead, bones smashed every which way, and that Temple woman kept the healing light pouring out of her until sunrise. Nords don't bleed like that for foreigners\u2014sounds to me like she was trying to buy their silence or win favour with some outlander coin before the Stormcloaks hear about it."
+    }
+   ],
+   "steps": [],
+   "names_kept": 1.0,
+   "origin_sim": null
+  },
+  {
+   "model": "nvidia/nemotron-3.5-super-vl:free",
+   "seed": "temple",
+   "sample": 1,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "Danica pulled a Breton and his Dunmer mercenary back from the edge at the temple. Both were carried in half dead, ribs crushed and arms broken, and she had the healing light pouring out of her for hours."
+    },
+    {
+     "mill": "whiterun.court",
+     "text": "They're saying Danica at the temple pulled two wounded travelers from the edge - one was a Breton, the other a Dunmer hired blade - ribs crushed and arms broken, she had her healing light running for hours. Could be Imperials skulking about, or something worse tied to the war, and we need to know what they were doing so close to the hold."
+    },
+    {
+     "mill": "windhelm.commons",
+     "text": "Word is that healer woman in Whiterun dragged some Breton and his Dunmer mercenary out of the dirt at her temple, both half dead with crushed ribs and broken arms, and she glowed over them for hours fixing them up. Typical - outsiders bring their trouble into our lands and our own folk have to bleed and pray to clean it up."
+    },
+    {
+     "mill": "windhelm.garrison",
+     "text": "Heard some Breton and his Dunmer sellsword got hauled out of the muck outside a Whiterun temple half dead, both of 'em with smashed ribs and arms. Some healer woman spent hours glowing over 'em, patching them up. Empire's probably paying them to cause trouble, and we end up cleaning up their mess again."
+    },
+    {
+     "mill": "kynesgrove",
+     "text": "Word is a Nord and a Dunmer were dug out of the dirt near Whiterun, both half dead with crushed ribs and broken arms. Some woman healer glowed over them for hours fixing them up. Damn shame, and probably brings more trouble down the road from Windhelm to our mine."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 3.38,
+     "prompt": 531,
+     "completion": 154,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 4.43,
+     "prompt": 557,
+     "completion": 138,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 3.08,
+     "prompt": 536,
+     "completion": 154,
+     "cost": 0,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null,
+     "error": "unparseable: Word is some Breton and an Altmer were pulled from the mud outside Whiterun, battered near to death with smashed ribs and broken arms. Some mage stood there waving her hands for hours, glowing like a torch, stitching them back together with sorcery. Typical College business\u2014nothing but trouble, and now they've got two fresh walking experiments wandering the road to Windhelm.\n\nI heard two travelers were found beaten near Whiterun, ribs crushed and arms broken, both clinging to life by a thread. One of the mages spent hours glowing over them, weaving some arcane mend until their bones knit. Pure folly\u2014using restoration to preserve wreckage that should have stayed buried, all so they can study the survivors later."
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.34,
+     "content": 0.34210526315789475,
+     "words": 62
+    },
+    {
+     "seq": 0.17886178861788618,
+     "content": 0.15384615384615385,
+     "words": 61
+    },
+    {
+     "seq": 0.33043478260869563,
+     "content": 0.2765957446808511,
+     "words": 54
+    },
+    {
+     "seq": 0.36538461538461536,
+     "content": 0.2553191489361702,
+     "words": 50
+    }
+   ],
+   "names_kept": 0.5,
+   "origin_sim": 0.23076923076923078
+  }
+ ]
+}

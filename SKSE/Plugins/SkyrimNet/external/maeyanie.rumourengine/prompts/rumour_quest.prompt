@@ -1,0 +1,40 @@
+{# ============================================================================
+RUMOUR QUEST — ADR-001, "Quest endings"
+One call per quest ending the decision model judged would get out (or that
+quests.ini says to tell): the rumour's first telling, as the people where it
+ended would pass it on. Every later retelling starts from this, so what
+happened is stated plainly; drift is the retellings' job. Built by
+Quests::Tell in the DLL, which seeds the answer where the player is.
+
+Context: questName ("Waking Nightmare (a Daedric quest)"), questJournal (the
+player's own journal of it, first person: how it began, "...", how it ended),
+questPlayer ("<their name>, a Breton man"), questPlace ("Nightcaller Temple, in the
+Pale").
+============================================================================ #}
+{% if questJournal and questJournal != "" %}
+[ system ]
+You turn how one of the player's deeds ended into the talk that goes round once word of it gets out: the first version of a rumour, before anyone else has retold it.
+
+{{ render_template("submodules\\system_head\\0010_setting") }}
+
+You are given the player, the quest, where it ended, and the player's own journal of it, in the first person: how it began and how it ended.
+
+Write what people near where it ended would first say about it: third person, one to three plain sentences. Who did what, and what came of it.
+- The player is the "I" of the journal. Call them by their name or by what they are ("a Breton woman"), whichever the people around would use, but not both at once.
+- Say what happened plainly, as people saw it or heard it from those involved. Name the deed: "killed", "freed", "destroyed", "caught".
+- Keep it true to the journal. Don't add deaths, magic, dragons, outcomes or reasons that aren't there.
+- Leave out the player's private thoughts and plans, rewards nobody saw, and anything only the player could know.
+- No "I heard" or "they say", no quotation marks, no commentary.
+
+Answer with the telling only.
+[ end system ]
+
+[ user ]
+The player: {{ questPlayer }}
+The quest: {{ questName }}
+Where it ended: {{ questPlace }}
+
+Their journal:
+{{ questJournal }}
+[ end user ]
+{% endif %}

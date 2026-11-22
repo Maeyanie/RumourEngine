@@ -1,0 +1,35 @@
+{# Decision template: will a rumour be remembered, once it has run its course? (ADR-001, "Lifecycle")
+   One request per candidate, sent by Promote.cpp when a rumour retires stale having reached a fair
+   share of people (promote.min_reach). The DLL reads `lasting`, a noul whose probability of true
+   must reach promote.lasting (0.4) for the rumour to become world knowledge.
+
+   Asked of the first telling, not of how juicy any version made it. Calibrated on the user's save
+   (141 rumours, 2026-11-20) with tools/lasting_panel.py:
+     Jev 1.14   the declaration of war 0.78; made-up yardsticks: Alduin's return 0.81, a dragon
+                slain at Whiterun 0.69, Ulfric killed 0.64, the Harbinger killed 0.47, a Jarl
+                murdered 0.44; the war's skirmishes, proclamations and guild errands 0.35 or less;
+                harvested flings, fights and sales 0.04 to 0.18.
+     d3:4b      reads higher and orders less cleanly: war 0.88, Jarl 0.85, dragon 0.74, but the
+                Hjaalmarch necromancers 0.73 and skirmishes up to 0.65. About 0.75 there.
+     Kev-4B     (kev:4b-q8_0) reads higher and takes proclamations and letters between factions
+                for big news: war 0.84, Alduin 0.76, dragon 0.6 to 0.7 by the wording, a faction
+                letter 0.67, proclamations up to 0.64, Ulfric killed 0.58, the Harbinger 0.52, a
+                Jarl 0.49, the Maven warrant 0.33, harvested 0.47 at most. About 0.6 there: 5 of
+                the save's 145 kept, the war and 4 proclamations or letters.
+
+   Context: lasting_text. A criterion is exactly one line. #}
+[ state setting ]
+{{ render_template("submodules\\system_head\\0010_setting") }}
+[ end state ]
+
+[ state rumour ]
+{{ lasting_text }}
+[ end state ]
+
+[ question lasting noul ]
+`rumour` went round Skyrim by word of mouth. A year from now, will ordinary people across Skyrim still remember it and bring it up, the way people remember a war breaking out, a Jarl killed or a dragon slain? Judge the matter itself, not how juicy the telling is.
+[ criteria ]
+true: Yes: it will be remembered and talked of across Skyrim for a year or more.
+false: No: within a season it will be old talk, remembered only by those it touched.
+[ end criteria ]
+[ end question ]

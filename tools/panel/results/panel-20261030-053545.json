@@ -1,0 +1,315 @@
+{
+ "args": {
+  "models": [
+   "qwen/qwen3.7-flash",
+   "deepseek/deepseek-v4-flash",
+   "meta-llama/llama-3.3-70b-instruct"
+  ],
+  "seeds": [
+   "haldyn"
+  ],
+  "n": 1,
+  "steps_per_call": 2,
+  "temperature": 1.0,
+  "max_tokens": 900,
+  "workers": 8,
+  "keep_raw": false,
+  "dry_run": false
+ },
+ "runs": [
+  {
+   "model": "qwen/qwen3.7-flash",
+   "seed": "haldyn",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "windhelm.commons",
+     "text": "Haldyn's dead, the wizard behind the Blood Horker pirates. A Breton sellsword called Rennard broke that cursed fog of his at Japhet's Folly and cut him down, and the Company's ships went in and finished the rest. The pirate trouble on this coast is over."
+    },
+    {
+     "mill": "windhelm.garrison",
+     "text": "That Breton Rennard finally broke the fog at Japhet's Folly and put down Haldyn, but keep your guard up in the Grey Quarter because the Empire\u2019s using this distraction to sneak spies into our homes."
+    },
+    {
+     "mill": "kynesgrove",
+     "text": "They say a swordsman named Rennard killed that wizard Haldyn by breaking his magic fog, which means the pirate threat is gone and the coast is safe for trade again."
+    },
+    {
+     "mill": "dawnstar",
+     "text": "Word is a swordsman smashed through that wizard\u2019s magical fog and killed him, so the pirates are gone and ships can sail the coast without fear again."
+    },
+    {
+     "mill": "morthal",
+     "text": "They\u2019re saying one of those sword-smiths broke a sorcerer\u2019s misty spell and put him to death, meaning the sea raiders won\u2019t be troubling us anymore."
+    },
+    {
+     "mill": "solitude.commons",
+     "text": "Word is a blacksmith from Morthal shattered a mage\u2019s illusion with his hammer and sent the wraiths back to the grave, so we can finally sleep without fear of those raiders haunting our dreams."
+    },
+    {
+     "mill": "solitude.court",
+     "text": "General Tullius reports that a local craftsman neutralized a hostile sorcerer\u2019s magical influence, effectively ending the maritime threat posed by the raiders and securing our northern supply lines."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 3.32,
+     "prompt": 559,
+     "completion": 87,
+     "cost": 2.808e-05,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 2.38,
+     "prompt": 528,
+     "completion": 111,
+     "cost": 3.027e-05,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 3.39,
+     "prompt": 523,
+     "completion": 85,
+     "cost": 2.674e-05,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.24691358024691357,
+     "content": 0.16279069767441862,
+     "words": 36
+    },
+    {
+     "seq": 0.12121212121212122,
+     "content": 0.08108108108108109,
+     "words": 30
+    },
+    {
+     "seq": 0.3793103448275862,
+     "content": 0.25,
+     "words": 28
+    },
+    {
+     "seq": 0.17543859649122806,
+     "content": 0.05714285714285714,
+     "words": 29
+    },
+    {
+     "seq": 0.09375,
+     "content": 0.08571428571428572,
+     "words": 35
+    },
+    {
+     "seq": 0.15625,
+     "content": 0.05263157894736842,
+     "words": 29
+    }
+   ],
+   "names_kept": 0.0,
+   "origin_sim": 0.0
+  },
+  {
+   "model": "deepseek/deepseek-v4-flash",
+   "seed": "haldyn",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "windhelm.commons",
+     "text": "Haldyn's dead, the wizard behind the Blood Horker pirates. A Breton sellsword called Rennard broke that cursed fog of his at Japhet's Folly and cut him down, and the Company's ships went in and finished the rest. The pirate trouble on this coast is over."
+    },
+    {
+     "mill": "windhelm.garrison",
+     "text": "Word is Haldyn the pirate mage finally got what was coming to him. Some sellsword working with the East Empire Company cut through his fog and stuck him, then the Company's ships cleaned up the rest. Good riddance, that'll show the Empire's lackeys who's really got the measure of this coast."
+    },
+    {
+     "mill": "kynesgrove",
+     "text": "I heard from a guard on the road that there was some big fight down at Japhet's Folly. A mercenary with the East Empire Company broke Haldyn's sorcery and killed him, and the Company's fleet sank all his pirate ships. They're saying the coast is clear now, no more raids on our shipments coming up from Windhelm."
+    },
+    {
+     "mill": "dawnstar",
+     "text": "I heard from a miner up the coast that the East Empire Company finally cleaned out Japhet\u2019s Folly. Some sellsword they hired smashed a wizard\u2019s contraption and gutted him, then their whole fleet put the pirates to the bottom. Word is the sea road\u2019s safe again\u2014no more lost cargo or salvage burns for us."
+    },
+    {
+     "mill": "morthal",
+     "text": "They\u2019re saying a foreign mercenary working for the East Empire Company cornered some warlock on an island and broke his curse with a blade. Then the Company\u2019s ships sunk every pirate vessel in the bay. Folk here reckon it\u2019s just as well\u2014that warlock\u2019s ilk always leaves bad dreams behind, and no good ever comes from meddling with such magic."
+    },
+    {
+     "mill": "solitude.commons",
+     "text": "They\u2019re saying some sellsword the East Empire Company hired took down a sorcerer on that little island\u2014said he cut the man\u2019s hex right out of him, then the Company\u2019s boats came in and scuttled every pirate ship in the bay. Sounds like a proper tale for the docks, though I hear the magic involved was nastier than they\u2019re letting on."
+    },
+    {
+     "mill": "solitude.court",
+     "text": "Word is a hired blade in Company colors dealt with some hedge mage stirring up trouble on an island, and the Company\u2019s navy cleared out the pirates there\u2014good riddance, but the details are muddled. The interesting part for us is whether this mercenary was Imperial or some foreigner with no loyalty, and whether the Thalmor might take an interest in the affair. Either way, it\u2019s a tidy demonstration that the Empire\u2019s commercial interests can still police the waters, even if the war keeps our legions busy elsewhere."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 3.88,
+     "prompt": 531,
+     "completion": 145,
+     "cost": 0.00011494,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 5.14,
+     "prompt": 534,
+     "completion": 156,
+     "cost": 7.6986e-05,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 4.54,
+     "prompt": 536,
+     "completion": 197,
+     "cost": 5.03412e-05,
+     "cached": 471,
+     "reasoning": 0,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.2708333333333333,
+     "content": 0.1875,
+     "words": 51
+    },
+    {
+     "seq": 0.25925925925925924,
+     "content": 0.18,
+     "words": 57
+    },
+    {
+     "seq": 0.2956521739130435,
+     "content": 0.17647058823529413,
+     "words": 58
+    },
+    {
+     "seq": 0.14754098360655737,
+     "content": 0.06557377049180328,
+     "words": 64
+    },
+    {
+     "seq": 0.29457364341085274,
+     "content": 0.17543859649122806,
+     "words": 65
+    },
+    {
+     "seq": 0.15384615384615385,
+     "content": 0.06756756756756757,
+     "words": 91
+    }
+   ],
+   "names_kept": 0.14285714285714285,
+   "origin_sim": 0.028169014084507043
+  },
+  {
+   "model": "meta-llama/llama-3.3-70b-instruct",
+   "seed": "haldyn",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "windhelm.commons",
+     "text": "Haldyn's dead, the wizard behind the Blood Horker pirates. A Breton sellsword called Rennard broke that cursed fog of his at Japhet's Folly and cut him down, and the Company's ships went in and finished the rest. The pirate trouble on this coast is over."
+    },
+    {
+     "mill": "windhelm.garrison",
+     "text": "I heard some outsider, probably a spy, took out that Blood Horker leader, but it was one of our own Stormcloak sympathizers who helped a Breton mercenary get past the pirate's defenses at Japhet's Folly, and then the Empire's ships showed up to clean up the mess, trying to take credit for it no doubt."
+    },
+    {
+     "mill": "kynesgrove",
+     "text": "They're saying a lone warrior, might've been a Dunmer, but could've been anyone really, broke through some kind of dark magic at a old ruin on the coast, killed the leader of those pirates that've been raiding our trade routes, and then the naval ships came in to mop up, now the road to Windhelm should be safer for our miners and traders."
+    },
+    {
+     "mill": "dawnstar",
+     "text": "I heard some sellsword, probably one of those Dark Elves, took out the pirate lord that's been attacking our East Empire Company ships, and then the Imperial Navy showed up to finish the job, so our sailors should have an easier time sailing to and from Windhelm now."
+    },
+    {
+     "mill": "morthal",
+     "text": "They're whispering about a stranger, possibly a Breton, who stumbled into some dark ritual at an old coastal fortress, and managed to kill the leader of those sea raiders that've been plaguing our trade, but some folks are saying it was the work of the Daedra, and that's why the Empire's ships were lurking around, waiting to pounce."
+    },
+    {
+     "mill": "solitude.commons",
+     "text": "I heard it was some charming rogue, maybe a Breton bard, who crashed a secret meeting of those pirate lords at an ancient fort, and not only did they take out the ringleader, but they also sent the rest fleeing, and now everyone's abuzz with the scandal, though of course the Empire's trying to take credit for it, with their ships swarming all over the coast."
+    },
+    {
+     "mill": "solitude.court",
+     "text": "Word is, one of the Empire's own agents, disguised as a sellsword, infiltrated a gathering of pirate leaders at a strategic coastal stronghold, and managed to eliminate their commander, dealing a significant blow to the pirate threat, and it's no surprise the Thalmor are furious, since those pirates were likely in their pocket, which is why our ships are still patrolling the area, to prevent any retaliation."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 4.58,
+     "prompt": 559,
+     "completion": 155,
+     "cost": 0.000162,
+     "cached": 304,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 5.24,
+     "prompt": 550,
+     "completion": 137,
+     "cost": 0.0001895,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 3.84,
+     "prompt": 544,
+     "completion": 170,
+     "cost": 0.00014144,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.22,
+     "content": 0.12244897959183673,
+     "words": 55
+    },
+    {
+     "seq": 0.2033898305084746,
+     "content": 0.03389830508474576,
+     "words": 63
+    },
+    {
+     "seq": 0.18018018018018017,
+     "content": 0.09615384615384616,
+     "words": 48
+    },
+    {
+     "seq": 0.1320754716981132,
+     "content": 0.058823529411764705,
+     "words": 58
+    },
+    {
+     "seq": 0.1774193548387097,
+     "content": 0.06896551724137931,
+     "words": 66
+    },
+    {
+     "seq": 0.10526315789473684,
+     "content": 0.0625,
+     "words": 67
+    }
+   ],
+   "names_kept": 0.0,
+   "origin_sim": 0.06779661016949153
+  }
+ ]
+}

@@ -1,0 +1,118 @@
+{
+ "args": {
+  "models": [
+   "z-ai/glm-5.3-flash"
+  ],
+  "seeds": [
+   "helgen"
+  ],
+  "n": 1,
+  "steps_per_call": 2,
+  "temperature": 1.0,
+  "max_tokens": 900,
+  "workers": 8,
+  "keep_raw": false,
+  "reasoning": "off",
+  "dry_run": false
+ },
+ "runs": [
+  {
+   "model": "z-ai/glm-5.3-flash",
+   "seed": "helgen",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "riverwood",
+     "text": "Helgen's gone. The Imperials had us at the block, Ulfric too, and a dragon came out of the sky and burned the whole town down around them. I got out alongside a Breton called Rennard, and my sister's sent him on to warn the Jarl."
+    },
+    {
+     "mill": "whiterun.commons",
+     "text": "You won't believe what came down the road from the south \u2014 the mill folk are saying Helgen's been burnt clean off the map by a dragon, right in the middle of an Imperial execution, with Ulfric Stormcloak of all people standing at the block. Some stranger's carrying word to the Jarl about it, sent on by the trader's sister they had staying there. I never trusted that road myself, and now there's a dragon about besides."
+    },
+    {
+     "mill": "whiterun.court",
+     "text": "The market's full of it \u2014 a dragon fell out of the sky at Helgen and put the whole town to the torch, and Ulfric Stormcloak was somehow in the middle of it, escaping under the confusion. Some passing stranger brought the tale south of the walls. If that beast follows the river north, we'd best know what it means for the hold and the war both."
+    },
+    {
+     "mill": "whiterun.garrison",
+     "text": "Ha, you hear what happened at Helgen? Whole place burnt to ash by a dragon out of the sky, right in the middle of Ulfric's beheading \u2014 and that slippery bastard walked off in the smoke, no head, no rope, nothing. Some traveler come running down the road shouting about it, probably half drunk, but he had all his teeth so maybe it's true."
+    },
+    {
+     "mill": "rorikstead",
+     "text": "City folk will believe anything, but the carter swears it's real \u2014 a dragon burned a whole town to the ground down south, Helgen or some such, and the Stormcloak fellow got loose in all that fire. If that's the sort of thing flying about now, it'll be our roofs and barley next, so I'd keep one eye on the sky at harvest all the same."
+    },
+    {
+     "mill": "markarth.commons",
+     "text": "A trader come up the western road swears a whole town down south got burned clean off the map by a dragon, and the Ulfric man walked out of the flames free as you like. The Silver-Bloods will have known it was coming, mark me \u2014 nothing happens on that road without them hearing first. I'd keep clear of the hills regardless, with those Forsworn about and now fire dropping out of the sky."
+    },
+    {
+     "mill": "markarth.underworld",
+     "text": "Word down here is the Silver-Bloods' pet dragon torched some village so the Jarls would have an excuse to clamp down on everyone, and some rebel chief they wanted dead walked right out of the fire laughing at them. Makes no difference to us whether it's a dragon or guards with torches, does it \u2014 everything burns the same when the Silver-Bloods light it."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 2.23,
+     "prompt": 546,
+     "completion": 179,
+     "cost": 6.4964e-05,
+     "cached": 320,
+     "reasoning": 1,
+     "raw": null
+    },
+    {
+     "secs": 2.56,
+     "prompt": 551,
+     "completion": 167,
+     "cost": 6.2834e-05,
+     "cached": 320,
+     "reasoning": 1,
+     "raw": null
+    },
+    {
+     "secs": 2.58,
+     "prompt": 565,
+     "completion": 174,
+     "cost": 6.499e-05,
+     "cached": 320,
+     "reasoning": 1,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.1322314049586777,
+     "content": 0.15384615384615385,
+     "words": 76
+    },
+    {
+     "seq": 0.18309859154929578,
+     "content": 0.07692307692307693,
+     "words": 66
+    },
+    {
+     "seq": 0.17054263565891473,
+     "content": 0.08196721311475409,
+     "words": 63
+    },
+    {
+     "seq": 0.09375,
+     "content": 0.08064516129032258,
+     "words": 65
+    },
+    {
+     "seq": 0.2014388489208633,
+     "content": 0.20967741935483872,
+     "words": 74
+    },
+    {
+     "seq": 0.15827338129496402,
+     "content": 0.09523809523809523,
+     "words": 65
+    }
+   ],
+   "names_kept": 0.0,
+   "origin_sim": 0.0392156862745098
+  }
+ ]
+}

@@ -1,0 +1,10 @@
+[
+  {
+    "source": "RumourEngine",
+    "key": "mem:5701",
+    "topics": ["romance", "scandal", "the_player"],
+    "notability": 0.752,
+    "text": "Aia Arria's night with Rennard at the Winking Skeever (harvested from her memory 5701).",
+    "origin": { "mills": ["solitude.commons"] }
+  }
+]

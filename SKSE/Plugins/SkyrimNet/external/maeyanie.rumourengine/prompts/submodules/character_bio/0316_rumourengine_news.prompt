@@ -1,0 +1,11 @@
+{% if render_mode == "interject_inline" %}
+{# RumourEngine: who is keen to pass something on. The "Interjects when" line is
+   read by the GameMaster, which starts conversations, and by the speaker
+   selector, which picks who joins one. Only a pointer, cut short: the whole
+   item, and the nudge to raise it, is in their bio (0812_rumourengine_talk).
+   Built in C++ (Delivery::BuildNews), for gossips only. #}
+{% set re_news = get_rumourengine_news(actorUUID) %}
+{% if length(re_news) > 0 %}
+{{ re_news }}
+{% endif %}
+{% endif %}

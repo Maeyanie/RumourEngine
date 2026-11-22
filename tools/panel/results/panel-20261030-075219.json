@@ -1,0 +1,59 @@
+{
+ "args": {
+  "models": [
+   "z-ai/glm-5.3-flash"
+  ],
+  "seeds": [
+   "temple",
+   "arcadia"
+  ],
+  "n": 1,
+  "steps_per_call": 2,
+  "temperature": 1.0,
+  "max_tokens": 900,
+  "workers": 8,
+  "keep_raw": false,
+  "reasoning": "off",
+  "dry_run": false
+ },
+ "runs": [
+  {
+   "model": "z-ai/glm-5.3-flash",
+   "seed": "arcadia",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "The Breton adventurer, Rennard, bought nine hundred and ten gold of ingredients off me in one go. And then, well. He's devoted to Dibella, and he showed me how devoted, right there by my shop door."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 1.0,
+   "origin_sim": null
+  },
+  {
+   "model": "z-ai/glm-5.3-flash",
+   "seed": "temple",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "whiterun.commons",
+     "text": "Danica pulled a Breton and his Dunmer mercenary back from the edge at the temple. Both were carried in half dead, ribs crushed and arms broken, and she had the healing light pouring out of her for hours."
+    }
+   ],
+   "calls": [
+    {
+     "error": "HTTP 400: {\"error\":{\"message\":\"Reasoning is mandatory for this endpoint and cannot be disabled.\",\"code\":400,\"metadata\":{\"provider_name\":null}}}"
+    }
+   ],
+   "steps": [],
+   "names_kept": 1.0,
+   "origin_sim": null
+  }
+ ]
+}

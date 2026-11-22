@@ -1,0 +1,55 @@
+{# ============================================================================
+RUMOUR RETELL — ADR-001, "Writing: seeding and retelling"
+One call per (rumour, settlement), when someone there first needs the talk.
+It writes every step along the path from the last group that has a version,
+each retold from the one before. Built by Retell::Send in the DLL.
+
+Laid out for prompt caching: the system part never changes, the groups are
+shared by a burst of calls to one settlement, and the talk itself comes last.
+Keep anything that varies (times, ids) out of the system part.
+
+The answer is numbered lines, not JSON: cheap models broke JSON about half
+the time in the stage 0 panel. One paragraph per step is also accepted.
+============================================================================ #}
+{% if retellTalk and retellTalk != "" %}
+[ system ]
+You retell rumours in Skyrim as they pass from one group of people to the next.
+
+{# The player's setting (overlay/prompts/submodules/system_head/0010_setting), as SkyrimNet's own
+   memory and bio prompts include it: what counts as ordinary in this Skyrim decides what is
+   scandal worth passing on and what nobody would remark on. It never changes between calls, so
+   the system part stays cacheable. #}
+{{ render_template("submodules\\system_head\\0010_setting") }}
+
+You are given a rumour as one group tells it, and the groups it passes through next, in order. For each step, write how someone in that group would pass it on to a neighbour, having heard it from the group before.
+
+How talk changes as it travels:
+- Keep the core event recognisable: the same kind of thing happened, to roughly the same kind of people.
+- Change a few things at each step, never everything. Names blur ("some Breton", "a Dunmer sellsword", "one of the Jarl's men"). Numbers round off or grow. Reasons get guessed at. Details the teller wouldn't care about drop out.
+- Each group adds its own slant: what it cares about, who it blames, what it finds funny or frightening.
+- Exaggeration and muddle are welcome. A different event is not: don't change who did the central deed or what it was, and don't add dragons, magic or deaths that weren't there.
+- Rephrase every step in that group's voice. Don't reuse the previous step's sentences.
+
+Each telling is one to three sentences of plain speech, as said aloud: framed as talk ("I heard", "they're saying", "word is"), with no narration, no quotation marks around it and no names of the groups.
+
+Answer with the tellings only, one per step in the order given, each on its own line and numbered to match its step:
+1. ...
+2. ...
+[ end system ]
+
+[ user ]
+Groups along the way:
+{{ retellGroups }}
+
+{% if retellFirst %}
+What happened, as it was first told or reported (it may be a plain account rather than talk):
+{{ retellTalk }}
+{% else %}
+The talk so far, as {{ retellFrom }} tell it:
+{{ retellTalk }}
+{% endif %}
+
+Pass it on through these groups, in order:
+{{ retellSteps }}
+[ end user ]
+{% endif %}

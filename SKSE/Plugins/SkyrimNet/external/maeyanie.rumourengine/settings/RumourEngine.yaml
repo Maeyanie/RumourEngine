@@ -1,0 +1,453 @@
+plugin:
+  name: RumourEngine
+  version: "1.0.0"
+  description: "Rumour mills: groups of people rumours spread between, retold as they go"
+  icon: "\U0001F5E3"
+
+variants:
+  # One call per (rumour, settlement) when someone there first needs the talk,
+  # writing each group's version from the one before. Cheap on purpose.
+  - name: rumour_retell
+    description: "How a rumour is retold as it passes from group to group: one call when the player reaches a settlement the talk has got to, writing each step along its path. A small, cheap model is right; the stage 0 panel chose GLM 5.3 Flash (z-ai/glm-5.3-flash), with Gemma 4 31B or DeepSeek V4 Flash as alternatives. Reasoning none or low: some reasoning models spend the whole budget thinking and return nothing. Uses base OpenRouter config unless overridden below"
+
+  # One call per harvest sweep, turning the memories it accepted into rumours.
+  - name: rumour_seed
+    description: "Turns memories people would pass on into rumours: one call per harvest sweep (every couple of game hours, when anything was accepted), writing each memory as its owner would tell it and saying who it is about. It sets what every later retelling starts from, so a capable model earns its keep here, though calls are few. Uses base OpenRouter config unless overridden below"
+
+  # Used only when no decision provider is set up: the screening questions as a chat prompt.
+  - name: rumour_screen
+    description: "Only used when SkyrimNet has no decision provider: asks whether someone would pass each new memory on, as a chat prompt. With a decision provider, screening goes through SkyrimNet's decisions variant instead. Uses base OpenRouter config unless overridden below"
+
+  # One call per rumour kept as world knowledge, a few times a game month at most.
+  - name: rumour_settle
+    description: "Writes what people came to know of a rumour that is kept as world knowledge, once it has run its course: one call per rumour kept, from how it was being told by then. Calls are rare and the entry lasts, so any capable model will do; GLM 5.3 Flash (z-ai/glm-5.3-flash) did well in testing. Uses base OpenRouter config unless overridden below"
+
+  # One call per quest ending that word of would get out, a few times a game week at most.
+  - name: rumour_quest
+    description: "Writes the first telling of how one of the player's quests ended, from their journal, when word of it would get out: what the people where it ended would say. Calls are rare and every later retelling starts from it, so a capable model earns its keep here. Uses base OpenRouter config unless overridden below"
+
+schema:
+  fields:
+    - name: "Enable RumourEngine"
+      path: "general.enabled"
+      type: "bool"
+      description: "Build the rumour mills and keep each save's rumours. Off, RumourEngine does nothing at all. Takes effect at the next game start."
+      defaultValue: true
+      category: "General"
+
+    - name: "Smallest mill"
+      path: "mills.floor"
+      type: "int"
+      description: "A group with fewer people than this folds into the nearest bigger one in its hold: a lone farm joins its village, a town's thin court joins its commons. Lower gives more, smaller mills and keeps villages apart; higher spreads news faster. 4 gives about 53 mills on vanilla Skyrim. Applies from the next save load."
+      defaultValue: 4
+      min: 1
+      max: 20
+      category: "Mills"
+
+    - name: "Rumours in a bio"
+      path: "delivery.max_rumours_per_prompt"
+      type: "int"
+      description: "How many of the rumours going round an NPC's groups their bio shows, freshest first."
+      defaultValue: 3
+      min: 1
+      max: 8
+      category: "Talk"
+
+    - name: "Tellings before they stop raising it"
+      path: "delivery.airings_until_stale"
+      type: "int"
+      description: "After a rumour has been told this many times in your hearing in one group, they stop bringing it up unprompted. They still know it and will talk about it if asked, until it goes stale. 0 turns this off."
+      defaultValue: 3
+      min: 0
+      max: 20
+      category: "Talk"
+
+    - name: "Gossips start conversations"
+      path: "starter.enabled"
+      type: "bool"
+      description: "When you are near a gossip with something fresh to pass on, they turn to someone nearby and tell it, once the room has been quiet for a while. Off, rumours only come up when you or the conversation raise them."
+      defaultValue: true
+      category: "Gossip"
+
+    - name: "Seconds between tellings"
+      path: "starter.cooldown_seconds"
+      type: "int"
+      description: "Real seconds after one gossip starts telling something before any other may."
+      defaultValue: 180
+      min: 30
+      max: 3600
+      category: "Gossip"
+
+    - name: "Minutes before a story is told again"
+      path: "starter.item_cooldown_minutes"
+      type: "int"
+      description: "Real minutes after a rumour is told before another gossip will raise the same one. The one who told it may go on about it."
+      defaultValue: 15
+      min: 0
+      max: 240
+      category: "Gossip"
+
+    - name: "Gossip score to start a telling"
+      path: "starter.min_teller_score"
+      type: "float"
+      description: "How much of a gossip an NPC must be (0 to 1) to start telling things; below this they only join in. Innkeepers, bards, barmaids and beggars score highest, guards and court wizards lowest (gossips.ini), and a bio that shows someone talkative or close-mouthed moves them."
+      defaultValue: 0.6
+      min: 0.0
+      max: 1.0
+      category: "Gossip"
+
+    - name: "Read bios for gossip scores"
+      path: "gossip.rate_bios"
+      type: "bool"
+      description: "Read each named NPC's bio once with SkyrimNet's decision model to see how much of a gossip they are, and again whenever their bio changes. One small request per person, the first time they are around. Off, or with no decision provider, scores come from jobs alone."
+      defaultValue: true
+      category: "Gossip"
+
+    - name: "How much a bio counts"
+      path: "gossip.bio_weight"
+      type: "float"
+      description: "How far a bio that shows someone talkative or close-mouthed moves their score from their job's: 0 not at all, 1 all the way to the top or bottom. A bio that says nothing either way never moves it."
+      defaultValue: 0.7
+      min: 0.0
+      max: 1.0
+      category: "Gossip"
+
+    - name: "Not everyone has heard everything"
+      path: "reach.enabled"
+      type: "bool"
+      description: "A rumour reaches the people of a group over time, gossips first: notable talk reaches nearly everyone within a day or two, trivia stays among the gossips. Only those it has reached know it or pass it on. Off, everyone in a group knows whatever has arrived there."
+      defaultValue: true
+      category: "Gossip"
+
+    - name: "Reach rate"
+      path: "reach.base_rate"
+      type: "float"
+      description: "How fast a rumour reaches people who never gossip, per game day. At 0.5, four in ten have heard notable talk after a day and six in ten after two."
+      defaultValue: 0.5
+      min: 0.0
+      max: 20.0
+      category: "Gossip"
+
+    - name: "Reach rate for gossips"
+      path: "reach.gossip_rate"
+      type: "float"
+      description: "Added to the reach rate times how much of a gossip the person is, so gossips hear first. At 2, an innkeeper has usually heard a rumour within half a day."
+      defaultValue: 2.0
+      min: 0.0
+      max: 20.0
+      category: "Gossip"
+
+    - name: "You can be told"
+      path: "starter.tell_player"
+      type: "string"
+      description: "Where a gossip may pick you to tell something to: never, taverns, towns or anywhere. Being picked is an interruption, whatever is said."
+      defaultValue: "taverns"
+      category: "Gossip"
+
+    - name: "Your followers can be told"
+      path: "starter.tell_party"
+      type: "string"
+      description: "Where a gossip may pick one of your followers to tell something to: never, taverns, towns or anywhere. A follower who is told something stops to talk it over, so on the road the whole party stops. Where they may not be told, they don't hear the telling either."
+      defaultValue: "taverns"
+      category: "Gossip"
+
+    - name: "Hours between spreading steps"
+      path: "spread.tick_hours"
+      type: "float"
+      description: "Game hours between steps of the simulation that carries rumours from group to group. Smaller is smoother but no faster: the chance of a hop scales with the step."
+      defaultValue: 2.0
+      min: 0.25
+      max: 24.0
+      category: "Spreading"
+
+    - name: "Kept within a town"
+      path: "spread.decay_local"
+      type: "float"
+      description: "How much of a rumour's notability survives a hop between groups in the same place, such as a town's commons and its guards. Higher lets talk cross a whole town without using up its reach."
+      defaultValue: 0.9
+      min: 0.0
+      max: 1.0
+      category: "Spreading"
+
+    - name: "Kept on the road"
+      path: "spread.decay_travel"
+      type: "float"
+      description: "How much of a rumour's notability survives a hop to another place, for the most minor talk. Lower keeps talk local; higher sends it further."
+      defaultValue: 0.6
+      min: 0.0
+      max: 1.0
+      category: "Spreading"
+
+    - name: "Big news keeps its size"
+      path: "spread.decay_travel_per_notability"
+      type: "float"
+      description: "Added to the share kept on the road, times the rumour's notability (0 to 1), because everyone passes big news on. At 0.3, the biggest news keeps 0.9 of its notability per hop and minor talk about 0.7."
+      defaultValue: 0.3
+      min: 0.0
+      max: 1.0
+      category: "Spreading"
+
+    - name: "Travel speed"
+      path: "spread.travel_rate_scale"
+      type: "float"
+      description: "How readily news is carried to another place by road, carriage or ship, as a multiple of the base rates. Higher gets news between towns sooner, big news most of all."
+      defaultValue: 8.0
+      min: 0.0
+      max: 100.0
+      category: "Spreading"
+
+    - name: "How much bigger news travels"
+      path: "spread.travel_exponent"
+      type: "float"
+      description: "How steeply the chance of news being carried to another place rises with its notability. Higher keeps minor talk at home and sends big news further. Compared with 2 and a travel speed of 1, at 4 and 8 minor talk (0.3) travels a little less readily, news at 0.5 twice as readily, and news at 0.9 over six times as readily."
+      defaultValue: 4.0
+      min: 0.5
+      max: 8.0
+      category: "Spreading"
+
+    - name: "Too minor to spread"
+      path: "spread.notability_floor"
+      type: "float"
+      description: "A rumour whose notability has fallen below this stops spreading."
+      defaultValue: 0.15
+      min: 0.0
+      max: 1.0
+      category: "Spreading"
+
+    - name: "Days a rumour stays fresh"
+      path: "spread.base_fresh_days"
+      type: "float"
+      description: "Game days a group keeps talking about even the most minor rumour, and passing it on."
+      defaultValue: 2.0
+      min: 0.1
+      max: 30.0
+      category: "Spreading"
+
+    - name: "Extra fresh days for notable news"
+      path: "spread.fresh_days_per_notability"
+      type: "float"
+      description: "Added to the days above, times the rumour's notability there (0 to 1): at 6, the biggest news stays fresh for 8 days."
+      defaultValue: 6.0
+      min: 0.0
+      max: 30.0
+      category: "Spreading"
+
+    - name: "Most groups one rumour reaches"
+      path: "spread.max_mills_per_rumour"
+      type: "int"
+      description: "A cap on how many groups one rumour can spread to. Notability usually stops a rumour first; at 80 it doesn't bind on a standard load order."
+      defaultValue: 80
+      min: 1
+      max: 200
+      category: "Spreading"
+
+    - name: "When versions are written"
+      path: "retell.mode"
+      type: "string"
+      description: "lazy: a group's version of a rumour is written when you reach their settlement, or when one of them would bring it up. eager: as soon as it arrives anywhere, for testing; it costs a call for every hop."
+      defaultValue: "lazy"
+      category: "Spreading"
+
+    - name: "Turn memories into rumours"
+      path: "harvest.enabled"
+      type: "bool"
+      description: "Every couple of game hours, look at the memories people have formed lately, ask whether they would pass each one on, and turn those into rumours that start in their groups. Off, rumours only come from other mods."
+      defaultValue: true
+      category: "Harvest"
+
+    - name: "Hours between harvests"
+      path: "harvest.interval_hours"
+      type: "float"
+      description: "Game hours between looks at new memories. Each look costs one decision call per person with something new (up to the cap below) and one writing call if anything was accepted."
+      defaultValue: 2.0
+      min: 0.25
+      max: 48.0
+      category: "Harvest"
+
+    - name: "Days looked back"
+      path: "harvest.window_days"
+      type: "float"
+      description: "How old, in game days, a memory may be and still be looked at. Each memory is only ever looked at once."
+      defaultValue: 2.0
+      min: 0.25
+      max: 30.0
+      category: "Harvest"
+
+    - name: "Memory importance needed"
+      path: "harvest.importance_floor"
+      type: "float"
+      description: "SkyrimNet scores every memory's importance from 0 to 1. Memories below this are never considered. Most everyday memories score 0.2 to 0.5."
+      defaultValue: 0.5
+      min: 0.0
+      max: 1.0
+      category: "Harvest"
+
+    - name: "Gossips' lower importance bar"
+      path: "harvest.gossip_floor_bonus"
+      type: "float"
+      description: "Lowers the importance needed by this much times how much of a gossip the person is, so gossips pass on smaller things."
+      defaultValue: 0.2
+      min: 0.0
+      max: 1.0
+      category: "Harvest"
+
+    - name: "Likelihood of passing it on"
+      path: "harvest.screen_threshold"
+      type: "float"
+      description: "How sure the decision model must be (0 to 1) that someone would pass a memory on, before it becomes a rumour."
+      defaultValue: 0.6
+      min: 0.0
+      max: 1.0
+      category: "Harvest"
+
+    - name: "Gossips' lower likelihood bar"
+      path: "harvest.gossip_threshold_bonus"
+      type: "float"
+      description: "Lowers the likelihood above by this much times how much of a gossip the person is."
+      defaultValue: 0.25
+      min: 0.0
+      max: 1.0
+      category: "Harvest"
+
+    - name: "Interest needed"
+      path: "harvest.min_interest"
+      type: "int"
+      description: "How much a room would care to hear it, from 1 (nobody) to 5 (everyone stops to listen). The answer also sets how far the rumour travels."
+      defaultValue: 3
+      min: 1
+      max: 5
+      category: "Harvest"
+
+    - name: "People per harvest"
+      path: "harvest.max_actors"
+      type: "int"
+      description: "Most people whose new memories one harvest looks at, those with the most important new memories first. One decision call each."
+      defaultValue: 10
+      min: 1
+      max: 50
+      category: "Harvest"
+
+    - name: "Memories per person"
+      path: "harvest.memories_per_actor"
+      type: "int"
+      description: "Most new memories of one person a harvest looks at, newest first, in one request. 6 fits a returning follower's catch-up in one, so all of it can be compared."
+      defaultValue: 6
+      min: 1
+      max: 10
+      category: "Harvest"
+
+    - name: "New rumours per harvest"
+      path: "harvest.max_seeds_per_sweep"
+      type: "int"
+      description: "Most new rumours one harvest starts. The rest of what was accepted waits for the next."
+      defaultValue: 6
+      min: 1
+      max: 20
+      category: "Harvest"
+
+    - name: "Remember telling"
+      path: "harvest.remember_telling"
+      type: "bool"
+      description: "Whoever a rumour from memories starts with remembers passing it on, so if asked who's been talking they know it was them, and may own up or lie. Only they do; the people it reaches later hear it offstage. Off, nobody remembers starting a rumour."
+      defaultValue: true
+      category: "Harvest"
+
+    - name: "Hours to settle"
+      path: "settle.hours"
+      type: "float"
+      description: "Game hours someone must stay in one town before they count as living there. A dismissed follower, or anyone a mod or quest moved, then joins that town's groups and tells their talk there. Long enough that a daily trip to the next village isn't a move."
+      defaultValue: 24.0
+      min: 1.0
+      max: 240.0
+      category: "Settling"
+
+    - name: "Longest wait for a dismissed follower"
+      path: "settle.max_days"
+      type: "float"
+      description: "Game days after you dismiss a follower when they count as settled wherever they are, even if they haven't stayed put."
+      defaultValue: 3.0
+      min: 0.25
+      max: 30.0
+      category: "Settling"
+
+    - name: "Memories from a follower's travels"
+      path: "settle.follower_harvest_max"
+      type: "int"
+      description: "Once a dismissed follower has settled, this many of their most important memories from their time with you are looked at, and those they'd pass on become talk where they live. 0 turns this off."
+      defaultValue: 6
+      min: 0
+      max: 20
+      category: "Settling"
+
+    - name: "Keep the biggest news as world knowledge"
+      path: "promote.enabled"
+      type: "bool"
+      description: "When a rumour has run its course everywhere, ask SkyrimNet's decision model whether people will still talk of it in a year. If so, what people came to know of it becomes a SkyrimNet world-knowledge entry, for the people it had reached only, so a war's outbreak or a Jarl's murder stays known after the talk dies down. Turning this off takes the entries out of SkyrimNet's world knowledge (do that before removing RumourEngine); turning it on again puts them back."
+      defaultValue: true
+      category: "World knowledge"
+
+    - name: "How lasting it must be"
+      path: "promote.lasting"
+      type: "float"
+      description: "How sure the decision model must be (0 to 1) that people across Skyrim will still bring a rumour up a year from now. Models read this differently, so set it for yours. Tuned on Jev 1.14 (typesafe/jev-1.14), where 0.4 keeps a declaration of war (0.78), a dragon slain at a city's gates (0.69), the Harbinger of the Companions killed (0.47) and a Jarl murdered (0.44), but not a war's skirmishes, proclamations or guild errands (0.35 or less) or anyone's flings, fights and sales (under 0.15). On d3 (d3:4b, huggingface.co/vllm-sr/d3-mini), which reads higher and less cleanly, about 0.75 does the same (war 0.88, a Jarl murdered 0.85, a dragon slain 0.74, but necromancers in a barrow 0.73). On Kev-4B (kev:4b-q8_0, SkyrimNet MultiProxy's default), about 0.6 keeps the war (0.84), Alduin's return (0.76) and a dragon slain (0.6 to 0.7), with some proclamations and letters between factions (up to 0.67) besides; a Jarl murdered (0.49) scores no higher than those letters, so Kev can't keep it alone. Lower keeps more."
+      defaultValue: 0.4
+      min: 0.0
+      max: 1.0
+      category: "World knowledge"
+
+    - name: "How widely it must have spread"
+      path: "promote.min_reach"
+      type: "float"
+      description: "The share of everyone in the mills (0 to 1) a rumour must have reached before the decision model is asked about keeping it. Talk that stayed in one village isn't common knowledge, however big it was there."
+      defaultValue: 0.25
+      min: 0.0
+      max: 1.0
+      category: "World knowledge"
+
+    - name: "Notability needed without a decision model"
+      path: "promote.notability"
+      type: "float"
+      description: "Only when SkyrimNet has no decision provider: how notable a rumour must be (0 to 1) to be kept instead. Harvested rumours reach 0.55 at most, so at 0.8 only other mods' biggest news is kept."
+      defaultValue: 0.8
+      min: 0.0
+      max: 1.0
+      category: "World knowledge"
+
+    - name: "Rumours of quest endings"
+      path: "quests.enabled"
+      type: "bool"
+      description: "When one of the player's quests ends and word of how it ended would get out, such as Dawnstar freed of its nightmares or the Butcher of Windhelm caught, it becomes a rumour where the player is. The decision model judges which endings people would hear of, and how far the news goes, from the quest's journal; quests.ini says always or never for a quest. Quests finished before RumourEngine saw them end are never told."
+      defaultValue: true
+      category: "Quest endings"
+
+    - name: "How sure that word gets out"
+      path: "quests.heard"
+      type: "float"
+      description: "How sure the decision model must be (0 to 1) that word of how a quest ended gets beyond the people who took part. Models read this differently, so set it for yours. Tuned on Jev 1.14 (typesafe/jev-1.14) with 60 vanilla endings, where 0.5 tells every ending that is news across Skyrim (the war won, a dragon killed at Whiterun, the Emperor assassinated) and every one talked of where it happened (Dawnstar's nightmares ended, the Butcher of Windhelm caught, Madanach's escape), and 2 of 20 private ones; Thieves Guild work reads 0.35 or less. On d3 (d3:4b, huggingface.co/vllm-sr/d3-mini) about 0.6 does nearly as well (it misses 4 local endings and lets 5 private ones through). Kev-4B (kev:4b-q8_0) separates them poorly: about 0.45. Lower tells more."
+      defaultValue: 0.5
+      min: 0.0
+      max: 1.0
+      category: "Quest endings"
+
+    - name: "Notability without a decision model"
+      path: "quests.notability"
+      type: "float"
+      description: "Only when SkyrimNet has no decision provider: then only the quests quests.ini says always become rumours, at this notability (0 to 1). 0.7 reaches most of a region; with a decision model the notability comes from how far it judges the news would go, 0.5 to 0.9."
+      defaultValue: 0.7
+      min: 0.0
+      max: 1.0
+      category: "Quest endings"
+
+    - name: "Log every mill"
+      path: "debug.dump_mills"
+      type: "bool"
+      description: "Write every mill and its members to RumourEngine.log, and the whole set to RumourEngine_Mills.json next to it, each time the mills are built."
+      defaultValue: true
+      category: "Debug"
+
+    - name: "Log what NPCs are shown"
+      path: "debug.log_prompts"
+      type: "bool"
+      description: "Write the talk block and the keen-to-pass-on line to RumourEngine.log whenever they change for an NPC."
+      defaultValue: false
+      category: "Debug"

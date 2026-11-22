@@ -1,0 +1,32 @@
+{# Decision template: how much of a gossip someone is, read off their bio (ADR-001, "Gossip score").
+   One request per named person, sent by Gossip.cpp the first time they matter and again whenever
+   one of the bio blocks shown here changes, in the authored bio or a generated one. The DLL reads
+   the answer to `gossip`: a score whose level comes back counted from 0, so 0 is the first line
+   below and 4 the last. A bio that says nothing either way reads as about 1, and the DLL leaves
+   the person's job score alone between 0.8 and 1.3 (tools/gossip_panel.py has the panel).
+
+   Nothing earlier is shown: the same bio reads the same every time, and an earlier reading only
+   drags the new one towards it.
+
+   Context: gossip_npc (UUID, a JSON number), gossip_name.
+   A criterion is exactly one line. #}
+{% set _npc = decnpc(gossip_npc) %}
+[ state person ]
+{{ gossip_name }}, {{ _npc.gender }} {{ _npc.race }}.
+{{ render_character_profile("bio_summary", gossip_npc) }}
+{{ render_character_profile("bio_personality", gossip_npc) }}
+{{ render_character_profile("bio_occupation", gossip_npc) }}
+{{ render_character_profile("bio_skills", gossip_npc) }}
+{{ render_character_profile("speech_style", gossip_npc) }}
+[ end state ]
+
+[ question gossip score ]
+How readily does {{ gossip_name }} pass on news and gossip about other people to those around them? Judge by who they are (`person`): how fond of talk, how discreet, and what their work brings them to hear.
+[ criteria ]
+1: Tight-lipped: keeps what they know to themselves, and dislikes idle talk.
+2: Discreet: says little about other people's business unless there's a reason to.
+3: Ordinary: passes on news like anyone would, without going looking for it.
+4: Talkative: enjoys the local talk and readily passes on what they hear.
+5: Incorrigible gossip: collects every story going and tells it to anyone who will listen.
+[ end criteria ]
+[ end question ]

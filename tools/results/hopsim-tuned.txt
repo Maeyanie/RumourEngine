@@ -1,0 +1,113 @@
+
+== settlement: 57 mills, 10 trials x 60 days, 1.5 rumours/day ==
+  mills reached      median 3, p90 9, max 28
+  holds reached          1     2     3   4-5    6+   next hold (p50 days)
+    minor      200    83%   17%    0%    0%    0%    17% (2.5)
+    moderate   118    39%   35%   19%    7%    0%    62% (2.5)
+    major       34     9%   15%   21%   32%   24%    94% (1.6)
+  hold crossings by  road 69%, carriage 27%, ship 2%
+  hops deep          median 1, p90 2
+  sameness mills, same hold   mean 0.12
+  sameness people, same mill  mean 0.55
+  sameness people, same town  mean 0.56
+  retell calls       eager 107/trial, lazy 8/trial writing 9 versions
+  who has heard (share of the mill, by age of the rumour there):
+    gossip <0.35         14%    36%    53%    66%    86%
+    gossip 0.35-0.65     22%    52%    71%    82%    96%
+    gossip >0.65         37%    77%    94%    99%   100%
+  who has heard (by notability in that mill):
+    gossip <0.35         39%    56%    81%
+    gossip 0.35-0.65     54%    72%    89%
+    gossip >0.65         83%    89%    93%
+
+== strata: 70 mills, 10 trials x 60 days, 1.5 rumours/day ==
+  mills reached      median 4, p90 13, max 34
+  own town, all mills 63% of rumours; p50 2.0 days
+  holds reached          1     2     3   4-5    6+   next hold (p50 days)
+    minor      214    88%   11%    1%    0%    0%    12% (2.8)
+    moderate   104    48%   31%   17%    3%    1%    52% (3.7)
+    major       44     5%   20%   27%   34%   14%    95% (2.7)
+  hold crossings by  road 69%, carriage 27%, ship 3%
+  hops deep          median 2, p90 3
+  sameness mills, same town   mean 0.44
+  sameness mills, same hold   mean 0.19
+  sameness people, same mill  mean 0.59
+  sameness people, same town  mean 0.53
+  retell calls       eager 166/trial, lazy 39/trial writing 49 versions
+  who has heard (share of the mill, by age of the rumour there):
+    gossip <0.35         15%    38%    52%    65%    88%
+    gossip 0.35-0.65     22%    52%    70%    81%    96%
+    gossip >0.65         36%    78%    94%    99%   100%
+  who has heard (by notability in that mill):
+    gossip <0.35         38%    56%    83%
+    gossip 0.35-0.65     54%    72%    89%
+    gossip >0.65         84%    89%    93%
+
+== institutions: 72 mills, 10 trials x 60 days, 1.5 rumours/day ==
+  mills reached      median 4, p90 13, max 39
+  own town, all mills 61% of rumours; p50 2.1 days
+  holds reached          1     2     3   4-5    6+   next hold (p50 days)
+    minor      212    82%   16%    2%    0%    0%    18% (3.0)
+    moderate   102    39%   32%   21%    8%    0%    62% (3.2)
+    major       28     7%   11%   11%   29%   43%    93% (2.8)
+  hold crossings by  road 63%, carriage 24%, shared 8%, ship 2%
+  hops deep          median 2, p90 3
+  sameness mills, same town   mean 0.40
+  sameness mills, same hold   mean 0.17
+  sameness people, same mill  mean 0.57
+  sameness people, same town  mean 0.49
+  retell calls       eager 164/trial, lazy 39/trial writing 50 versions
+  who has heard (share of the mill, by age of the rumour there):
+    gossip <0.35         15%    35%    52%    64%    87%
+    gossip 0.35-0.65     21%    53%    69%    80%    96%
+    gossip >0.65         35%    78%    94%    99%   100%
+  who has heard (by notability in that mill):
+    gossip <0.35         38%    56%    82%
+    gossip 0.35-0.65     54%    73%    88%
+    gossip >0.65         84%    89%    92%
+
+== merged: 53 mills, 10 trials x 60 days, 1.5 rumours/day ==
+  mills reached      median 4, p90 15, max 36
+  own town, all mills 63% of rumours; p50 2.0 days
+  holds reached          1     2     3   4-5    6+   next hold (p50 days)
+    minor      214    76%   21%    3%    0%    0%    24% (2.9)
+    moderate   101    29%   22%   27%   21%    2%    71% (3.0)
+    major       41    10%   12%   10%   29%   39%    93% (2.1)
+  hold crossings by  road 73%, carriage 18%, shared 5%, ship 1%
+  hops deep          median 2, p90 3
+  sameness mills, same town   mean 0.40
+  sameness mills, same hold   mean 0.22
+  sameness people, same mill  mean 0.57
+  sameness people, same town  mean 0.49
+  retell calls       eager 180/trial, lazy 41/trial writing 52 versions
+  who has heard (share of the mill, by age of the rumour there):
+    gossip <0.35         15%    36%    52%    64%    87%
+    gossip 0.35-0.65     23%    52%    69%    80%    96%
+    gossip >0.65         34%    77%    93%    99%   100%
+  who has heard (by notability in that mill):
+    gossip <0.35         38%    56%    86%
+    gossip 0.35-0.65     54%    72%    89%
+    gossip >0.65         83%    88%    92%
+
+== merged10: 31 mills, 10 trials x 60 days, 1.5 rumours/day ==
+  mills reached      median 4, p90 11, max 25
+  own town, all mills 67% of rumours; p50 1.4 days
+  holds reached          1     2     3   4-5    6+   next hold (p50 days)
+    minor      208    74%   23%    3%    0%    0%    26% (2.6)
+    moderate   113    14%   34%   30%   16%    6%    86% (3.1)
+    major       42     0%    5%   14%   40%   40%   100% (1.8)
+  hold crossings by  road 83%, carriage 14%, ship 1%
+  hops deep          median 2, p90 3
+  sameness mills, same town   mean 0.40
+  sameness mills, same hold   mean 0.25
+  sameness people, same mill  mean 0.59
+  sameness people, same town  mean 0.52
+  retell calls       eager 144/trial, lazy 37/trial writing 46 versions
+  who has heard (share of the mill, by age of the rumour there):
+    gossip <0.35         15%    35%    52%    65%    87%
+    gossip 0.35-0.65     23%    51%    69%    80%    96%
+    gossip >0.65         37%    77%    93%    99%   100%
+  who has heard (by notability in that mill):
+    gossip <0.35         38%    56%    82%
+    gossip 0.35-0.65     54%    72%    89%
+    gossip >0.65         84%    88%    92%

@@ -1,0 +1,135 @@
+{
+ "args": {
+  "models": [
+   "google/gemma-4-31b-it"
+  ],
+  "seeds": [
+   "haldyn"
+  ],
+  "n": 1,
+  "steps_per_call": 2,
+  "temperature": 1.0,
+  "max_tokens": 900,
+  "workers": 8,
+  "keep_raw": false,
+  "dry_run": false
+ },
+ "rows": [
+  {
+   "model": "google/gemma-4-31b-it",
+   "chains": "1/1",
+   "errors": 0,
+   "seq": 0.19419256208396174,
+   "copy": 0.0,
+   "replace": 0.5,
+   "content": 0.06926338133431954,
+   "origin": 0.0,
+   "names": 0.0,
+   "words": 36.333333333333336,
+   "cost_call": 0.00010732666666666668,
+   "secs": 2.9566666666666666,
+   "cached": 0.19656019656019655,
+   "reasoning": 0
+  }
+ ],
+ "runs": [
+  {
+   "model": "google/gemma-4-31b-it",
+   "seed": "haldyn",
+   "sample": 0,
+   "chain": [
+    {
+     "mill": "windhelm.commons",
+     "text": "Haldyn's dead, the wizard behind the Blood Horker pirates. A Breton sellsword called Rennard broke that cursed fog of his at Japhet's Folly and cut him down, and the Company's ships went in and finished the rest. The pirate trouble on this coast is over."
+    },
+    {
+     "mill": "windhelm.garrison",
+     "text": "Word is some Breton mercenary took out the pirate boss, Haldyn, and his fog-trick at Japhet's Folly. The East Empire Company moved in to clean up the mess, so keep an eye out for any Imperial spies sliding into the city on the tide."
+    },
+    {
+     "mill": "kynesgrove",
+     "text": "I heard some foreigner cleared out a pirate den called Japhet's Folly and killed their leader. The Company ships took the rest of them, so the roads and waters should be safer for the ore shipments now."
+    },
+    {
+     "mill": "dawnstar",
+     "text": "Word is some outsider wiped out the lot at Japhet's Folly and took the captain's head. The Company's finally cleaning up the coast, so maybe the shipments will actually arrive on time for once."
+    },
+    {
+     "mill": "morthal",
+     "text": "I heard a stranger came from the coast and slaughtered a whole nest of brigands in some cave. They say the Empire's moving in to take over, though I reckon there's some dark business afoot if a lone wanderer is doing their killing."
+    },
+    {
+     "mill": "solitude.commons",
+     "text": "Word is some sellsword cleared out a whole den of bandits up north single-handedly. They say the Legion is scrambling to seize the area now, which sounds like a right mess!"
+    },
+    {
+     "mill": "solitude.court",
+     "text": "Reports indicate a mercenary has neutralized a significant brigand outpost in the marshes. General Tullius is coordinating a deployment to ensure the region remains under Imperial jurisdiction."
+    }
+   ],
+   "calls": [
+    {
+     "secs": 4.54,
+     "prompt": 558,
+     "completion": 125,
+     "cost": 9.83e-05,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 2.63,
+     "prompt": 529,
+     "completion": 111,
+     "cost": 0.000128025,
+     "cached": 0,
+     "reasoning": 0,
+     "raw": null
+    },
+    {
+     "secs": 1.7,
+     "prompt": 541,
+     "completion": 82,
+     "cost": 9.5655e-05,
+     "cached": 320,
+     "reasoning": 0,
+     "raw": null
+    }
+   ],
+   "steps": [
+    {
+     "seq": 0.2222222222222222,
+     "content": 0.10869565217391304,
+     "words": 45
+    },
+    {
+     "seq": 0.2682926829268293,
+     "content": 0.13157894736842105,
+     "words": 37
+    },
+    {
+     "seq": 0.28169014084507044,
+     "content": 0.12121212121212122,
+     "words": 34
+    },
+    {
+     "seq": 0.07792207792207792,
+     "content": 0.02631578947368421,
+     "words": 43
+    },
+    {
+     "seq": 0.21333333333333335,
+     "content": 0.027777777777777776,
+     "words": 32
+    },
+    {
+     "seq": 0.1016949152542373,
+     "content": 0.0,
+     "words": 27
+    }
+   ],
+   "names_kept": 0.0,
+   "origin_sim": 0.0
+  }
+ ]
+}

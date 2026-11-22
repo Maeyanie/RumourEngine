@@ -1,0 +1,29 @@
+[
+  {
+    "source": "FactionEngine",
+    "key": "event-144@115.3109",
+    "if_absent": true,
+    "happened": 115.31089782714844,
+    "topics": ["politics"],
+    "notability": 0.48,
+    "text": "The Imperial Legion marched a picked company out of Castle Dour toward the old house near Falkreath that served the Dark Brotherhood for a sanctuary, there to break the brotherhood of killers who had taken Maven Black-Briar's contract against the Emperor's toll-officers, and to seize their contract-books before another name on the seized ledgers could be crossed off.",
+    "retell_origin": true,
+    "subjects": ["General Tullius", "Legate Rikke", "Astrid", "Nazir"],
+    "origin": { "settlement": "Solitude" },
+    "delay_hours": 4.0
+  },
+  {
+    "source": "FactionEngine",
+    "key": "event-144@115.3109",
+    "patch": true,
+    "reach": ["legion"],
+    "versions": { "mill:legion": { "text": "The Imperial Legion marched a picked company out of Castle Dour toward the old house near Falkreath that served the Dark Brotherhood for a sanctuary, there to break the brotherhood of killers who had taken Maven Black-Briar's contract against the Emperor's toll-officers, and to seize their contract-books before another name on the seized ledgers could be crossed off.", "as_fact": true } },
+    "happened": 115.3109
+  },
+  {
+    "source": "FactionEngine",
+    "key": "event-144@115.3109",
+    "patch": true,
+    "known_better_by": ["General Tullius", "Legate Rikke"]
+  }
+]
