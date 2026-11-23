@@ -79,6 +79,8 @@ namespace RumourEngine::Quests {
         std::shared_ptr<const PluginScan::Result> g_scan;
         std::map<std::string, Override>           g_overrides;  // "edid" or "edid:stage", lowercased
         std::set<std::string>                     g_known;      // quests with a row: handled, or finished before
+        std::set<std::string>                     g_skipLogged; // ended and passed over: logged once a session
+        std::map<std::string, RE::FormID>         g_before;     // rows saying a save had finished the quest before we saw it end
         std::map<RE::FormID, Watch>               g_watch;
         std::map<RE::FormID, std::uint16_t>       g_homeless;  // ended where there's no location: waiting for the player to reach one
         RE::FormID                                g_lastLoc = 0;  // the last location the player was in, this session
@@ -379,6 +381,27 @@ namespace RumourEngine::Quests {
             }
         }
 
+        /** Why a quest quests.ini says nothing about is never asked about, or null if it is. The
+         *  game leaves some real quests untyped (The Man Who Cried Wolf, the temples' quests), and
+         *  those have objectives; its monitors and handlers, untyped too, have none. */
+        const char* SkipReason(RE::QUEST_DATA::Type type, bool named, bool hasObjectives) {
+            if (!named) return "it has no name";
+            if (type == RE::QUEST_DATA::Type::kMiscellaneous) return "it's a miscellaneous quest";
+            if (type == RE::QUEST_DATA::Type::kNone && !hasObjectives) return "it has neither a type nor objectives";
+            return nullptr;
+        }
+
+        /** A quest that ended and is passed over, so that the log says why there's no rumour of it. */
+        void LogSkip(RE::TESQuest* q, const std::string& key, std::uint16_t stage, const char* why) {
+            {
+                std::lock_guard lk(g_lock);
+                if (!g_skipLogged.insert(key).second) return;
+            }
+            const char* name = q->GetName();
+            logger::info("Quests: {}{} ended (stage {}), but is passed over: {}", key,
+                         name && *name ? fmt::format(" ({})", Fill(q, Utf8(name))) : std::string{}, stage, why);
+        }
+
         /** quests.ini's line for this ending ("edid:stage"), else for the quest. Under g_lock. */
         Override RuleFor(const std::string& key, int stage) {
             if (auto it = g_overrides.find(fmt::format("{}:{}", key, stage)); it != g_overrides.end()) return it->second;
@@ -393,6 +416,8 @@ namespace RumourEngine::Quests {
                      { "player", e.player }, { "origin", e.origin }, { "notability", e.notability } };
         }
 
+        /** The ending's row. It replaces a `before` row whole, day and stage too, so that a reload's
+         *  take-back goes by when the quest ended in this save. */
         void Store(const Ending& e, std::int32_t rumourId = 0) {
             if (e.preview) return;
             Database::With([&](sqlite3* db) {
@@ -400,7 +425,8 @@ namespace RumourEngine::Quests {
                 if (sqlite3_prepare_v2(db,
                                        "INSERT INTO quest_endings(quest, form_id, stage, state, heard, far, rumour_id, detail, game_time) "
                                        "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(quest) DO UPDATE SET state = excluded.state, "
-                                       "heard = excluded.heard, far = excluded.far, rumour_id = excluded.rumour_id, detail = excluded.detail;",
+                                       "form_id = excluded.form_id, stage = excluded.stage, heard = excluded.heard, far = excluded.far, "
+                                       "rumour_id = excluded.rumour_id, detail = excluded.detail, game_time = excluded.game_time;",
                                        -1, &st, nullptr) != SQLITE_OK) {
                     logger::error("Quests: {}", sqlite3_errmsg(db));
                     return;
@@ -443,23 +469,35 @@ namespace RumourEngine::Quests {
             const auto                                key = (preview ? std::string("preview:") : std::string{}) + KeyOf(q);
             std::shared_ptr<const PluginScan::Result> scan;
             Override                                  rule;
+            bool                                      recorded = false;
             {
                 std::lock_guard lk(g_lock);
-                if (gen != g_generation || (!preview && (!g_loaded || g_known.contains(key)))) return;
+                if (gen != g_generation || (!preview && !g_loaded)) return;
+                recorded = !preview && g_known.contains(key);
                 scan = g_scan;
                 rule = RuleFor(KeyOf(q), stage);
+            }
+            if (recorded) {
+                LogSkip(q, key, stage, "it's already on record");
+                return;
             }
             if (!scan) return;
             const auto jit = scan->quests.find(q->GetFormID());
             if (jit == scan->quests.end()) {
                 if (preview) logger::info("Quests: preview: {} has no journal in the plugins", key);
+                else LogSkip(q, key, stage, "it has no journal");
                 return;  // no journal, so nothing to tell from
             }
             const auto  type = q->GetType();
             const char* rawName = q->GetName();
-            if (!preview && rule.rule == Rule::None &&
-                (type == RE::QUEST_DATA::Type::kNone || type == RE::QUEST_DATA::Type::kMiscellaneous || !rawName || !*rawName)) {
-                return;  // errands, chores and the game's own bookkeeping
+            if (rule.rule == Rule::None) {
+                if (const char* why = SkipReason(type, rawName && *rawName, jit->second.hasObjectives)) {
+                    if (!preview) {
+                        LogSkip(q, key, stage, why);
+                        return;  // errands, chores and the game's own bookkeeping
+                    }
+                    logger::info("Quests: preview: {} would be passed over in play ({}); previewing it anyway", key, why);
+                }
             }
 
             Ending e;
@@ -660,14 +698,27 @@ namespace RumourEngine::Quests {
         void Sweep(unsigned gen) {
             std::shared_ptr<const PluginScan::Result> scan;
             std::set<std::string>                     known;
+            std::map<std::string, RE::FormID>         recorded;
             {
                 std::lock_guard lk(g_lock);
                 if (gen != g_generation) return;
                 scan = g_scan;
                 known = g_known;
+                recorded = g_before;
             }
             auto* handler = RE::TESDataHandler::GetSingleton();
             if (!scan || !handler) return;
+            // A `before` row holds only while the quest is finished: one recorded by a later save
+            // (loaded first, then this earlier one with the history kept) or from before an older
+            // save is restarted mustn't stop the ending being told when it comes in this one.
+            std::vector<std::string> again;
+            for (const auto& [key, form] : recorded) {
+                auto* q = RE::TESForm::LookupByID<RE::TESQuest>(form);
+                if (q && KeyOf(q) == key && !q->IsCompleted()) {
+                    again.push_back(key);
+                    known.erase(key);
+                }
+            }
             std::vector<std::pair<std::string, RE::FormID>> before;
             for (auto* q : handler->GetFormArray<RE::TESQuest>()) {
                 if (!q || !q->IsCompleted() || !scan->quests.contains(q->GetFormID())) continue;
@@ -698,10 +749,18 @@ namespace RumourEngine::Quests {
                 std::lock_guard lk(g_lock);
                 if (gen != g_generation) return;
                 for (const auto& [key, form] : before) g_known.insert(key);
+                for (const auto& key : again) g_known.erase(key);
                 g_loaded = true;
                 g_swept = true;
                 total = g_known.size();
                 waiting = g_pending.size();
+            }
+            if (!again.empty()) {
+                std::string list;
+                for (std::size_t i = 0; i < again.size() && i < 10; ++i) list += (i ? ", " : "") + again[i];
+                logger::info("Quests: {} quest(s) recorded as finished before RumourEngine saw them end aren't finished in this save, "
+                             "so they can still be told when they end: {}{}",
+                             again.size(), list, again.size() > 10 ? ", ..." : "");
             }
             logger::info("Quests: watching for quest endings; {} on record ({} newly found finished before RumourEngine saw them end), "
                          "{} under way",
@@ -713,7 +772,8 @@ namespace RumourEngine::Quests {
             RE::BSEventNotifyControl ProcessEvent(const RE::TESQuestStageEvent* e, RE::BSTEventSource<RE::TESQuestStageEvent>*) override {
                 if (!e || !Session::IsReady() || !Settings::QuestsEnabled()) return RE::BSEventNotifyControl::kContinue;
                 std::lock_guard lk(g_lock);
-                if (g_loaded && g_scan && g_scan->quests.contains(e->formID)) g_watch[e->formID] = { e->stage, Clock::now() + kWatchFor };
+                // Those without a journal too, so that Consider can log that it passed them over.
+                if (g_loaded) g_watch[e->formID] = { e->stage, Clock::now() + kWatchFor };
                 return RE::BSEventNotifyControl::kContinue;
             }
         };
@@ -939,8 +999,9 @@ namespace RumourEngine::Quests {
             rules[line.key] = o;
         }
 
-        std::set<std::string>         known;
-        std::map<std::string, Ending> pending;
+        std::set<std::string>              known;
+        std::map<std::string, RE::FormID>  before;
+        std::map<std::string, Ending>      pending;
         Database::With([&](sqlite3* db) {
             sqlite3_stmt* st = nullptr;
             if (sqlite3_prepare_v2(db, "SELECT quest, form_id, stage, state, heard, far, detail, game_time FROM quest_endings;", -1, &st,
@@ -954,6 +1015,7 @@ namespace RumourEngine::Quests {
                 if (!key || !state) continue;
                 known.insert(key);
                 const std::string_view s = state;
+                if (s == "before") before[key] = static_cast<RE::FormID>(sqlite3_column_int64(st, 1));
                 if (s != "asking" && s != "telling") continue;
                 Ending e;
                 e.key = key;
@@ -981,6 +1043,7 @@ namespace RumourEngine::Quests {
         g_overrides = std::move(rules);
         for (auto& [key, e] : pending) e.rule = RuleFor(key, e.stage);
         g_known = std::move(known);
+        g_before = std::move(before);
         g_pending = std::move(pending);
         g_rowsRead = true;
         logger::info("Quests: {} line(s) in quests.ini{}, {} quest endings on record, {} still to finish", g_overrides.size(),
@@ -991,6 +1054,8 @@ namespace RumourEngine::Quests {
         std::lock_guard lk(g_lock);
         ++g_generation;
         g_known.clear();
+        g_skipLogged.clear();
+        g_before.clear();
         g_watch.clear();
         g_homeless.clear();
         g_lastLoc = 0;

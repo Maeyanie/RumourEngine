@@ -608,13 +608,24 @@ talk of these weren't there, so the harvest never sees them. `Quests.cpp`
 makes them rumours. *Built 2026-11-21, the user's idea before 1.0.*
 
 - **Seeing a quest end.** A `TESQuestStageEvent` sink watches each quest
-  with a journal for 30 s after a stage is set, and the worker looks on the
-  main thread whether it has completed. A script may complete it a little
-  after the stage that leads there. Errands, miscellaneous quests and
-  unnamed ones are skipped unless `quests.ini` names them. Each quest's
-  ending is handled once per save (`quest_endings`, schema 12). On a save's
-  first load with this, every quest it had already finished is recorded as
-  `before` and never told.
+  for 30 s after a stage is set, and the worker looks on the main thread
+  whether it has completed. A script may complete it a little after the
+  stage that leads there. Passed over are quests without a journal, and,
+  unless `quests.ini` names them, miscellaneous quests, unnamed ones and
+  those with neither a type nor objectives (QOBJ in the plugin). A missing
+  type alone says nothing: The Man Who Cried Wolf, the three temples' quests,
+  Forbidden Legend and half a dozen more of the game's own have none, and
+  until 2026-11-22 they were all skipped. Its monitors and handlers have no
+  type and no objectives. Each quest passed over, for whatever reason, is
+  logged once a session, and the inbox's `quest_preview` says when a quest
+  would be. Each quest's ending is handled once per save (`quest_endings`,
+  schema 12). On a save's first load with this, every quest it had already
+  finished is recorded as `before` and never told. A `before` row holds
+  only while the loaded save has the quest finished: loading the latest
+  save first, then an earlier one with SkyrimNet's history kept, once
+  left The Man Who Cried Wolf on record as `before` and its ending untold
+  (2026-11-22). An ending's own row replaces a `before` row whole, its day
+  and stage too, so a reload's take-back goes by when it ended in this save.
 - **The journal.** The game reads journal entries from the plugins only to
   show them, and CommonLib has no reader. The plugin scan keeps each quest's
   stages and entries from the last plugin to change it (a string id for a

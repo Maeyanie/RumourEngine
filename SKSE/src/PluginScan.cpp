@@ -295,6 +295,7 @@ namespace RumourEngine::PluginScan {
                             if (!stages) return;
                             if (f == kQOBJ || f == kANAM) {
                                 stages = false;
+                                q.hasObjectives = f == kQOBJ;  // they come before the aliases
                             } else if (f == kINDX && n >= 2) {
                                 q.stages.push_back({ Read<std::uint16_t>(p), {} });
                                 entry = nullptr;

@@ -62,6 +62,7 @@ namespace RumourEngine::PluginScan {
     struct QuestJournal {
         std::string             file;  // that plugin, whose strings a localized one's ids are in
         bool                    localized = false;
+        bool                    hasObjectives = false;  // QOBJ: it has something to show the player to do
         std::vector<QuestStage> stages;
     };
 
