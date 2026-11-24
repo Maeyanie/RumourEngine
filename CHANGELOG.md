@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.1.0
+
+- **Skyrim 1.7.99 and 1.7.104.** RumourEngine now loads on them: it reads
+  their Address Library (format 5) itself and declares that it can, as SKSE
+  for 1.7 requires. Experimental until someone has played on them. Any other
+  1.7 version is refused, with the reason in the log, until it's been
+  checked.
+- **Skyrim VR.** Checked against the VR Address Library, and one player has
+  run 1.0.0 on it without trouble; still experimental. Light plugins (with
+  Skyrim VR ESL Support) are now numbered correctly there, both for forms named by plugin
+  in API requests and when the plugins are read for where NPCs live. The
+  CommonLib RumourEngine is built on numbered them as full plugins on VR.
+- **Names with accents.** Text from the game is in its code page, not
+  UTF-8, so a name like "Jónsi" in a plugin couldn't go into JSON: the mills
+  dump wasn't written ("invalid UTF-8 byte" in the log), and when someone
+  with such a name had memories to screen, the error went uncaught and would
+  most likely have crashed the game. Names, place names, editor IDs, ini
+  files and the strings other mods pass in are now made UTF-8 as they're
+  read, in Windows-1252, or Windows-1250 and 1251 for Polish, Czech and
+  Russian games. Quest journals already were. An error RumourEngine's own
+  thread doesn't expect is now logged and skipped rather than ending the
+  game.
+- **Log folder.** On 1.6.1130 and later, `RumourEngine.log`, the debug inbox
+  and the mills dump went to `My Games/Skyrim.INI/SKSE/`, because of a
+  CommonLib lookup that no longer matches the game. They are now beside
+  SKSE's own logs in `My Games/Skyrim Special Edition/SKSE/`.
+
 ## 1.0.0
 
 The first release.

@@ -13,6 +13,7 @@
 #include "Settings.h"
 #include "SkyrimNet.h"
 #include "Spread.h"
+#include "Text.h"
 
 #include <nlohmann/json.hpp>
 
@@ -81,8 +82,7 @@ namespace RumourEngine::GossipStarter {
         }
 
         std::string NameOf(RE::Actor* a) {
-            const char* n = a ? a->GetDisplayFullName() : nullptr;
-            return n ? n : "";
+            return Text::FromGame(a ? a->GetDisplayFullName() : nullptr);
         }
 
         void Tick() {
@@ -229,19 +229,29 @@ namespace RumourEngine::GossipStarter {
             while (g_running) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(kPollMs));
                 if (!g_running) break;
-                Settings::Refresh();
-                if (!Session::IsReady()) continue;
-                Api::PollInbox();
-                Spread::Tick();
-                Retell::Pump();
-                Placements::Pump();
-                Harvest::Pump();
-                Gossip::Pump();
-                Promote::Pump();
-                Quests::Pump();
-                if (++polls % kSweepEvery == 0) Rumours::Sweep(Rumours::Now());
-                if (!Settings::StarterEnabled() || CoolingDown() || !RoomIsQuiet()) continue;
-                if (auto* task = SKSE::GetTaskInterface()) task->AddTask([]() { Tick(); });
+                // An exception left to escape this thread would end the game, so a pass that throws is
+                // logged and skipped instead.
+                try {
+                    Settings::Refresh();
+                    if (!Session::IsReady()) continue;
+                    Api::PollInbox();
+                    Spread::Tick();
+                    Retell::Pump();
+                    Placements::Pump();
+                    Harvest::Pump();
+                    Gossip::Pump();
+                    Promote::Pump();
+                    Quests::Pump();
+                    if (++polls % kSweepEvery == 0) Rumours::Sweep(Rumours::Now());
+                    if (!Settings::StarterEnabled() || CoolingDown() || !RoomIsQuiet()) continue;
+                    if (auto* task = SKSE::GetTaskInterface()) task->AddTask([]() { Tick(); });
+                } catch (const std::exception& e) {
+                    static int failures = 0;
+                    if (++failures <= 20) logger::error("RumourEngine: a pass of its worker failed and was skipped: {}", e.what());
+                } catch (...) {
+                    static int failures = 0;
+                    if (++failures <= 20) logger::error("RumourEngine: a pass of its worker failed and was skipped");
+                }
             }
         }
     }

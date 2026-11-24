@@ -1,4 +1,6 @@
 #include "PluginScan.h"
+#include "Runtime.h"
+#include "Text.h"
 
 #include <chrono>
 #include <cstring>
@@ -171,12 +173,7 @@ namespace RumourEngine::PluginScan {
             RE::FormID Resolve(std::uint32_t raw) const {
                 if (raw == 0) return 0;
                 const std::size_t idx = raw >> 24;
-                const RE::TESFile* file = idx < masters_.size() ? masters_[idx] : self_;
-                if (!file) return 0;
-                if (file->IsLight()) {
-                    return 0xFE000000u | (std::uint32_t(file->GetSmallFileCompileIndex()) << 12) | (raw & 0xFFF);
-                }
-                return (std::uint32_t(file->GetCompileIndex()) << 24) | (raw & 0xFFFFFF);
+                return Runtime::FormIDIn(idx < masters_.size() ? masters_[idx] : self_, raw);
             }
 
             void Walk(const std::uint8_t* p, const std::uint8_t* end, Context ctx) {
@@ -249,7 +246,7 @@ namespace RumourEngine::PluginScan {
                                     : type == kFACT ? out_.factionEditorIDs
                                                     : out_.locationEditorIDs;
                         ForEachField(data, size, [&](std::uint32_t f, const std::uint8_t* p, std::size_t n) {
-                            if (f == kEDID) names[id] = ZString(p, n);
+                            if (f == kEDID) names[id] = Text::FromGame(ZString(p, n));
                             if (type != kLCTN) return;
                             if (f == kMNAM && n >= 4) out_.locationMarkers[id] = Resolve(Read<std::uint32_t>(p));
                             if (f == kLCUN || f == kACUN) {

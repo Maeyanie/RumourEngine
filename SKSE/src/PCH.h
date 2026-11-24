@@ -17,7 +17,7 @@
 #include <unordered_set>
 #include <vector>
 
-#define RUMOURENGINE_VERSION "1.0.0"
+#define RUMOURENGINE_VERSION "1.1.0"
 
 using namespace std::literals;
 

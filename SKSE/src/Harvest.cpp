@@ -8,6 +8,7 @@
 #include "Session.h"
 #include "Settings.h"
 #include "SkyrimNet.h"
+#include "Text.h"
 
 #include <nlohmann/json.hpp>
 #include <sqlite3.h>
@@ -174,12 +175,10 @@ namespace RumourEngine::Harvest {
             auto* f = form ? RE::TESForm::LookupByID(form) : nullptr;
             if (!f) return "";
             if (auto* a = f->As<RE::Actor>()) {
-                const char* n = a->GetDisplayFullName();
-                return n ? n : "";
+                return Text::FromGame(a->GetDisplayFullName());
             }
             if (auto* npc = f->As<RE::TESNPC>()) {
-                const char* n = npc->GetName();
-                return n ? n : "";
+                return Text::FromGame(npc->GetName());
             }
             return "";
         }
@@ -241,7 +240,7 @@ namespace RumourEngine::Harvest {
                     logger::error("Harvest: {}", sqlite3_errmsg(db));
                     return;
                 }
-                const auto eventsJson = json(events).dump();
+                const auto eventsJson = Text::Dump(json(events));
                 const auto actorText = actor ? std::to_string(actor) : std::string{};
                 sqlite3_bind_int64(st, 1, memory);
                 sqlite3_bind_text(st, 2, verdict, -1, SQLITE_TRANSIENT);
@@ -463,7 +462,7 @@ namespace RumourEngine::Harvest {
                 std::lock_guard lk(g_lock);
                 ++g_screening;
             }
-            const bool queued = SkyrimNet::SendCustomPrompt(kScreenPrompt, kScreenPrompt, ScreenContext(p).dump(),
+            const bool queued = SkyrimNet::SendCustomPrompt(kScreenPrompt, kScreenPrompt, Text::Dump(ScreenContext(p)),
                                                             [gen, p](std::string text, bool ok) {
                                                                 ScreenResult r{ gen, p };
                                                                 if (ok) r.verdicts = ParseScreenChat(text);
@@ -487,7 +486,7 @@ namespace RumourEngine::Harvest {
                 std::lock_guard lk(g_lock);
                 ++g_screening;
             }
-            const bool queued = SkyrimNet::SendCustomDecision(kScreenTemplate, ScreenContext(p).dump(),
+            const bool queued = SkyrimNet::SendCustomDecision(kScreenTemplate, Text::Dump(ScreenContext(p)),
                                                               [gen, p](std::string, std::string text, bool ok) {
                                                                   ScreenResult r{ gen, p };
                                                                   const auto   j = json::parse(text, nullptr, false);
@@ -736,7 +735,7 @@ namespace RumourEngine::Harvest {
             logger::info("Harvest: writing {} rumour(s) from memories", batch.size());
 
             SeedResult pending{ gen, batch, subjects };
-            const bool queued = SkyrimNet::SendCustomPrompt(kSeedPrompt, kSeedPrompt, ctx.dump(), [pending](std::string text, bool ok) mutable {
+            const bool queued = SkyrimNet::SendCustomPrompt(kSeedPrompt, kSeedPrompt, Text::Dump(ctx), [pending](std::string text, bool ok) mutable {
                 if (ok) pending.text = std::move(text);
                 else pending.error = text.substr(0, 200);
                 std::lock_guard lk(g_lock);
@@ -842,7 +841,7 @@ namespace RumourEngine::Harvest {
                                            { "topics", s->second.topics },
                                            { "heard_by", heardBy } };
                     std::string error;
-                    const auto  rid = Rumours::Add(request.dump(), error);
+                    const auto  rid = Rumours::Add(Text::Dump(request), error);
                     if (!rid) {
                         SeedFailed(std::move(a), "AddRumour: " + error, now);
                         continue;

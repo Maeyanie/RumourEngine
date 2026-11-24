@@ -11,9 +11,11 @@
 #include "Rumours.h"
 #include "PluginScan.h"
 #include "Retell.h"
+#include "Runtime.h"
 #include "Settings.h"
 #include "SkyrimNet.h"
 #include "Spread.h"
+#include "Text.h"
 
 #include <nlohmann/json.hpp>
 
@@ -47,7 +49,7 @@ namespace RumourEngine::Session {
         std::condition_variable g_wake;
 
         std::filesystem::path MillsJsonPath() {
-            if (auto dir = logger::log_directory()) return *dir / "RumourEngine_Mills.json";
+            if (auto dir = RumourEngine::Runtime::LogDirectory()) return *dir / "RumourEngine_Mills.json";
             return std::filesystem::temp_directory_path() / "RumourEngine_Mills.json";
         }
 
@@ -148,7 +150,7 @@ namespace RumourEngine::Session {
                     std::string error;
                     if (!Rumours::Add(e->strArg.c_str(), error)) logger::warn("RumourEngine_AddRumour: {}", error);
                 } else if (name == "RumourEngine_RetireRumour") {
-                    const auto  j = nlohmann::json::parse(e->strArg.c_str(), nullptr, false);
+                    const auto  j = nlohmann::json::parse(Text::FromGame(e->strArg.c_str()), nullptr, false);
                     std::string error;
                     if (!j.is_object() || !j.contains("source") || !j.contains("key") || !j["source"].is_string() ||
                         !j["key"].is_string()) {

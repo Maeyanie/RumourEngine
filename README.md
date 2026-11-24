@@ -49,7 +49,14 @@ ModEvent; FactionEngine uses it for faction news. See
 
 ## Requirements
 
-- Skyrim SE/AE with SKSE and the Address Library.
+- Skyrim with SKSE and the Address Library for SKSE Plugins:
+  - AE 1.6.x (tested on 1.6.1170) or SE 1.5.97.
+  - 1.7.99 and 1.7.104 are supported but haven't been played on yet, so
+    treat them as experimental. A later 1.7 is refused until it's been
+    checked.
+  - Skyrim VR, with SKSE VR and the VR Address Library for SKSEVR, and Skyrim
+    VR ESL Support as SkyrimNet asks. One player has run 1.0.0 on it without
+    trouble, but it's still experimental.
 - SkyrimNet 1.0 or later (or beta 26 or later), with an LLM set up.
 - A decision provider in SkyrimNet, for screening memories, reading bios,
   judging quest endings and deciding what is kept as world knowledge. Without
@@ -82,6 +89,9 @@ Install it with your mod manager. Then:
   memories at each harvest, one bio reading per named NPC (and again when
   their bio changes), one question per quest that ends, and one per rumour
   that might be kept as world knowledge.
+- **`rumour_screen`:** if no Decision model is configured in SkyrimNet's settings,
+  this model is used instead. If you have a Decision model (highly recommended)
+  this never gets used.
 - **`rumour_seed`:** one call per harvest that accepted anything, a few times
   a game day at most.
 - **`rumour_quest`:** one call per quest ending that word of would get out, a
@@ -150,6 +160,16 @@ GLM 5.3 Flash came out of the stage 0 panel as the retell model
 and DeepSeek V4 Flash are the alternatives. GLM 5.3 Flash also did well
 writing settled accounts.
 
+### `rumour_screen`
+
+Models for this haven't been extensively compared as it's only used in a
+fallback role. A model which is good at analysis is recommended; whatever
+you use for `meta` is likely a good pick.
+This should be set to a regular LLM; don't use `typesafe/jev-1.14` or
+another Decision model, as the calling conventions are different.
+You only need to set up the SkyrimNet Decisions model, and RumourEngine 
+will use whatever you have configured there.
+
 ### Decisions
 
 What is kept as world knowledge (`promote.lasting`) is calibrated on Jev
@@ -168,8 +188,9 @@ description gives the equivalents for d3 and Kev.
 
 ## Logs
 
-`RumourEngine.log` is beside SKSE's own logs, usually in
-`Documents/My Games/Skyrim Special Edition/SKSE/`. It records every rumour
+`RumourEngine.log` is beside SKSE's own logs, in
+`Documents/My Games/Skyrim Special Edition/SKSE/` (`Skyrim Special Edition
+GOG` for the GOG edition, `Skyrim VR` for VR). It records every rumour
 added, every hop, retelling, telling and retirement, and what is kept as
 world knowledge. With **Log what NPCs are shown** on, it also shows what each
 NPC's bio is given.

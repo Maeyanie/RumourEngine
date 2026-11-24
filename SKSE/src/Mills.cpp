@@ -1,6 +1,7 @@
 #include "Mills.h"
 #include "Ini.h"
 #include "Settings.h"
+#include "Text.h"
 
 #include <nlohmann/json.hpp>
 
@@ -713,7 +714,7 @@ namespace RumourEngine::Mills {
                 pd.p.key = r.key;
                 pd.p.npc = r.npc;
                 pd.p.editorID = e != scan.npcEditorIDs.end() ? e->second : fmt::format("{:08X}", r.npc);
-                pd.p.name = npc && npc->GetName() ? npc->GetName() : "";
+                pd.p.name = npc ? Text::FromGame(npc->GetName()) : "";
                 pd.p.location = r.loc;
                 pd.p.unique = r.key == r.npc;
                 // A faction mills.ini makes a mill of is people, even one hostile to strangers (Volkihar).
@@ -1135,7 +1136,7 @@ namespace RumourEngine::Mills {
             auto placeNameOf = [&](RE::FormID loc) -> std::string {
                 auto        it = W.locs.find(loc);
                 const char* n = it != W.locs.end() && it->second.form ? it->second.form->GetName() : nullptr;
-                return n && *n ? std::string(n) : Slug(W.Edid(loc));
+                return n && *n ? Text::FromGame(n) : Slug(W.Edid(loc));
             };
             for (const auto& id : liveIds) {
                 const auto& info = mills.InfoOf(id);
@@ -1646,7 +1647,7 @@ namespace RumourEngine::Mills {
         json out = { { "strategy", "merged" }, { "reason", set.reason }, { "mills", mills }, { "persons", persons }, { "edges", edges } };
         try {
             std::ofstream f(path);
-            f << out.dump(1);
+            f << Text::Dump(out, 1);
         } catch (const std::exception& e) {
             logger::warn("Could not write {}: {}", path.string(), e.what());
         }

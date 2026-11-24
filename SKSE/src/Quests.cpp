@@ -6,6 +6,7 @@
 #include "Session.h"
 #include "Settings.h"
 #include "SkyrimNet.h"
+#include "Text.h"
 
 #include <nlohmann/json.hpp>
 #include <sqlite3.h>
@@ -100,44 +101,6 @@ namespace RumourEngine::Quests {
             return s;
         }
 
-        bool IsUtf8(std::string_view s) {
-            for (std::size_t i = 0; i < s.size();) {
-                const auto c = static_cast<unsigned char>(s[i]);
-                const int  n = c < 0x80 ? 0 : (c >> 5) == 0x6 ? 1 : (c >> 4) == 0xE ? 2 : (c >> 3) == 0x1E ? 3 : -1;
-                if (n < 0 || i + n >= s.size() + (n == 0 ? 1 : 0)) return false;
-                for (int k = 1; k <= n; ++k) {
-                    if ((static_cast<unsigned char>(s[i + k]) >> 6) != 0x2) return false;
-                }
-                i += n + 1;
-            }
-            return true;
-        }
-
-        /** The English strings and older plugins are Windows-1252; SkyrimNet wants UTF-8. */
-        std::string Utf8(std::string_view s) {
-            if (IsUtf8(s)) return std::string(s);
-            static constexpr char16_t k80[32] = { 0x20AC, 0xFFFD, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021, 0x02C6, 0x2030, 0x0160,
-                                                  0x2039, 0x0152, 0xFFFD, 0x017D, 0xFFFD, 0xFFFD, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022,
-                                                  0x2013, 0x2014, 0x02DC, 0x2122, 0x0161, 0x203A, 0x0153, 0xFFFD, 0x017E, 0x0178 };
-            std::string out;
-            out.reserve(s.size() + 8);
-            for (char ch : s) {
-                const auto     c = static_cast<unsigned char>(ch);
-                const char16_t u = c < 0x80 ? c : c < 0xA0 ? k80[c - 0x80] : c;
-                if (u < 0x80) {
-                    out += static_cast<char>(u);
-                } else if (u < 0x800) {
-                    out += static_cast<char>(0xC0 | (u >> 6));
-                    out += static_cast<char>(0x80 | (u & 0x3F));
-                } else {
-                    out += static_cast<char>(0xE0 | (u >> 12));
-                    out += static_cast<char>(0x80 | ((u >> 6) & 0x3F));
-                    out += static_cast<char>(0x80 | (u & 0x3F));
-                }
-            }
-            return out;
-        }
-
         /** The answer as one paragraph: no thinking, no quotes around it. */
         std::string CleanAnswer(std::string text) {
             if (auto end = text.rfind("</think>"); end != std::string::npos) text.erase(0, end + 8);
@@ -213,11 +176,11 @@ namespace RumourEngine::Quests {
             std::string out(len, '\0');
             if (len && !s.read(out.data(), len)) return {};
             if (auto z = out.find('\0'); z != std::string::npos) out.resize(z);
-            return Utf8(out);
+            return Text::FromGame(out);
         }
 
         std::string EntryText(const PluginScan::QuestJournal& j, const PluginScan::LogEntry& e) {
-            return j.localized ? DLString(j.file, e.stringId) : Utf8(e.text);
+            return j.localized ? DLString(j.file, e.stringId) : Text::FromGame(e.text);
         }
 
         /** The quest's text-replacement data: who its aliases name, and which entry the journal shows. */
@@ -248,10 +211,10 @@ namespace RumourEngine::Quests {
             if (!f) return {};
             if (auto* r = f->As<RE::TESObjectREFR>()) {
                 const char* n = r->GetDisplayFullName();
-                return n ? Utf8(n) : std::string{};
+                return n ? Text::FromGame(n) : std::string{};
             }
             const char* n = f->GetName();
-            return n ? Utf8(n) : std::string{};
+            return n ? Text::FromGame(n) : std::string{};
         }
 
         /** 0 for a man, 1 for a woman, -1 if it isn't a person. */
@@ -294,7 +257,7 @@ namespace RumourEngine::Quests {
                 if (inst) {
                     for (const auto& v : inst->valueData) {
                         const char* id = v.global ? v.global->GetFormEditorID() : nullptr;
-                        if (id && Ini::Lower(id) == Ini::Lower(name)) value = v.value;
+                        if (id && Ini::Lower(Text::FromGame(id)) == Ini::Lower(name)) value = v.value;
                     }
                 }
                 if (!value) {
@@ -360,7 +323,7 @@ namespace RumourEngine::Quests {
 
         std::string KeyOf(const RE::TESQuest* q) {
             const char* edid = q->GetFormEditorID();
-            return edid && *edid ? Ini::Lower(edid) : fmt::format("{:08x}", q->GetFormID());
+            return edid && *edid ? Ini::Lower(Text::FromGame(edid)) : fmt::format("{:08x}", q->GetFormID());
         }
 
         const char* TypeWord(RE::QUEST_DATA::Type t) {
@@ -399,7 +362,7 @@ namespace RumourEngine::Quests {
             }
             const char* name = q->GetName();
             logger::info("Quests: {}{} ended (stage {}), but is passed over: {}", key,
-                         name && *name ? fmt::format(" ({})", Fill(q, Utf8(name))) : std::string{}, stage, why);
+                         name && *name ? fmt::format(" ({})", Fill(q, Text::FromGame(name))) : std::string{}, stage, why);
         }
 
         /** quests.ini's line for this ending ("edid:stage"), else for the quest. Under g_lock. */
@@ -431,7 +394,7 @@ namespace RumourEngine::Quests {
                     logger::error("Quests: {}", sqlite3_errmsg(db));
                     return;
                 }
-                const auto detail = Detail(e).dump();
+                const auto detail = Text::Dump(Detail(e));
                 sqlite3_bind_text(st, 1, e.key.c_str(), -1, SQLITE_TRANSIENT);
                 sqlite3_bind_int64(st, 2, e.form);
                 sqlite3_bind_int(st, 3, e.stage);
@@ -508,7 +471,7 @@ namespace RumourEngine::Quests {
             e.rule = rule;
             auto* calendar = RE::Calendar::GetSingleton();
             e.day = calendar ? calendar->GetCurrentGameTime() : 0.0;
-            const auto quest = Fill(q, rawName ? Utf8(rawName) : key);
+            const auto quest = Fill(q, rawName ? Text::FromGame(rawName) : key);
             const char* typeWord = TypeWord(type);
             e.name = *typeWord ? fmt::format("{} (a {} quest)", quest, typeWord) : quest;
 
@@ -806,7 +769,7 @@ namespace RumourEngine::Quests {
         void Ask(unsigned gen, const Ending& e) {
             const json ctx = { { "quest_text", e.name }, { "journal_text", e.journal } };
             const auto key = e.key;
-            const bool queued = SkyrimNet::SendCustomDecision(kDecision, ctx.dump(), [gen, key](std::string, std::string text, bool ok) {
+            const bool queued = SkyrimNet::SendCustomDecision(kDecision, Text::Dump(ctx), [gen, key](std::string, std::string text, bool ok) {
                 // A SkyrimNet worker thread: no RE:: here.
                 const auto j = json::parse(text, nullptr, false);
                 Reply      r;
@@ -834,7 +797,7 @@ namespace RumourEngine::Quests {
         void Tell(unsigned gen, const Ending& e) {
             const json ctx = { { "questName", e.name }, { "questJournal", e.journal }, { "questPlayer", e.player }, { "questPlace", e.place } };
             const auto key = e.key;
-            const bool queued = SkyrimNet::SendCustomPrompt(kPrompt, kVariant, ctx.dump(), [gen, key](std::string text, bool ok) {
+            const bool queued = SkyrimNet::SendCustomPrompt(kPrompt, kVariant, Text::Dump(ctx), [gen, key](std::string text, bool ok) {
                 // A SkyrimNet worker thread: no RE:: here.
                 Reply r;
                 r.text = ok ? CleanAnswer(text) : text.substr(0, 200);
@@ -863,7 +826,7 @@ namespace RumourEngine::Quests {
                                    { "retell_origin", retellOrigin },
                                    { "if_absent", true } };
             std::string error;
-            const auto  rid = Rumours::Add(request.dump(), error);
+            const auto  rid = Rumours::Add(Text::Dump(request), error);
             if (!rid) {
                 logger::warn("Quests: couldn't make a rumour of how {} ended ({})", e.name, error);
                 Finish(std::move(e), "failed");

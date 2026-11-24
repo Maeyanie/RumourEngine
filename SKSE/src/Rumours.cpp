@@ -4,9 +4,11 @@
 #include "Gossip.h"
 #include "Mills.h"
 #include "Retell.h"
+#include "Runtime.h"
 #include "Settings.h"
 #include "SkyrimNet.h"
 #include "Spread.h"
+#include "Text.h"
 
 #include <sqlite3.h>
 
@@ -209,8 +211,7 @@ namespace RumourEngine::Rumours {
                 return nullptr;
             }
             if (colon == std::string::npos) return RE::TESForm::LookupByID(id);
-            auto* handler = RE::TESDataHandler::GetSingleton();
-            return handler ? handler->LookupForm(id, s.substr(0, colon)) : nullptr;
+            return Runtime::LookupForm(id, s.substr(0, colon));
         }
 
         /** People by plain name: the player, or every named NPC the mills know by it, each as their
@@ -223,7 +224,7 @@ namespace RumourEngine::Rumours {
             if (want.empty()) return out;
             if (auto* player = RE::PlayerCharacter::GetSingleton()) {
                 const char* n = player->GetDisplayFullName();
-                if (n && Lower(n) == want) {
+                if (n && Lower(Text::FromGame(n)) == want) {
                     out.push_back(player);
                     return out;
                 }
@@ -239,7 +240,7 @@ namespace RumourEngine::Rumours {
             for (const auto& w : set->watch) {  // named people with no mill yet
                 if (set->persons.contains(w.base)) continue;
                 const auto* npc = RE::TESForm::LookupByID<RE::TESNPC>(w.base);
-                if (npc && npc->GetName()) consider(w.base, npc->GetName());
+                if (npc && npc->GetName()) consider(w.base, Text::FromGame(npc->GetName()));
             }
             for (const auto base : found) {
                 RE::TESForm* form = nullptr;
@@ -273,11 +274,9 @@ namespace RumourEngine::Rumours {
                 s.formId = form->GetFormID();
                 s.key = ActorKey(s.formId);
                 if (auto* actor = form->As<RE::Actor>()) {
-                    const char* n = actor->GetDisplayFullName();
-                    s.name = n ? n : "";
+                    s.name = Text::FromGame(actor->GetDisplayFullName());
                 } else if (auto* npc = form->As<RE::TESNPC>()) {
-                    const char* n = npc->GetName();
-                    s.name = n ? n : "";
+                    s.name = Text::FromGame(npc->GetName());
                 }
                 out.push_back(std::move(s));
             }
@@ -840,7 +839,8 @@ namespace RumourEngine::Rumours {
 
     std::int32_t Add(const std::string& requestJson, std::string& error) {
         try {
-            auto j = nlohmann::json::parse(requestJson, nullptr, false);
+            // Papyrus strings and ModEvents are in the game's code page, and C++ callers may pass game names.
+            auto j = nlohmann::json::parse(Text::FromGame(requestJson), nullptr, false);
             if (j.is_discarded() || !j.is_object()) {
                 error = "the request is not a JSON object";
                 return 0;

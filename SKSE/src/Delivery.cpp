@@ -1,8 +1,10 @@
 #include "Delivery.h"
 #include "Gossip.h"
 #include "Mills.h"
+#include "Runtime.h"
 #include "Settings.h"
 #include "SkyrimNet.h"
+#include "Text.h"
 
 namespace RumourEngine::Delivery {
 
@@ -28,8 +30,7 @@ namespace RumourEngine::Delivery {
         }
 
         std::string NameOf(RE::Actor* actor) {
-            const char* n = actor ? actor->GetDisplayFullName() : nullptr;
-            return n ? n : "";
+            return Text::FromGame(actor ? actor->GetDisplayFullName() : nullptr);
         }
 
         /** Cut a telling short for the GameMaster's list, at a word, not inside a UTF-8 character. */
@@ -79,9 +80,8 @@ namespace RumourEngine::Delivery {
     bool InIntimateScene(RE::Actor* actor) {
         static const auto factions = [] {
             std::vector<RE::TESFaction*> found;
-            auto* data = RE::TESDataHandler::GetSingleton();
             for (const auto& [id, plugin] : kSceneFactions) {
-                if (auto* f = data ? data->LookupForm<RE::TESFaction>(id, plugin) : nullptr) found.push_back(f);
+                if (auto* f = Runtime::LookupForm<RE::TESFaction>(id, plugin)) found.push_back(f);
             }
             return found;
         }();

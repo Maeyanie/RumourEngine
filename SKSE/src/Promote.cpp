@@ -6,6 +6,7 @@
 #include "Session.h"
 #include "Settings.h"
 #include "SkyrimNet.h"
+#include "Text.h"
 
 #include <nlohmann/json.hpp>
 
@@ -144,7 +145,7 @@ namespace RumourEngine::Promote {
         void Ask(unsigned gen, const Rumours::Promotion& p) {
             const json ctx = { { "lasting_text", p.text } };
             const auto id = p.id;
-            const bool queued = SkyrimNet::SendCustomDecision(kDecision, ctx.dump(), [gen, p](std::string, std::string text, bool ok) {
+            const bool queued = SkyrimNet::SendCustomDecision(kDecision, Text::Dump(ctx), [gen, p](std::string, std::string text, bool ok) {
                 // A SkyrimNet worker thread: no RE:: here.
                 const auto j = json::parse(text, nullptr, false);
                 double     yes = -1.0;
@@ -194,7 +195,7 @@ namespace RumourEngine::Promote {
             // If the writer never answers: the telling that had travelled furthest, as people had it.
             const auto fallback = p.versions.empty() ? p.text : p.versions.front().second;
             const auto id = p.id;
-            const bool queued = SkyrimNet::SendCustomPrompt(kPrompt, kVariant, ctx.dump(), [gen, id, header, fallback](std::string text, bool ok) {
+            const bool queued = SkyrimNet::SendCustomPrompt(kPrompt, kVariant, Text::Dump(ctx), [gen, id, header, fallback](std::string text, bool ok) {
                 // A SkyrimNet worker thread: no RE:: here.
                 {
                     std::lock_guard lk(g_lock);

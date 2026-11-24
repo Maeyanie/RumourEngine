@@ -4,6 +4,7 @@
 #include "Rumours.h"
 #include "Session.h"
 #include "SkyrimNet.h"
+#include "Text.h"
 
 #include <nlohmann/json.hpp>
 
@@ -198,7 +199,7 @@ namespace RumourEngine::Retell {
                 { "retellCount", c.steps.size() },
             };
 
-            const bool queued = SkyrimNet::SendCustomPrompt(kPrompt, kVariant, ctx.dump(), [gen, c](std::string text, bool ok) {
+            const bool queued = SkyrimNet::SendCustomPrompt(kPrompt, kVariant, Text::Dump(ctx), [gen, c](std::string text, bool ok) {
                 // A SkyrimNet worker thread: no RE:: here.
                 if (gen != g_generation) return;
                 if (!ok) {

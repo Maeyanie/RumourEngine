@@ -3,7 +3,9 @@
 #include "Mills.h"
 #include "Quests.h"
 #include "Rumours.h"
+#include "Runtime.h"
 #include "Session.h"
+#include "Text.h"
 
 #include "RumourEngineAPI.h"
 #ifdef GetObject
@@ -92,7 +94,7 @@ namespace RumourEngine::Api {
     void SetLastError(std::string message) { t_lastError = std::move(message); }
 
     void PollInbox() {
-        auto logDir = logger::log_directory();
+        auto logDir = RumourEngine::Runtime::LogDirectory();
         if (!logDir) return;
         const auto      inbox = *logDir / "RumourEngine_Inbox";
         std::error_code ec;
@@ -173,7 +175,7 @@ __declspec(dllexport) bool RumourEngine_RetireRumour(std::int32_t id) {
 
 __declspec(dllexport) bool RumourEngine_RetireRumourByKey(const char* source, const char* key) {
     std::string error;
-    if (Rumours::RetireByKey(source ? source : "", key ? key : "", error)) return true;
+    if (Rumours::RetireByKey(Text::FromGame(source), Text::FromGame(key), error)) return true;
     Api::SetLastError(error);
     return false;
 }
@@ -188,9 +190,9 @@ __declspec(dllexport) char* RumourEngine_GetRumour(std::int32_t id) {
 }
 
 __declspec(dllexport) char* RumourEngine_GetRumourByKey(const char* source, const char* key) {
-    auto j = Rumours::DescribeByKey(source ? source : "", key ? key : "");
+    auto j = Rumours::DescribeByKey(Text::FromGame(source), Text::FromGame(key));
     if (!j) {
-        Api::SetLastError(fmt::format("no live rumour from {} with key {}", source ? source : "", key ? key : ""));
+        Api::SetLastError(fmt::format("no live rumour from {} with key {}", Text::FromGame(source), Text::FromGame(key)));
         return nullptr;
     }
     return Give(j->dump());

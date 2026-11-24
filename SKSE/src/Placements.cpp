@@ -6,6 +6,7 @@
 #include "Session.h"
 #include "Settings.h"
 #include "SkyrimNet.h"
+#include "Text.h"
 
 #include <nlohmann/json.hpp>
 #include <sqlite3.h>
@@ -65,7 +66,7 @@ namespace RumourEngine::Placements {
         std::string NameOf(RE::FormID ref) {
             auto*       a = RE::TESForm::LookupByID<RE::Actor>(ref);
             const char* n = a ? a->GetDisplayFullName() : nullptr;
-            return n ? n : fmt::format("{:08X}", ref);
+            return n ? Text::FromGame(n) : fmt::format("{:08X}", ref);
         }
 
         /** Nothing for the placements table. */

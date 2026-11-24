@@ -3,6 +3,7 @@
 #include "Mills.h"
 #include "Rumours.h"
 #include "Session.h"
+#include "Text.h"
 
 #include <nlohmann/json.hpp>
 
@@ -33,27 +34,27 @@ namespace RumourEngine::Papyrus {
                 logger::warn("RumourEngine.AddRumour: no origin");
                 return 0;
             }
-            nlohmann::json j = { { "source", source.c_str() },
-                                 { "text", text.c_str() },
+            nlohmann::json j = { { "source", Text::FromGame(source.c_str()) },
+                                 { "text", Text::FromGame(text.c_str()) },
                                  { "notability", notability },
                                  { "origin", { { "actor", origin->GetFormID() } } } };
-            if (key.c_str() && *key.c_str()) j["key"] = key.c_str();
+            if (key.c_str() && *key.c_str()) j["key"] = Text::FromGame(key.c_str());
             auto subs = nlohmann::json::array();
             for (auto* a : subjects) {
                 if (a) subs.push_back(a->GetFormID());
             }
             if (!subs.empty()) j["subjects"] = subs;
-            return AddFromJson("AddRumour", j.dump());
+            return AddFromJson("AddRumour", Text::Dump(j));
         }
 
         std::int32_t AddRumourInMill(RE::StaticFunctionTag*, RE::BSFixedString source, RE::BSFixedString text,
                                      RE::BSFixedString mill, float notability, RE::BSFixedString key) {
-            nlohmann::json j = { { "source", source.c_str() },
-                                 { "text", text.c_str() },
+            nlohmann::json j = { { "source", Text::FromGame(source.c_str()) },
+                                 { "text", Text::FromGame(text.c_str()) },
                                  { "notability", notability },
-                                 { "origin", { { "mills", { mill.c_str() } } } } };
-            if (key.c_str() && *key.c_str()) j["key"] = key.c_str();
-            return AddFromJson("AddRumourInMill", j.dump());
+                                 { "origin", { { "mills", { Text::FromGame(mill.c_str()) } } } } };
+            if (key.c_str() && *key.c_str()) j["key"] = Text::FromGame(key.c_str());
+            return AddFromJson("AddRumourInMill", Text::Dump(j));
         }
 
         std::int32_t AddRumourJson(RE::StaticFunctionTag*, RE::BSFixedString json) {
@@ -69,7 +70,7 @@ namespace RumourEngine::Papyrus {
 
         bool RetireRumourByKey(RE::StaticFunctionTag*, RE::BSFixedString source, RE::BSFixedString key) {
             std::string error;
-            if (Rumours::RetireByKey(source.c_str(), key.c_str(), error)) return true;
+            if (Rumours::RetireByKey(Text::FromGame(source.c_str()), Text::FromGame(key.c_str()), error)) return true;
             logger::warn("RumourEngine.RetireRumourByKey: {}", error);
             return false;
         }

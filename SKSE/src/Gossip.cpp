@@ -4,6 +4,7 @@
 #include "Rumours.h"
 #include "Settings.h"
 #include "SkyrimNet.h"
+#include "Text.h"
 
 #include <nlohmann/json.hpp>
 #include <sqlite3.h>
@@ -290,7 +291,7 @@ namespace RumourEngine::Gossip {
             const double now = Rumours::Now();
             const json   ctx = { { "gossip_npc", uuid }, { "gossip_name", a.name } };
             const bool   queued = SkyrimNet::SendCustomDecision(
-                kTemplate, ctx.dump(), [a, bio, uuid, gen, now, person](std::string, std::string text, bool ok) {
+                kTemplate, Text::Dump(ctx), [a, bio, uuid, gen, now, person](std::string, std::string text, bool ok) {
                     const auto j = json::parse(text, nullptr, false);
                     double     level = -1.0;
                     if (ok && j.is_object()) {

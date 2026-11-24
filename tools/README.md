@@ -15,6 +15,7 @@ standard library only.
 | `quest_panel.py` | Reads about 60 vanilla quest endings' journal entries from the masters and asks a System One endpoint whether word of each would get out (`heard`) and reach other holds (`far`), beside the label I'd give it (wide, local, private or ?), with what each threshold on `heard` lets through. `--openrouter` asks Jev as SkyrimNet does, `--no-type` leaves the quest type out, `--list` prints the journals without asking. |
 | `panel/retell_panel.py` | Sends the seeds in `panel/seeds.json` down their mill paths through candidate models on OpenRouter. It scores drift and writes `panel/results/panel-<time>.md` for reading. `--dry-run` prints a prompt without calling anything. Reasoning is off; an endpoint that refuses gets `low` automatically, or pass `--reasoning low`. |
 | `panel/seed_panel.py` | Rebuilds real `rumour_seed` inputs from the memories RumourEngine seeded on a save (both databases opened read-only), laid out as `Harvest.cpp` lays them out, and asks candidate models on OpenRouter to write the first tellings with the current prompt. It flags quotation marks and names found in no input, and writes `panel/results/seed-<time>.md` beside each memory's in-game telling. The results hold the save's memories, so `.gitignore` keeps them out. `--list` prints the inputs without calling anything. |
+| `check_addresses.py` | Checks a new game version's Address Library against what the DLL can look up: every AE address CommonLib binds that 1.6.1170 has and the new table lacks, marking the ones whose value appears in the DLL. It's the check behind the 1.7 versions `Runtime.cpp` lets through; run it before adding another. `--lib` is the Address Library's `SKSE/Plugins` folder. |
 
 `esm.py` is the plugin reader the first two share, and `quest_panel.py` too. `lstrings.py` reads the masters' localized string tables, loose or from `Skyrim - Interface.bsa`.
 
@@ -26,7 +27,7 @@ To check the DLL's mills against this builder on the same load order:
 
 ```bash
 python extract.py --profile 5 && python mills.py --world p5 --kid 5 --strategy merged --name p5kid
-python compare_mills.py "C:/Users/image/Documents/My Games/Skyrim.INI/SKSE/RumourEngine_Mills.json" cache/mills_p5kid.json
+python compare_mills.py "C:/Users/image/Documents/My Games/Skyrim Special Edition/SKSE/RumourEngine_Mills.json" cache/mills_p5kid.json
 ```
 
 ```bash

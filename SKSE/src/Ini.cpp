@@ -1,4 +1,5 @@
 #include "Ini.h"
+#include "Text.h"
 
 #include <algorithm>
 #include <fstream>
@@ -19,7 +20,7 @@ namespace RumourEngine::Ini {
                 // Notepad and some editors start a UTF-8 file with a byte-order mark.
                 if (first && line.starts_with("\xEF\xBB\xBF")) line.erase(0, 3);
                 first = false;
-                auto t = Trim(line);
+                auto t = Trim(Text::FromGame(line));
                 if (t.empty() || t[0] == ';' || t[0] == '#') continue;
                 if (t.front() == '[' && t.back() == ']') {
                     section = Lower(Trim(std::string_view(t).substr(1, t.size() - 2)));

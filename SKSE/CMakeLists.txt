@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21)
 
 project(
     RumourEngine
-    VERSION 1.0.0
+    VERSION 1.1.0
     DESCRIPTION "Group-level rumour mills for SkyrimNet"
     LANGUAGES CXX
 )
@@ -36,13 +36,21 @@ set(SOURCES
     src/Retell.cpp
     src/Harvest.cpp
     src/Placements.cpp
+    src/Runtime.cpp
+    src/Text.cpp
 )
 
-add_commonlibsse_plugin(
+# A plain DLL, not CommonLib's add_commonlibsse_plugin: that writes the SKSE
+# plugin declaration itself and can't set the Address Library format 5 flag
+# Skyrim 1.7 needs. src/Plugin.cpp declares the plugin instead.
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
+target_link_libraries(${PROJECT_NAME} PRIVATE CommonLibSSE::CommonLibSSE)
+target_compile_definitions(
     ${PROJECT_NAME}
-    AUTHOR "maeyanie"
-    MINIMUM_SKSE_VERSION 0.0.0
-    SOURCES ${SOURCES}
+    PRIVATE
+        RUMOURENGINE_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
+        RUMOURENGINE_VERSION_MINOR=${PROJECT_VERSION_MINOR}
+        RUMOURENGINE_VERSION_PATCH=${PROJECT_VERSION_PATCH}
 )
 
 target_include_directories(
