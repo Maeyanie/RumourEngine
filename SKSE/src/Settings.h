@@ -119,6 +119,25 @@ namespace RumourEngine::Settings {
     /** Whoever a harvested rumour starts with remembers telling it. */
     bool RememberTelling();
 
+    /** Skip the memories of people who have died: the dead start no talk. */
+    bool HarvestSkipDead();
+
+    // Hold-back: news reaches the people it is about last.
+
+    /** The people a rumour is about, the one it started from and those who were there don't hear
+     *  it as talk until it has gone round somewhere else, or until it is old news. */
+    bool HoldbackEnabled();
+
+    /** Game days after the rumour reached a group none of theirs belongs to. */
+    double HoldbackAfterDays();
+
+    /** Game days after it started, when it never left their groups. */
+    double HoldbackLocalDays();
+
+    /** Game hours either side of the memory a rumour started from within which someone's own memory
+     *  means they were probably there; also folds witnesses' rumours of one happening into one. */
+    double HoldbackThereHours();
+
     // Settling (ADR-001, "Dismissed followers" and "Observed homes").
 
     /** Game hours someone must stay in one place before they count as living there. */

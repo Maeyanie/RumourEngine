@@ -77,6 +77,11 @@ namespace RumourEngine::Settings {
         std::atomic<int>       g_harvestMaxActors = 10;
         std::atomic<int>       g_harvestPerActor = 6;
         std::atomic<bool>      g_rememberTelling = true;
+        std::atomic<bool>      g_skipDead = true;
+        std::atomic<bool>      g_holdback = true;
+        std::atomic<double>    g_holdbackAfter = 0.5;
+        std::atomic<double>    g_holdbackLocal = 2.0;
+        std::atomic<double>    g_holdbackThere = 0.5;
         std::atomic<int>       g_maxSeeds = 6;
         std::atomic<double>    g_settleHours = 24.0;
         std::atomic<double>    g_settleMaxDays = 3.0;
@@ -132,6 +137,11 @@ namespace RumourEngine::Settings {
         g_harvestPerActor = std::clamp(ReadInt("harvest.memories_per_actor", 6), 1, 10);
         g_maxSeeds = std::clamp(ReadInt("harvest.max_seeds_per_sweep", 6), 1, 20);
         g_rememberTelling = ReadBool("harvest.remember_telling", true);
+        g_skipDead = ReadBool("harvest.skip_dead", true);
+        g_holdback = ReadBool("holdback.enabled", true);
+        g_holdbackAfter = std::clamp(ReadDouble("holdback.after_days", 0.5), 0.0, 30.0);
+        g_holdbackLocal = std::clamp(ReadDouble("holdback.local_days", 2.0), 0.0, 60.0);
+        g_holdbackThere = std::clamp(ReadDouble("holdback.there_hours", 0.5), 0.0, 6.0);
         g_settleHours = std::clamp(ReadDouble("settle.hours", 24.0), 1.0, 240.0);
         g_settleMaxDays = std::clamp(ReadDouble("settle.max_days", 3.0), 0.25, 30.0);
         g_followerHarvestMax = std::clamp(ReadInt("settle.follower_harvest_max", 6), 0, 20);
@@ -183,6 +193,11 @@ namespace RumourEngine::Settings {
     int       HarvestMaxActors() { return g_harvestMaxActors; }
     int       HarvestMemoriesPerActor() { return g_harvestPerActor; }
     bool      RememberTelling() { return g_rememberTelling; }
+    bool      HarvestSkipDead() { return g_skipDead; }
+    bool      HoldbackEnabled() { return g_holdback; }
+    double    HoldbackAfterDays() { return g_holdbackAfter; }
+    double    HoldbackLocalDays() { return g_holdbackLocal; }
+    double    HoldbackThereHours() { return g_holdbackThere; }
     int       MaxSeedsPerSweep() { return g_maxSeeds; }
     double    SettleHours() { return g_settleHours; }
     double    SettleMaxDays() { return g_settleMaxDays; }

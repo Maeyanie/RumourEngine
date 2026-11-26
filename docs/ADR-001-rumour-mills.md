@@ -920,6 +920,38 @@ person it's about. So:
   shown only for a version that names that NPC. An unnamed one is shown as
   ordinary talk.
 
+#### Hold-back: the people it is about hear it last
+
+Talk about someone reaches them last, if at all, and a witness doesn't learn
+what they saw from the gossip. Without this, the mill a rumour starts in is
+the owner's own, so the person whose memory it came from, the subject named
+in it and anyone else who was there all have it in their bio as talk at
+once, and the starter will even pick them to be told or asked about it.
+
+- **Who is involved.** A subject of the rumour; the person whose memory it
+  came from; a witness whose memory was matched to the same happening; and
+  anyone with a memory of their own from within `holdback.there_hours` (0.5)
+  of the seed memory, among the people it was first told to. The player
+  never is. Involvement is kept in the `involved` table; a database from
+  before it is rebuilt from `screened` at load (starters and their matched
+  memories; witnesses folded into a seed aren't recoverable).
+- **When it comes back to them.** Once it has been in a mill none of theirs
+  belongs to for `holdback.after_days` (0.5), they have it in that mill's
+  version, as word from that place. A rumour that never leaves their mills
+  reaches them anyway at `holdback.local_days` (2) old. Spreading,
+  `HasHeard` and screening's "same talk" are unchanged.
+- **Exempt.** Proclaimed rumours, `as_fact` versions and eager mills: news
+  everyone knows at once, or that is their own people's account.
+- **The starter** never tells it to someone it is held back from, nor airs
+  it while one of them is in earshot of the teller, and someone involved
+  never starts a telling of it.
+- **One happening, one rumour.** Witnesses' memories of one happening often
+  share no SkyrimNet event. Memories within `holdback.there_hours` of each
+  other, of people in a shared mill, that name someone in common (the player
+  aside), are folded into one rumour before anything is written, and a later
+  one reinforces the live rumour instead of seeding another.
+- **The dead** start no talk: `harvest.skip_dead` leaves their memories out.
+
 ### Lifecycle
 
 - **Freshness:** a rumour is fresh in a mill for `fresh(r,h)` game days,

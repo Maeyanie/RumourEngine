@@ -530,7 +530,8 @@ namespace RumourEngine::Harvest {
                 if (auto r = IndexOf(v.same, 'r'); r && *r < p.known.size() && Rumours::IsLive(p.known[*r].first)) {
                     const auto rid = p.known[*r].first;
                     logger::info("{}: the same as rumour #{}; {}", head, rid, detail);
-                    Rumours::Reinforce(rid, p.mills, p.form, now);
+                    // A memory from before the talk began is of the happening itself: they were there.
+                    Rumours::Reinforce(rid, p.mills, p.form, now, Rumours::FormedBefore(rid, m.day));
                     MarkWithStretch(m, "same", rid, p.uuid, detail, now);
                     continue;
                 }
@@ -611,6 +612,22 @@ namespace RumourEngine::Harvest {
 
         void StartSeeding(unsigned gen) {
             std::vector<Accepted> batch;
+            // Hold-back: witnesses' memories of one happening that share no SkyrimNet event, matched by time,
+            // group and someone they both name, before anything is written.
+            const auto                                     pu = SkyrimNet::UUIDOf(kPlayer);
+            const double                                   closeDays = Settings::HoldbackThereHours() / 24.0;
+            std::vector<std::pair<Accepted, std::int32_t>> toLive;  // of a live rumour: reinforce it after the lock
+            auto closeHappening = [&](const Accepted& a, const Accepted& b) {
+                if (closeDays <= 0.0 || a.m.day < 0.0 || b.m.day < 0.0 || std::abs(a.m.day - b.m.day) > closeDays) return false;
+                const bool sameGroup = std::any_of(a.who.mills.begin(), a.who.mills.end(), [&](const std::string& m) {
+                    return std::find(b.who.mills.begin(), b.who.mills.end(), m) != b.who.mills.end();
+                });
+                if (!sameGroup) return false;
+                for (auto x : a.m.related) {
+                    if (x && x != pu && std::find(b.m.related.begin(), b.m.related.end(), x) != b.m.related.end()) return true;
+                }
+                return false;
+            };
             {
                 std::lock_guard lk(g_lock);
                 if (g_screening > 0 || g_seeding || g_accepted.empty() || Clock::now() < g_seedRetryAt) return;
@@ -673,8 +690,12 @@ namespace RumourEngine::Harvest {
                 std::vector<Accepted> rest;
                 const auto            max = static_cast<std::size_t>(Settings::MaxSeedsPerSweep());
                 for (auto& a : g_accepted) {
+                    if (const auto live = Rumours::SameHappening(a.m.day, a.who.mills, a.m.related, pu); live && Rumours::IsLive(live)) {
+                        toLive.emplace_back(std::move(a), live);
+                        continue;
+                    }
                     auto same = std::find_if(batch.begin(), batch.end(), [&](const Accepted& b) {
-                        return !a.m.events.empty() && ShareEvents(a.m.events, b.m.events);
+                        return (!a.m.events.empty() && ShareEvents(a.m.events, b.m.events)) || closeHappening(a, b);
                     });
                     if (same != batch.end()) {
                         if (same->who.form != a.who.form) same->witnesses.emplace_back(a.who.form, a.who.mills);
@@ -694,8 +715,20 @@ namespace RumourEngine::Harvest {
                     else rest.push_back(std::move(a));
                 }
                 g_accepted = std::move(rest);
-                g_seeding = true;
+                g_seeding = !batch.empty();
             }
+            if (!toLive.empty()) {
+                const double now = Rumours::Now();
+                for (auto& [a, live] : toLive) {
+                    logger::info("Harvest: {}'s memory {} is of the same happening as rumour #{} (close in time, same group, same people)",
+                                 a.who.name, a.m.id, live);
+                    Rumours::Reinforce(live, a.who.mills, a.who.form, now, true);
+                    for (const auto& [f, mills] : a.witnesses) Rumours::Reinforce(live, mills, f, now, true);
+                    MarkScreened(a.m.id, "same_event", live, a.who.uuid, a.m.events, "", now, -1.0);
+                    MarkFolded(a, "same_event", live, "", now);
+                }
+            }
+            if (batch.empty()) return;
 
             // Who each memory may be about: its owner, the player, and the others SkyrimNet linked to it.
             const auto                           playerUuid = SkyrimNet::UUIDOf(kPlayer);
@@ -850,7 +883,9 @@ namespace RumourEngine::Harvest {
                                  a.interest, a.witnesses.size());
                     MarkScreened(a.m.id, "seeded", rid, a.who.uuid, a.m.events, fmt::format("interest {:.2f}, spread {:.2f}, tell {}", a.interest, a.spread, a.everything ? "everything" : "gist"), now, a.m.day);
                     MarkFolded(a, "same_event", rid, "", now);
-                    for (const auto& [f, mills] : a.witnesses) Rumours::Reinforce(rid, mills, f, now);
+                    Rumours::MarkInvolved(rid, a.who.form, "started", now);
+                    for (const auto& [f, mills] : a.witnesses) Rumours::Reinforce(rid, mills, f, now, true);
+                    Rumours::NoteSeedDay(rid, a.m.day, a.m.related, now);
                     if (Settings::RememberTelling()) RememberTelling(a, rid, s->second.telling, now);
                 }
             }
@@ -913,11 +948,18 @@ namespace RumourEngine::Harvest {
                         }
                     }
                 }
+                // Or someone else's rumour that started from a memory that close to it, among their own people.
+                bool byHour = false;
+                if (!known && m.day >= 0.0) {
+                    if ((known = Rumours::SameHappening(m.day, p.mills, m.related, SkyrimNet::UUIDOf(kPlayer)))) byHour = true;
+                }
+                Rumours::NoteMemory(p.form, m.day, now);  // that close to a rumour's start: they were probably there
                 if (known && Rumours::IsLive(known)) {
                     logger::info("Harvest: {}'s memory {} is of the happening behind rumour #{}{}", p.name, m.id, known,
-                                 byTime ? " (from the same stretch of time)" : "");
-                    Rumours::Reinforce(known, p.mills, p.form, now);
-                    MarkScreened(m.id, "same_event", known, p.uuid, m.events, "", now, m.day);
+                                 byTime ? " (from the same stretch of time)" : byHour ? " (that close in time, same group)" : "");
+                    Rumours::Reinforce(known, p.mills, p.form, now, true);
+                    // A fold by time and people isn't kept as theirs by time, so it can't pull in their next hours too.
+                    MarkScreened(m.id, "same_event", known, p.uuid, m.events, "", now, byHour ? -1.0 : m.day);
                     ++matched;
                     continue;
                 }
@@ -980,7 +1022,7 @@ namespace RumourEngine::Harvest {
             const auto          maxPeople = static_cast<std::size_t>(Settings::HarvestMaxActors());
             const auto          perActor = static_cast<std::size_t>(Settings::HarvestMemoriesPerActor());
             std::vector<Person> people;
-            int                 sameEvent = 0, following = 0, homeless = 0, unknown = 0, nothingNew = 0;
+            int                 sameEvent = 0, following = 0, homeless = 0, unknown = 0, nothingNew = 0, dead = 0;
             for (const auto& lead : leads) {
                 if (people.size() >= maxPeople) break;
                 // SkyrimNet may name the base form; its memories and our mills want the reference it last saw.
@@ -989,6 +1031,11 @@ namespace RumourEngine::Harvest {
                 const auto formId = seen ? seen : lead.form;
                 auto*      form = RE::TESForm::LookupByID(formId);
                 auto*      actor = form ? form->As<RE::Actor>() : nullptr;
+                // The dead start no talk, however recent their memories.
+                if (actor && Settings::HarvestSkipDead() && actor->IsDead()) {
+                    ++dead;
+                    continue;
+                }
                 // Following the player: their stories wait until they're dismissed and settled (stage 4b).
                 // Dismissed but not settled yet: the same wait, and then their time away all at once.
                 if (actor && (Delivery::InPlayersCompany(actor) ||
@@ -1031,7 +1078,8 @@ namespace RumourEngine::Harvest {
             logger::info("Harvest: day {:.2f}: {} new memories from {} people to screen; of {} SkyrimNet listed, {} following, {} in no "
                          "mill, {} unknown, {} with nothing new above the floor{}",
                          now, count, people.size(), leads.size(), following, homeless, unknown, nothingNew,
-                         sameEvent ? fmt::format("; {} matched to a rumour by event", sameEvent) : "");
+                         (sameEvent ? fmt::format("; {} matched to a rumour by event", sameEvent) : std::string()) +
+                             (dead ? fmt::format("; {} dead, skipped", dead) : std::string()));
             for (const auto& p : people) Screen(gen, p);
         }
 

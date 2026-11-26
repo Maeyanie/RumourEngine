@@ -123,6 +123,8 @@ namespace RumourEngine::Delivery {
         for (auto& h : Rumours::InMills(mills, actor->GetFormID(), base ? base->GetFormID() : 0, now, 8)) {
             // Nobody gossips about themselves, and a story someone else has just told waits its turn.
             if (h.aboutThem || Rumours::AiredByOtherRecently(h.id, actor->GetFormID())) continue;
+            // Nor about what they were part of: they speak of that from their own memory, not as talk.
+            if (Settings::HoldbackEnabled() && Rumours::IsInvolved(h.id, actor->GetFormID())) continue;
             // A secret is only passed on by someone who gossips more readily than it is kept, and
             // nor is anything a close mill heard.
             if (const double keep = std::max(h.secrecy, set->SecrecyOf(h.mill)); keep > 0.0 && gossip <= keep) continue;
@@ -163,6 +165,11 @@ namespace RumourEngine::Delivery {
             if (pick && h.id == pick->id) {
                 listed = true;
                 return "- " + keen + h.text + "\n";
+            }
+            // Hold-back: it has come back to them from another group's talk.
+            if (!h.from.empty()) {
+                return h.aboutThem ? "- People in " + PlaceOf(h.from) + " are saying this about " + name + ": " + h.text + "\n"
+                                   : "- Word going round " + PlaceOf(h.from) + ": " + h.text + "\n";
             }
             return h.aboutThem ? "- People are saying this about " + name + ": " + h.text + "\n" : "- " + h.text + "\n";
         };

@@ -95,6 +95,7 @@ namespace RumourEngine::Rumours {
         bool         fact = false;       // the caller's as_fact version
         bool         aboutThem = false;  // they are a subject this version still names
         std::vector<RE::FormID> named;   // subjects this version names, by form
+        std::string  from;               // hold-back: the group it came back to them from; empty if their own
     };
 
     /** Read the save's live rumours. Call once its database is open and settled. */
@@ -148,7 +149,41 @@ namespace RumourEngine::Rumours {
 
     /** A witness's own memory of a live rumour: fresh again in their mills, and there first-hand
      *  (the first telling) where it hadn't reached. They have certainly heard it. */
-    void Reinforce(std::int32_t id, const std::vector<std::string>& mills, RE::FormID witness, double now);
+    void Reinforce(std::int32_t id, const std::vector<std::string>& mills, RE::FormID witness, double now,
+                   bool firstHand = false);
+
+    // ---- Hold-back: news reaches the people it is about last ----
+    //
+    // Someone involved in a rumour (named in it, the one it started from, or there when it happened)
+    // isn't shown it as talk until it has been going round a group none of theirs belongs to for
+    // holdback.after_days, or until it is holdback.local_days old. Then it comes back to them in that
+    // group's telling. Spreading is unchanged. The player is never held back.
+
+    /** They are involved: `why` is "started", "witness" or "there", for the log and the database. */
+    void MarkInvolved(std::int32_t id, RE::FormID formId, const char* why, double now);
+
+    /** Involved, whether or not it has come back to them yet. */
+    bool IsInvolved(std::int32_t id, RE::FormID formId);
+
+    /** Involved and still held back: they are not to be told it, nor be within earshot of a telling. */
+    bool HeldBack(std::int32_t id, RE::FormID formId);
+
+    /** Whether a memory formed on `day` is from before the rumour started, so of the happening itself. */
+    bool FormedBefore(std::int32_t id, double day);
+
+    /** A harvested rumour started from a memory formed on `memoryDay`: anyone with a screened memory of
+     *  their own within holdback.there_hours of it was probably there. */
+    void NoteSeedDay(std::int32_t id, double memoryDay, const std::vector<std::uint64_t>& related, double now);
+
+    /** Someone's memory from `memoryDay`, newly looked at: they were probably there for any live
+     *  harvested rumour that started from a memory that close to it. */
+    void NoteMemory(RE::FormID formId, double memoryDay, double now);
+
+    /** A live harvested rumour that started from a memory within holdback.there_hours of `memoryDay`,
+     *  first told in one of these mills, whose memory names someone this one does too (the player aside):
+     *  the same happening, seen by someone else. 0 if none, or if the rumour's memory isn't known. */
+    std::int32_t SameHappening(double memoryDay, const std::vector<std::string>& mills, const std::vector<std::uint64_t>& related,
+                               std::uint64_t playerUuid);
 
     /** What someone could be talking about: the live rumours in their mills, and those they were in
      *  earshot of, as (id, the version they'd know). For screening's "is this the same talk". */

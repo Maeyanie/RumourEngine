@@ -352,6 +352,47 @@ schema:
       defaultValue: true
       category: "Harvest"
 
+    - name: "Skip the dead"
+      path: "harvest.skip_dead"
+      type: "bool"
+      description: "The memories of someone who has died aren't harvested: the dead start no talk, however recent the memory."
+      defaultValue: true
+      category: "Harvest"
+
+    - name: "Hold back from those involved"
+      path: "holdback.enabled"
+      type: "bool"
+      description: "The people a rumour is about, the one it started from and those who were there don't hear it as talk until it has gone round somewhere else first, or until it is old news. They still know what happened from their own memories. The player is never held back."
+      defaultValue: true
+      category: "Hold-back"
+
+    - name: "Days after it goes round elsewhere"
+      path: "holdback.after_days"
+      type: "float"
+      description: "Game days after the rumour reached a group none of theirs belongs to, before it comes back to them as talk from there."
+      defaultValue: 0.5
+      min: 0.0
+      max: 30.0
+      category: "Hold-back"
+
+    - name: "Days when it never leaves"
+      path: "holdback.local_days"
+      type: "float"
+      description: "Game days after it started, when it never got beyond their own groups, before they hear it anyway."
+      defaultValue: 2.0
+      min: 0.0
+      max: 60.0
+      category: "Hold-back"
+
+    - name: "Hours that count as being there"
+      path: "holdback.there_hours"
+      type: "float"
+      description: "Someone with a memory of their own from within this many game hours of the memory a rumour started from was probably there, and is held back too. Witnesses' memories of one happening this close together, in the same group, also become one rumour instead of several. 0 turns both off."
+      defaultValue: 0.5
+      min: 0.0
+      max: 6.0
+      category: "Hold-back"
+
     - name: "Hours to settle"
       path: "settle.hours"
       type: "float"
