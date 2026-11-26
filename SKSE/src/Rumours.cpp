@@ -90,6 +90,14 @@ namespace RumourEngine::Rumours {
         std::set<std::pair<std::int32_t, std::string>> g_heard;  // (rumour, actor key) in earshot of a telling
         // The same people by form, so a prompt decorator can ask without calling into SkyrimNet.
         std::set<std::pair<std::int32_t, RE::FormID>> g_heardForms;
+        // Hold-back: who is involved in each rumour (named in it is read from its subjects instead),
+        // by key and by form, and the day of the memory each harvested rumour started from.
+        std::set<std::pair<std::int32_t, std::string>> g_involved;
+        std::set<std::pair<std::int32_t, RE::FormID>> g_involvedForms;
+        std::map<std::int32_t, double>                g_seedDay;
+        std::map<std::int32_t, std::vector<std::uint64_t>> g_seedRelated;  // who the seed memory names; this session only
+        std::set<std::pair<std::int32_t, RE::FormID>> g_holdLogged;     // held back from them: logged once
+        std::set<std::pair<std::int32_t, RE::FormID>> g_releaseLogged;  // came back to them: logged once
 
         // Retired, and kept as world knowledge or about to be: what get_rumourengine_heard needs to
         // say who had heard them.
@@ -474,6 +482,77 @@ namespace RumourEngine::Rumours {
             return HeardRoll(who.roll, r.id) < Reach(p.notability, who.gossip, std::min(now, p.freshUntil) - p.arrived);
         }
 
+        // ---- Hold-back ----
+
+        constexpr RE::FormID kPlayerRef = 0x14, kPlayerBase = 0x7;
+
+        /** Named in it, started from them, or there. Never the player. Call with g_lock held. */
+        bool InvolvedLocked(const Rumour& r, std::int32_t id, RE::FormID self, RE::FormID base) {
+            if (!self && !base) return false;
+            if (self == kPlayerRef || self == kPlayerBase || base == kPlayerRef || base == kPlayerBase) return false;
+            for (auto f : { self, base }) {
+                if (f && g_involvedForms.contains({ id, f })) return true;
+            }
+            return std::any_of(r.subjects.begin(), r.subjects.end(),
+                               [&](const Subject& s) { return s.formId && (s.formId == self || s.formId == base); });
+        }
+
+        struct Release {
+            bool        released = false;
+            bool        old = false;  // holdback.local_days have passed
+            std::string from;         // the group outside theirs it comes back from, if any
+        };
+
+        /** Whether it has come back to someone in these mills: it has been going round a mill none of
+         *  theirs is for holdback.after_days, or it is holdback.local_days old. Call with g_lock held. */
+        Release ReleaseLocked(const Rumour& r, const std::vector<std::string>& mills, double now) {
+            Release     out;
+            double      bestWritten = 1e300, bestAny = 1e300;
+            std::string written, any;
+            // Someone in no mill (a follower) has no "elsewhere": only age brings it back to them.
+            static const decltype(r.mills) kNone;
+            for (const auto& [m, p] : mills.empty() ? kNone : r.mills) {
+                if (std::find(mills.begin(), mills.end(), m) != mills.end()) continue;
+                if (p.arrived > now - Settings::HoldbackAfterDays()) continue;
+                if (p.arrived < bestAny) {
+                    bestAny = p.arrived;
+                    any = m;
+                }
+                if (r.versions.contains(m) && p.arrived < bestWritten) {
+                    bestWritten = p.arrived;
+                    written = m;
+                }
+            }
+            out.from = !written.empty() ? written : any;
+            out.old = now - r.created >= Settings::HoldbackLocalDays();
+            out.released = out.old || !out.from.empty();
+            return out;
+        }
+
+        /** A held-back actor's own form and base. */
+        std::pair<RE::FormID, RE::FormID> FormAndBase(RE::FormID formId) {
+            RE::FormID base = 0;
+            if (auto* a = RE::TESForm::LookupByID<RE::Actor>(formId)) {
+                if (auto* b = a->GetActorBase()) base = b->GetFormID();
+            }
+            return { formId, base };
+        }
+
+        /** Whether someone with these mills shares one with where the rumour was first told. Call with g_lock held. */
+        bool SharesOrigin(const Rumour& r, const std::vector<std::string>& mills) {
+            return std::any_of(r.mills.begin(), r.mills.end(), [&](const auto& mp) {
+                return mp.second.parent.empty() && std::find(mills.begin(), mills.end(), mp.first) != mills.end();
+            });
+        }
+
+        /** The two memories name someone in common, the player aside. */
+        bool NameSomeoneInCommon(const std::vector<std::uint64_t>& a, const std::vector<std::uint64_t>& b, std::uint64_t player) {
+            for (auto x : a) {
+                if (x && x != player && std::find(b.begin(), b.end(), x) != b.end()) return true;
+            }
+            return false;
+        }
+
         /** A live or promoted rumour. Call with g_lock held. */
         Rumour* FindAny(std::int32_t id) {
             if (auto it = g_rumours.find(id); it != g_rumours.end()) return &it->second;
@@ -605,6 +684,12 @@ namespace RumourEngine::Rumours {
         g_byKey.clear();
         g_heard.clear();
         g_heardForms.clear();
+        g_involved.clear();
+        g_involvedForms.clear();
+        g_seedDay.clear();
+        g_seedRelated.clear();
+        g_holdLogged.clear();
+        g_releaseLogged.clear();
         g_aired.clear();
     }
 
@@ -631,6 +716,12 @@ namespace RumourEngine::Rumours {
         g_byKey.clear();
         g_heard.clear();
         g_heardForms.clear();
+        g_involved.clear();
+        g_involvedForms.clear();
+        g_seedDay.clear();
+        g_seedRelated.clear();
+        g_holdLogged.clear();
+        g_releaseLogged.clear();
         g_aired.clear();
         g_promoted.clear();
         g_withdrawn.clear();
@@ -763,6 +854,26 @@ namespace RumourEngine::Rumours {
                 const auto key = h.S(1);
                 if (const auto f = FormOfKey(key)) g_heardForms.insert({ id, f });
                 g_heard.insert({ id, key });
+            }
+            // Hold-back: who is involved, as recorded; and, for a database from before it was kept,
+            // whose own memories started or matched each rumour (a match with talk only counts when the
+            // memory is from before the rumour began: a later one is of hearing the talk).
+            auto involve = [&](std::int32_t id, const std::string& key) {
+                if (key.empty() || !FindAny(id)) return;
+                g_involved.insert({ id, key });
+                if (const auto f = FormOfKey(key)) g_involvedForms.insert({ id, f });
+            };
+            Stmt inv(db, "SELECT rumour_id, actor FROM involved;");
+            while (inv.Row()) involve(static_cast<std::int32_t>(inv.I(0)), inv.S(1));
+            Stmt scr(db, "SELECT s.rumour_id, s.actor FROM screened s JOIN rumours r ON r.id = s.rumour_id "
+                         "WHERE s.actor IS NOT NULL AND s.actor <> '' AND (s.verdict IN ('seeded', 'same_event', 'own') OR "
+                         "(s.verdict = 'same' AND s.memory_day IS NOT NULL AND s.memory_day < r.game_time));");
+            while (scr.Row()) involve(static_cast<std::int32_t>(scr.I(0)), scr.S(1));
+            Stmt sd(db, "SELECT rumour_id, MIN(memory_day) FROM screened WHERE verdict = 'seeded' AND rumour_id IS NOT NULL "
+                        "AND memory_day IS NOT NULL GROUP BY rumour_id;");
+            while (sd.Row()) {
+                const auto id = static_cast<std::int32_t>(sd.I(0));
+                if (g_rumours.contains(id)) g_seedDay[id] = sd.D(1);
             }
         });
         // Which versions are the caller's facts: those still as the caller gave them.
@@ -1245,6 +1356,7 @@ namespace RumourEngine::Rumours {
             if (std::find(order.begin(), order.end(), m) == order.end()) order.push_back(m);
         }
         const auto who = ListenerOf(set.get(), self, selfBase);
+        std::vector<std::pair<std::int32_t, std::string>> holdLog, releaseLog;  // (id, from), logged after the lock
         {
             std::lock_guard lk(g_lock);
             for (const auto& [id, r] : g_rumours) {
@@ -1253,7 +1365,13 @@ namespace RumourEngine::Rumours {
                                 [&](const Subject& s) { return s.formId && (s.formId == self || s.formId == selfBase); })) {
                     continue;
                 }
+                // Hold-back: news reaches the people it is about, and those who were there, last. They
+                // know what happened from their own memories; the talk comes back to them from elsewhere.
+                const bool involved = Settings::HoldbackEnabled() && r.scope != Scope::Proclaimed &&
+                                      InvolvedLocked(r, id, self, selfBase);
+                const Release rel = involved ? ReleaseLocked(r, mills, now) : Release{};
                 const bool certain = CertainlyHeard(id, who);
+                bool       queuedFrom = false;
                 for (const auto& m : order) {
                     auto p = r.mills.find(m);
                     if (p == r.mills.end() || Stale(p->second, now) || p->second.arrived > now) continue;
@@ -1265,7 +1383,28 @@ namespace RumourEngine::Rumours {
                         unwritten.emplace_back(id, m);
                         continue;
                     }
+                    // Their own people's account, or a mill whose people know at once, isn't talk.
+                    std::string from;
+                    if (involved && !v->second.fact && !(set && set->IsEager(m))) {
+                        // Held back here; a later mill of theirs may be exempt (eager, or their people's account).
+                        if (!rel.released) {
+                            if (g_holdLogged.insert({ id, self }).second) holdLog.emplace_back(id, "");
+                            continue;
+                        }
+                        if (!rel.from.empty()) {
+                            if (auto fv = r.versions.find(rel.from); fv != r.versions.end()) {
+                                v = fv;
+                                from = rel.from;
+                            } else if (!rel.old) {
+                                // Comes back in that group's telling, once it is written.
+                                if (!std::exchange(queuedFrom, true)) unwritten.emplace_back(id, rel.from);
+                                continue;
+                            }
+                        }
+                        if (g_releaseLogged.insert({ id, self }).second) releaseLog.emplace_back(id, from.empty() ? "(old news)" : from);
+                    }
                     Ranked x;
+                    x.h.from = from;
                     x.h.id = id;
                     x.h.mill = m;
                     if (const auto* mill = set ? set->Find(m) : nullptr; mill && mill->kind == Mills::Kind::Institution) x.faction = true;
@@ -1273,7 +1412,7 @@ namespace RumourEngine::Rumours {
                     x.h.notability = p->second.notability;
                     x.h.secrecy = r.secrecy;
                     x.h.airings = p->second.airings;
-                    x.h.fact = v->second.fact;
+                    x.h.fact = v->second.fact && from.empty();  // another group's account is talk to them
                     x.h.text = v->second.text;
                     const auto& names = v->second.names;
                     for (const auto& s : r.subjects) {
@@ -1291,6 +1430,10 @@ namespace RumourEngine::Rumours {
                 }
             }
         }
+        for (const auto& [id, f] : holdLog) {
+            logger::info("Hold-back: rumour #{} held back from {:08X}: not their talk until it goes round elsewhere", id, self);
+        }
+        for (const auto& [id, f] : releaseLog) logger::info("Hold-back: rumour #{} comes back to {:08X} from {}", id, self, f);
         for (const auto& [id, m] : unwritten) Retell::Request(id, m);
         // What concerns them comes first: talk about them, then their own faction's, then the freshest.
         std::sort(found.begin(), found.end(), [](const Ranked& a, const Ranked& b) {
@@ -1408,7 +1551,7 @@ namespace RumourEngine::Rumours {
         if (!out.empty()) AddArrivals(out);
     }
 
-    void Reinforce(std::int32_t id, const std::vector<std::string>& mills, RE::FormID witness, double now) {
+    void Reinforce(std::int32_t id, const std::vector<std::string>& mills, RE::FormID witness, double now, bool firstHand) {
         auto            set = Mills::Current();
         const auto      key = witness ? ActorKey(witness) : std::string{};
         std::lock_guard lk(g_lock);
@@ -1471,6 +1614,138 @@ namespace RumourEngine::Rumours {
             Api::DispatchEvent("arrived", nlohmann::json{ { "type", "arrived" }, { "id", id }, { "mill", m } }.dump());
         }
         if (!refreshed.empty()) logger::info("Rumour #{} is fresh again in {} mill(s), through a witness", id, refreshed.size());
+        // Reinforce holds g_lock throughout, so this is MarkInvolved inline.
+        if (firstHand && witness && witness != kPlayerRef && witness != kPlayerBase && !key.empty()) g_involvedForms.insert({ id, witness });
+        if (firstHand && witness && witness != kPlayerRef && witness != kPlayerBase && !key.empty() &&
+            g_involved.insert({ id, key }).second) {
+            Database::With([&](sqlite3* db) {
+                Stmt(db, "INSERT OR IGNORE INTO involved(rumour_id, actor, why, game_time) VALUES(?,?,?,?);")
+                    .Bind(1, id).Bind(2, key).Bind(3, std::string("witness")).Bind(4, now).Run();
+            });
+            logger::info("Hold-back: {:08X} is involved in rumour #{} (witness)", witness, id);
+        }
+    }
+
+    // ---- Hold-back ----
+
+    void MarkInvolved(std::int32_t id, RE::FormID formId, const char* why, double now) {
+        if (!formId || formId == kPlayerRef || formId == kPlayerBase) return;
+        const auto key = ActorKey(formId);
+        if (key.empty()) return;
+        {
+            std::lock_guard lk(g_lock);
+            if (!g_rumours.contains(id)) return;
+            g_involvedForms.insert({ id, formId });  // also when the key was known but its form wasn't at load
+            if (!g_involved.insert({ id, key }).second) return;
+            Database::With([&](sqlite3* db) {
+                Stmt(db, "INSERT OR IGNORE INTO involved(rumour_id, actor, why, game_time) VALUES(?,?,?,?);")
+                    .Bind(1, id).Bind(2, key).Bind(3, std::string(why)).Bind(4, now).Run();
+            });
+        }
+        logger::info("Hold-back: {:08X} is involved in rumour #{} ({})", formId, id, why);
+    }
+
+    bool IsInvolved(std::int32_t id, RE::FormID formId) {
+        const auto [self, base] = FormAndBase(formId);
+        std::lock_guard lk(g_lock);
+        auto            it = g_rumours.find(id);
+        return it != g_rumours.end() && it->second.scope != Scope::Proclaimed && InvolvedLocked(it->second, id, self, base);
+    }
+
+    bool HeldBack(std::int32_t id, RE::FormID formId) {
+        if (!Settings::HoldbackEnabled() || !formId) return false;
+        auto       set = Mills::Current();
+        const auto mills = set ? set->MillsFor(formId) : std::vector<std::string>{};
+        const auto [self, base] = FormAndBase(formId);
+        const double now = Now();
+        std::lock_guard lk(g_lock);
+        auto            it = g_rumours.find(id);
+        if (it == g_rumours.end()) return false;
+        const auto& r = it->second;
+        if (r.scope == Scope::Proclaimed || !InvolvedLocked(r, id, self, base)) return false;
+        return !ReleaseLocked(r, mills, now).released;
+    }
+
+    bool FormedBefore(std::int32_t id, double day) {
+        if (day < 0.0) return false;
+        std::lock_guard lk(g_lock);
+        auto            it = g_rumours.find(id);
+        if (it == g_rumours.end()) return false;
+        // The memory it started from, when known: the rumour itself may have been written days later.
+        if (auto s = g_seedDay.find(id); s != g_seedDay.end()) return day <= s->second + Settings::HoldbackThereHours() / 24.0;
+        return day < it->second.created;
+    }
+
+    void NoteSeedDay(std::int32_t id, double memoryDay, const std::vector<std::uint64_t>& related, double now) {
+        const double w = Settings::HoldbackThereHours() / 24.0;
+        {
+            std::lock_guard lk(g_lock);
+            if (memoryDay < 0.0 || !g_rumours.contains(id)) return;
+            g_seedDay[id] = memoryDay;
+            g_seedRelated[id] = related;
+        }
+        if (w <= 0.0) return;
+        // Everyone whose own memory from that close to it has been looked at was probably there.
+        std::vector<std::string> keys;
+        Database::With([&](sqlite3* db) {
+            Stmt q(db, "SELECT DISTINCT actor FROM screened WHERE actor IS NOT NULL AND actor <> '' AND memory_day IS NOT NULL "
+                       "AND memory_day BETWEEN ? AND ?;");
+            q.Bind(1, memoryDay - w).Bind(2, memoryDay + w);
+            while (q.Row()) keys.push_back(q.S(0));
+        });
+        // ...and among the people it was first told to.
+        auto set = Mills::Current();
+        for (const auto& k : keys) {
+            const auto f = FormOfKey(k);
+            if (!f || !set) continue;
+            const auto mills = set->MillsFor(f);
+            bool       near = false;
+            {
+                std::lock_guard lk(g_lock);
+                auto            it = g_rumours.find(id);
+                near = it != g_rumours.end() && SharesOrigin(it->second, mills);
+            }
+            if (near) MarkInvolved(id, f, "there", now);
+        }
+    }
+
+    void NoteMemory(RE::FormID formId, double memoryDay, double now) {
+        const double w = Settings::HoldbackThereHours() / 24.0;
+        if (!formId || memoryDay < 0.0 || w <= 0.0) return;
+        auto                      set = Mills::Current();
+        const auto                mills = set ? set->MillsFor(formId) : std::vector<std::string>{};
+        std::vector<std::int32_t> ids;
+        {
+            std::lock_guard lk(g_lock);
+            for (const auto& [id, day] : g_seedDay) {
+                if (std::abs(day - memoryDay) > w || g_involvedForms.contains({ id, formId })) continue;
+                auto it = g_rumours.find(id);
+                if (it != g_rumours.end() && SharesOrigin(it->second, mills)) ids.push_back(id);
+            }
+        }
+        for (auto id : ids) MarkInvolved(id, formId, "there", now);
+    }
+
+    std::int32_t SameHappening(double memoryDay, const std::vector<std::string>& mills, const std::vector<std::uint64_t>& related,
+                               std::uint64_t playerUuid) {
+        const double w = Settings::HoldbackThereHours() / 24.0;
+        if (memoryDay < 0.0 || w <= 0.0 || mills.empty() || related.empty()) return 0;
+        std::lock_guard lk(g_lock);
+        std::int32_t    best = 0;
+        double          bestGap = w;
+        for (const auto& [id, day] : g_seedDay) {
+            const double gap = std::abs(day - memoryDay);
+            if (gap > bestGap) continue;
+            auto it = g_rumours.find(id);
+            if (it == g_rumours.end()) continue;
+            // First told in one of their mills, and about someone this memory is about too.
+            auto rel = g_seedRelated.find(id);
+            if (rel == g_seedRelated.end() || !NameSomeoneInCommon(related, rel->second, playerUuid)) continue;
+            if (!SharesOrigin(it->second, mills)) continue;
+            best = id;
+            bestGap = gap;
+        }
+        return best;
     }
 
     std::vector<std::pair<std::int32_t, std::string>> KnownBy(RE::FormID formId, const std::vector<std::string>& mills,

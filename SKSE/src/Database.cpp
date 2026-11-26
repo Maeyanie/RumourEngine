@@ -87,6 +87,15 @@ CREATE TABLE IF NOT EXISTS heard (
     game_time REAL NOT NULL,
     PRIMARY KEY (rumour_id, actor)
 );
+-- Hold-back: people a rumour is about, started from, or who were there. Not shown it as talk
+-- until it has gone round elsewhere (Rumours::InMills).
+CREATE TABLE IF NOT EXISTS involved (
+    rumour_id INTEGER NOT NULL,
+    actor     TEXT NOT NULL,          -- SkyrimNet UUID, or form:XXXXXXXX
+    why       TEXT NOT NULL,          -- started, witness, there
+    game_time REAL NOT NULL,
+    PRIMARY KEY (rumour_id, actor)
+);
 CREATE TABLE IF NOT EXISTS placements (
     actor        TEXT PRIMARY KEY,    -- SkyrimNet UUID (or form:XXXXXXXX) of a follower or a moved NPC
     joined_time  REAL,                -- last joined the party; NULL if they were following when first seen
@@ -145,7 +154,7 @@ CREATE TABLE IF NOT EXISTS quest_endings (
 )SQL";
 
         constexpr const char* kTimedTables[] = { "rumours", "rumour_subjects", "rumour_mills", "versions", "airings",
-                                                 "heard", "placements", "pending_moves", "harvest_watermarks", "screened",
+                                                 "heard", "involved", "placements", "pending_moves", "harvest_watermarks", "screened",
                                                  "gossip_scores", "quest_endings" };
 
         bool Exec(const char* sql) {

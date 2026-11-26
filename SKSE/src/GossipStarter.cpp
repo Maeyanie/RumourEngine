@@ -138,6 +138,19 @@ namespace RumourEngine::GossipStarter {
                 }
             }
             if (nearby.empty()) return;
+            // Hold-back: everyone who could overhear a telling, busy or not, for the earshot check below.
+            std::vector<std::pair<RE::Actor*, RE::NiPoint3>> around;
+            if (Settings::HoldbackEnabled()) {
+                if (auto* lists = RE::ProcessLists::GetSingleton()) {
+                    for (auto& handle : lists->highActorHandles) {
+                        auto a = handle.get();
+                        if (!a || a.get() == player || a->IsDead() || a->IsDisabled() || !a->Is3DLoaded()) continue;
+                        if (interior ? a->GetParentCell() != playerCell : a->GetWorldspace() != playerWorld) continue;
+                        const auto pos = a->GetPosition();
+                        if (pos.GetDistance(playerPos) <= kEarshot * 2.0f) around.emplace_back(a.get(), pos);
+                    }
+                }
+            }
             std::sort(nearby.begin(), nearby.end(), [](const Near& x, const Near& y) { return x.toPlayer < y.toPlayer; });
 
             const double now = Rumours::Now();
@@ -151,6 +164,14 @@ namespace RumourEngine::GossipStarter {
                     if (g_told.contains({ g.actor->GetFormID(), pick->id })) continue;
                 }
 
+                // Hold-back: not while anyone it's about, or who was there, is in earshot of the telling.
+                if (Settings::HoldbackEnabled() && std::any_of(around.begin(), around.end(), [&](const auto& n) {
+                        return n.first != g.actor && std::fabs(n.second.z - g.pos.z) <= kSameFloor && n.second.GetDistance(g.pos) <= kEarshot &&
+                               Rumours::HeldBack(pick->id, n.first->GetFormID());
+                    })) {
+                    continue;
+                }
+
                 // Whom to tell: someone who hasn't heard it, else anyone; the nearest of those.
                 RE::Actor* listener = nullptr;
                 bool       listenerHeard = true;
@@ -159,6 +180,7 @@ namespace RumourEngine::GossipStarter {
                     if (std::fabs(pos.z - g.pos.z) > kSameFloor) return;
                     const float d = pos.GetDistance(g.pos);
                     if (d > kCloseEnough) return;
+                    if (Settings::HoldbackEnabled() && Rumours::HeldBack(pick->id, l->GetFormID())) return;
                     const bool heard = Rumours::HasHeard(pick->id, l->GetFormID());
                     if (listener && (heard > listenerHeard || (heard == listenerHeard && d >= best))) return;
                     listener = l;
