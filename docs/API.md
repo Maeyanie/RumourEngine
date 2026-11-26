@@ -154,13 +154,96 @@ them for a whole session.
 
 ## C API
 
+Copy `RumourEngineAPI.h` into your project. It's in the download at
+`SKSE/Plugins/RumourEngine/RumourEngineAPI.h`, and in this repository at
+[SKSE/include/RumourEngineAPI.h](../SKSE/include/RumourEngineAPI.h). It finds
+RumourEngine at run time, so your mod builds without it and runs as before
+where it isn't installed.
+
+### Example
+
+This is everything a mod needs to send its rumours to RumourEngine when it's
+installed. Change `MyMod` to your mod's name. It uses nlohmann::json, but any
+JSON library will do, since the request is just a string.
+
 ```cpp
+// MyModRumours.h: RumourEngine as an optional dependency.
+#pragma once
+
 #include "RumourEngineAPI.h"
 
-if (RumourEngineAPI::Bind()) {
-    RumourEngineAPI::RegisterListener("ready,retired", OnRumourEvent, nullptr);
+#include <nlohmann/json.hpp>
+
+namespace MyModRumours {
+    inline bool g_available = false;
+
+    // Call once, on SKSE's kDataLoaded message.
+    inline void Init() {
+        g_available = RumourEngineAPI::Bind() && RumourEngineAPI::GetApiVersion() >= 1;
+        if (g_available) SKSE::log::info("RumourEngine found: rumours will spread through its mills");
+    }
+
+    // Hands a rumour to RumourEngine. It starts with the people of `where`, spreads to other towns
+    // over the next days (further the more notable it is), and is retold in each town's own words.
+    // RumourEngine puts it in the bios of the people it has reached.
+    //
+    //   id          your own id for the rumour. Sending the same id again changes nothing.
+    //   text        the rumour as people tell it, in UTF-8.
+    //   where       where it's going round: any place in a town or farm, or elsewhere in a hold,
+    //               which starts it in the hold's capital. Null means wherever the player is (read
+    //               from the game, so call that from the main thread).
+    //   notability  0 to 1. As a guide, 0.3 stays in the town, 0.5 reaches the next hold, and 0.8
+    //               most of Skyrim within a week.
+    //
+    // Returns RumourEngine's id for the rumour, or 0 when RumourEngine isn't installed, no save is
+    // loaded yet, or it refused the rumour (RumourEngine.log says why).
+    inline std::int32_t Submit(const std::string& id, const std::string& text, RE::BGSLocation* where = nullptr,
+                               double notability = 0.4) {
+        if (!g_available || !RumourEngineAPI::IsReady()) return 0;
+        if (!where) {
+            if (auto* player = RE::PlayerCharacter::GetSingleton()) where = player->GetCurrentLocation();
+        }
+        if (!where) return 0;
+
+        nlohmann::json request = {
+            { "source", "MyMod" },
+            { "key", id },
+            { "text", text },
+            { "origin", { { "location", where->GetFormID() } } },
+            { "notability", notability },
+            { "if_absent", true },  // leave this out to replace a rumour already sent with this id
+        };
+        // Optional: who it's about, as form IDs. They hear it as "People are saying this about you".
+        // request["subjects"] = { actor->GetFormID() };
+
+        // error_handler_t::replace: a byte that isn't UTF-8 becomes U+FFFD instead of an exception.
+        const auto json = request.dump(-1, ' ', false, nlohmann::json::error_handler_t::replace);
+        return RumourEngineAPI::AddRumour(json.c_str());
+    }
 }
 ```
+
+```cpp
+// in SKSE's message listener
+case SKSE::MessagingInterface::kDataLoaded:
+    MyModRumours::Init();
+    break;
+
+// where a rumour is made
+MyModRumours::Submit(rumourId, rumourText, location, 0.4);
+```
+
+A location form is the simplest origin. RumourEngine walks up from it to the
+town or farm it's part of, and for a place in none, such as a cave or the
+wilds, starts the rumour in the hold's capital. AddRumour, below, has the
+other origins and every field. To hear what
+becomes of your rumours, register a listener as well (see Events):
+
+```cpp
+RumourEngineAPI::RegisterListener("ready,retired", OnRumourEvent, nullptr);
+```
+
+### Functions
 
 | Function | Returns |
 | --- | --- |
