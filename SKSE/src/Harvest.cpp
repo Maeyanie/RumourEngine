@@ -830,16 +830,21 @@ namespace RumourEngine::Harvest {
                     for (auto k : s->second.about) {
                         if (k < r.subjects[i].size()) about.push_back(r.subjects[i][k]);
                     }
-                    json heardBy = json::array({ a.who.form });
-                    for (const auto& [f, mills] : a.witnesses) heardBy.push_back(f);
+                    // The one whose memory it is, and the witnesses whose memories were folded in, were
+                    // there: they go by their own memories of it, so the talk stays out of their bios
+                    // and their gossip, and nobody tells their own story back as hearsay.
+                    json wereThere = json::array({ a.who.form });
+                    for (const auto& [f, mills] : a.witnesses) wereThere.push_back(f);
+                    // The telling is theirs, in the first person: they tell it themselves, and their own
+                    // mills, like every other, have it retold as talk about what they told.
                     const json request = { { "source", "RumourEngine" },
                                            { "key", fmt::format("mem:{}", a.m.id) },
                                            { "text", s->second.telling },
-                                           { "origin", { { "mills", a.who.mills } } },
+                                           { "origin", { { "mills", a.who.mills }, { "teller", a.who.form } } },
                                            { "notability", NotabilityOf(a.interest) },
                                            { "subjects", about },
                                            { "topics", s->second.topics },
-                                           { "heard_by", heardBy } };
+                                           { "known_better_by", wereThere } };
                     std::string error;
                     const auto  rid = Rumours::Add(Text::Dump(request), error);
                     if (!rid) {
@@ -850,7 +855,7 @@ namespace RumourEngine::Harvest {
                                  a.interest, a.witnesses.size());
                     MarkScreened(a.m.id, "seeded", rid, a.who.uuid, a.m.events, fmt::format("interest {:.2f}, spread {:.2f}, tell {}", a.interest, a.spread, a.everything ? "everything" : "gist"), now, a.m.day);
                     MarkFolded(a, "same_event", rid, "", now);
-                    for (const auto& [f, mills] : a.witnesses) Rumours::Reinforce(rid, mills, f, now);
+                    for (const auto& [f, mills] : a.witnesses) Rumours::Reinforce(rid, mills, f, now, true);
                     if (Settings::RememberTelling()) RememberTelling(a, rid, s->second.telling, now);
                 }
             }
@@ -916,7 +921,7 @@ namespace RumourEngine::Harvest {
                 if (known && Rumours::IsLive(known)) {
                     logger::info("Harvest: {}'s memory {} is of the happening behind rumour #{}{}", p.name, m.id, known,
                                  byTime ? " (from the same stretch of time)" : "");
-                    Rumours::Reinforce(known, p.mills, p.form, now);
+                    Rumours::Reinforce(known, p.mills, p.form, now, true);  // their memory of the happening itself
                     MarkScreened(m.id, "same_event", known, p.uuid, m.events, "", now, m.day);
                     ++matched;
                     continue;
@@ -1090,20 +1095,31 @@ namespace RumourEngine::Harvest {
         std::unordered_set<std::int64_t>               screened;
         std::unordered_map<std::int64_t, std::int32_t> events;
         std::unordered_map<std::uint64_t, std::vector<std::pair<double, std::int32_t>>> owners;
+        std::set<std::pair<std::int32_t, std::uint64_t>>                                 wereThere;  // rumour, SkyrimNet UUID
         Database::With([&](sqlite3* db) {
             sqlite3_stmt* st = nullptr;
-            if (sqlite3_prepare_v2(db, "SELECT memory_id, rumour_id, events, actor, memory_day FROM screened;", -1, &st, nullptr) != SQLITE_OK) {
+            if (sqlite3_prepare_v2(db, "SELECT memory_id, rumour_id, events, actor, memory_day, verdict FROM screened;", -1, &st, nullptr) !=
+                SQLITE_OK) {
                 return;
             }
             while (sqlite3_step(st) == SQLITE_ROW) {
                 screened.insert(sqlite3_column_int64(st, 0));
                 const auto rid = sqlite3_column_int(st, 1);
                 auto*      actor = reinterpret_cast<const char*>(sqlite3_column_text(st, 3));
-                if (rid && actor && *actor && sqlite3_column_type(st, 4) != SQLITE_NULL) {
+                auto*      verdict = reinterpret_cast<const char*>(sqlite3_column_text(st, 5));
+                std::uint64_t uuid = 0;
+                if (rid && actor && *actor) {
                     try {
-                        owners[std::stoull(actor)].push_back({ sqlite3_column_double(st, 4), rid });
+                        uuid = std::stoull(actor);
                     } catch (...) {
                     }
+                }
+                if (uuid && sqlite3_column_type(st, 4) != SQLITE_NULL) owners[uuid].push_back({ sqlite3_column_double(st, 4), rid });
+                // Their memory became the rumour, was of the happening behind it, or is of telling it:
+                // they were there. ("same" is the talk reaching them, which is hearsay to them too.)
+                if (uuid && verdict) {
+                    const std::string_view v = verdict;
+                    if (v == "seeded" || v == "same_event" || v == "own") wereThere.insert({ rid, uuid });
                 }
                 auto* text = reinterpret_cast<const char*>(sqlite3_column_text(st, 2));
                 if (!rid || !text) continue;
@@ -1115,11 +1131,22 @@ namespace RumourEngine::Harvest {
             }
             sqlite3_finalize(st);
         });
-        std::lock_guard lk(g_lock);
-        g_screened = std::move(screened);
-        g_eventRumour = std::move(events);
-        g_ownerRumours = std::move(owners);
-        logger::info("Harvest: {} memories screened before in this playthrough", g_screened.size());
+        {
+            std::lock_guard lk(g_lock);
+            g_screened = std::move(screened);
+            g_eventRumour = std::move(events);
+            g_ownerRumours = std::move(owners);
+            logger::info("Harvest: {} memories screened before in this playthrough", g_screened.size());
+        }
+        // Rumours from before this was done listed the people who were there as having heard it only,
+        // so it came back to them as talk. Rumours::Load has run, so the live ones are known.
+        std::vector<std::pair<std::int32_t, RE::FormID>> who;
+        for (const auto& [rid, uuid] : wereThere) {
+            if (const auto form = SkyrimNet::FormOf(uuid)) who.emplace_back(rid, form);
+        }
+        if (const int added = Rumours::AddKnownBetter(who); added > 0) {
+            logger::info("Harvest: {} time(s), someone who was there now goes by their own memory of a live rumour, not the talk", added);
+        }
     }
 
     void Reset() {

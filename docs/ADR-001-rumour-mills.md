@@ -872,6 +872,12 @@ The **GossipStarter** follows FactionEngine's version:
   may be told ([below](#who-can-be-told)), preferring one who hasn't heard it.
   It registers a `direct_narration` with the gossip as speaker.
 - **Never** into a conversation, a scene, combat, a menu, or anyone busy.
+  A quiet room is 30 real seconds since anyone spoke (20 until 2026-11-26),
+  and a minute since the player spoke or was spoken to. Whoever the player
+  talked with in the last three minutes is still in that conversation, and
+  neither tells nor is told. *Added 2026-11-26:* a player reported a bard
+  turning from their conversation to gossip to someone else. A pause of 20 s
+  while the player typed was enough, and the bard wasn't busy between turns.
   An OStim or SexLab scene counts too (`OStimExcitementFaction`,
   `SexLabAnimatingFaction`, as SkyrimNet's speaker selectors read them): no
   one in one starts a telling or is told one, the player included, and their
@@ -1421,7 +1427,8 @@ C++ exists.
      happening the same `related_event_ids`, and `screened` keeps them for
      seeded memories. A later memory sharing one reinforces that rumour with
      no call: fresh again where it was, and first-hand (the first telling) in
-     the witness's mills where it wasn't.
+     the witness's mills where it wasn't. The witness joins its
+     `known_better_by`, since they saw it.
    - **Screening** is `decisions/rumourengine/screen_memories`, one request
      per person with up to `harvest.memories_per_actor` memories: `spread_m<k>`
      (noul), `tell_m<k>` (choice), `interest_m<k>` (score 1–5) and `same_m<k>`
@@ -1449,7 +1456,31 @@ C++ exists.
      memory (`telling`, `about` by per-memory subject key, `topics`) or
      `skip`, not JSON. Each becomes an `AddRumour` from source `RumourEngine`,
      key `mem:<memory id>`, starting in the owner's mills, with
-     `heard_by` the owner and witnesses.
+     `known_better_by` the owner and witnesses. *Until 2026-11-26 they were
+     only `heard_by`:* the rumour was in their own bio as talk, in the first
+     telling's third-person words, and the gossip starter could pick them to
+     pass it on, so they could tell their own stories back as hearsay, and a
+     dismissed follower their own adventures. Now they go by their own
+     memories of it, and the "I'm the one who spread it" memory.
+   - **The owner tells it themselves** (2026-11-26, the user's design). The
+     seed telling is written in the owner's voice, in the first person, and
+     the request names them as `origin.teller`. Every mill, the origin
+     included, has it retold in the third person as talk about what they told
+     (hop 0, `retell_origin`); the retell prompt is told who "I" is. The owner
+     is the one person who tells the first-person account, picked by the gossip
+     starter as something they were there for, gossip or not ("Most on X's
+     mind just now, and worth telling given the chance, as X remembers it").
+     A witness or the party at a quest's ending tells their own mill's
+     version, as someone who was there. Neither is told to anyone the version
+     names. Wherever the first telling stands in for a version others see (a
+     retelling that fails, the "same talk" list for screening, promotion), it
+     is prefixed "X has been telling everyone:". The seed panel's comparisons
+     were made on third-person tellings. A witness whose later memory shares the happening's event ids
+     joins the list when it reinforces the rumour; someone whose memory is of
+     the talk reaching them (`same`) does not, since to them it is hearsay. At
+     load, live rumours from before get the owners and later witnesses from
+     `screened` (verdicts `seeded`, `same_event` and `own`); the witnesses
+     folded in at seeding were stored without their actor.
    - **One stretch, one rumour** (added 2026-11-04). SkyrimNet splits a long
      fight into several memories about an hour apart, with no event ids in
      common. Camilla Valerius's catch-up made four rumours of one fight at

@@ -29,7 +29,12 @@ namespace RumourEngine::GossipStarter {
         using Clock = std::chrono::steady_clock;
 
         constexpr int    kPollMs = 4000;
-        constexpr double kQuietSeconds = 20.0;   // real seconds since anyone spoke
+        constexpr double kQuietSeconds = 30.0;   // real seconds since anyone spoke
+        // A conversation with the player isn't over when it goes quiet: they may be typing, or
+        // thinking. Nothing starts within a minute of their last exchange, and whoever they talked
+        // with in the last three is still in it, neither telling nor told.
+        constexpr double kPlayerQuietSeconds = 60.0;
+        constexpr double kConversationSeconds = 180.0;
         constexpr double kSettleSeconds = 30.0;  // after a load, before the first telling
         constexpr int    kSweepEvery = 15;       // polls between retirement sweeps, about a minute
         constexpr float  kEarshot = 1200.0f;     // gossip to player, ~17 m
@@ -71,6 +76,39 @@ namespace RumourEngine::GossipStarter {
             return now - last["localTime"].get<double>() >= kQuietSeconds;
         }
 
+        /** The player's conversation, from SkyrimNet's recent speech: whether they spoke or were
+         *  spoken to too lately to start anything, and who they've been talking with. */
+        struct PlayerTalk {
+            bool                              recent = false;
+            std::unordered_set<std::uint64_t> partners;  // SkyrimNet UUIDs
+        };
+
+        PlayerTalk PlayerConversation() {
+            PlayerTalk t;
+            const auto player = SkyrimNet::UUIDOf(0x14);
+            if (!player) return t;
+            const auto events = nlohmann::json::parse(SkyrimNet::RecentEvents(100, kSpeechEvents), nullptr, false);
+            if (events.is_discarded() || !events.is_array()) return t;
+            const double now = std::chrono::duration<double>(std::chrono::system_clock::now().time_since_epoch()).count();
+            auto         id = [](const nlohmann::json& e, const char* key) -> std::uint64_t {
+                const auto it = e.find(key);
+                if (it == e.end()) return 0;
+                if (it->is_number_unsigned()) return it->get<std::uint64_t>();
+                if (it->is_number_integer()) return static_cast<std::uint64_t>(it->get<std::int64_t>());
+                return 0;
+            };
+            for (const auto& e : events) {
+                const auto at = e.find("localTime");
+                if (at == e.end() || !at->is_number() || now - at->get<double>() > kConversationSeconds) continue;
+                const auto from = id(e, "originatingActor"), to = id(e, "targetActor");
+                if (from != player && to != player) continue;
+                if (now - at->get<double>() < kPlayerQuietSeconds) t.recent = true;
+                if (from && from != player) t.partners.insert(from);
+                if (to && to != player) t.partners.insert(to);
+            }
+            return t;
+        }
+
         bool Allowed(Settings::TellWhere rule, const Mills::MillSet& set, RE::BGSLocation* here) {
             switch (rule) {
             case Settings::TellWhere::Never: return false;
@@ -85,7 +123,7 @@ namespace RumourEngine::GossipStarter {
             return Text::FromGame(a ? a->GetDisplayFullName() : nullptr);
         }
 
-        void Tick() {
+        void Tick(const std::unordered_set<std::uint64_t>& talkingWithPlayer) {
             if (!g_running || !Session::IsReady() || !Settings::StarterEnabled() || CoolingDown()) return;
             if (!SkyrimNet::CanRegisterEvents()) return;
             auto set = Mills::Current();
@@ -114,6 +152,8 @@ namespace RumourEngine::GossipStarter {
                 if (a->IsChild() || a->IsInCombat() || a->IsHostileToActor(player)) return false;
                 if (a->GetCurrentScene()) return false;  // a vanilla scene is already a conversation
                 if (Delivery::InIntimateScene(a)) return false;
+                // Still in a conversation with the player, quiet or not.
+                if (!talkingWithPlayer.empty() && talkingWithPlayer.contains(SkyrimNet::UUIDOf(a->GetFormID()))) return false;
                 if (auto* state = a->AsActorState(); state && state->GetSitSleepState() == RE::SIT_SLEEP_STATE::kIsSleeping) {
                     return false;
                 }
@@ -151,7 +191,16 @@ namespace RumourEngine::GossipStarter {
                     if (g_told.contains({ g.actor->GetFormID(), pick->id })) continue;
                 }
 
-                // Whom to tell: someone who hasn't heard it, else anyone; the nearest of those.
+                // Someone this version still names, by reference or base.
+                auto named = [&](RE::Actor* l) {
+                    const auto* base = l->GetActorBase();
+                    return std::any_of(pick->named.begin(), pick->named.end(), [&](RE::FormID f) {
+                        return f && (f == l->GetFormID() || (base && f == base->GetFormID()));
+                    });
+                };
+
+                // Whom to tell: someone who hasn't heard it, else anyone; the nearest of those. What
+                // the teller was there for isn't told to anyone who was in it with them.
                 RE::Actor* listener = nullptr;
                 bool       listenerHeard = true;
                 float      best = kCloseEnough;
@@ -159,6 +208,7 @@ namespace RumourEngine::GossipStarter {
                     if (std::fabs(pos.z - g.pos.z) > kSameFloor) return;
                     const float d = pos.GetDistance(g.pos);
                     if (d > kCloseEnough) return;
+                    if (pick->firstHand && named(l)) return;
                     const bool heard = Rumours::HasHeard(pick->id, l->GetFormID());
                     if (listener && (heard > listenerHeard || (heard == listenerHeard && d >= best))) return;
                     listener = l;
@@ -176,16 +226,15 @@ namespace RumourEngine::GossipStarter {
                 const std::string ln = NameOf(listener);
                 if (gn.empty() || ln.empty()) continue;
 
-                // Asked, not told, when the listener is someone this version still names.
-                const auto* lbase = listener->GetActorBase();
-                const bool  ask = std::any_of(pick->named.begin(), pick->named.end(), [&](RE::FormID f) {
-                    return f && (f == listener->GetFormID() || (lbase && f == lbase->GetFormID()));
-                });
+                // Asked, not told, when the listener is someone this version still names. What the
+                // teller was there for is told as theirs; the story itself is in their bio.
+                const bool        ask = !pick->firstHand && named(listener);
                 const std::string place = Delivery::PlaceOf(pick->mill);
                 const std::string narration =
-                    ask ? gn + " turns to " + ln + " to ask whether it's true, what people in " + place + " are saying about " +
-                              (listener == player ? std::string("them") : ln) + ": " + pick->text
-                        : gn + " turns to " + ln + " to pass on some of the talk going round " + place + ".";
+                    pick->firstHand ? gn + " turns to " + ln + " to tell them about something " + gn + " was there for."
+                    : ask ? gn + " turns to " + ln + " to ask whether it's true, what people in " + place + " are saying about " +
+                                (listener == player ? std::string("them") : ln) + ": " + pick->text
+                          : gn + " turns to " + ln + " to pass on some of the talk going round " + place + ".";
 
                 // Party members who may not be told are left out of the audience too, so
                 // SkyrimNet doesn't pick them to answer what they overheard.
@@ -212,7 +261,12 @@ namespace RumourEngine::GossipStarter {
                 if (id != 0) {
                     Rumours::NoteAiring(pick->id, pick->mill, g.actor->GetFormID(), listener->GetFormID(), earshot, now);
                     logger::info("Gossip: {} ({:08X}) {} rumour #{} {} {} ({:08X}), {:.0f}u from the player{}: {}", gn,
-                                 g.actor->GetFormID(), ask ? "asks about" : "passes on", pick->id, ask ? "with" : "to", ln,
+                                 g.actor->GetFormID(),
+                                 ask              ? "asks about"
+                                 : pick->own      ? "tells, in their own words,"
+                                 : pick->firstHand ? "tells, as someone who was there,"
+                                                  : "passes on",
+                                 pick->id, ask ? "with" : "to", ln,
                                  listener->GetFormID(), g.toPlayer, restrict ? ", party left out" : "",
                                  pick->text.substr(0, 120));
                     // Anyone who overheard it and lives elsewhere takes it home.
@@ -249,7 +303,9 @@ namespace RumourEngine::GossipStarter {
                     // quest endings all go by it.
                     task->AddTask([]() { Delivery::WatchParty(); });
                     if (!Settings::StarterEnabled() || CoolingDown() || !RoomIsQuiet()) continue;
-                    task->AddTask([]() { Tick(); });
+                    auto talk = PlayerConversation();
+                    if (talk.recent) continue;
+                    task->AddTask([partners = std::move(talk.partners)]() { Tick(partners); });
                 } catch (const std::exception& e) {
                     static int failures = 0;
                     if (++failures <= 20) logger::error("RumourEngine: a pass of its worker failed and was skipped: {}", e.what());

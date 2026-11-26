@@ -163,6 +163,9 @@ in the party while they're within half a cell of the player and not in
 while the follower idles. A follower mod with a faction of its own can ship
 `<Name>_mills.ini` with its `[Party]` line. When one of the player's quests
 ends, everyone in the party then is in that rumour's `known_better_by`.
+Everyone RumourEngine lists in its own rumours' `known_better_by` was there:
+the memory's owner and its witnesses, or the party. They aren't told it as
+talk, and the gossip starter can pick them to tell it as something they saw.
 
 ## C API
 
@@ -288,6 +291,8 @@ RumourEngineAPI::RegisterListener("ready,retired", OnRumourEvent, nullptr);
                                       //   { "settlement": "Solitude" } every mill of that town
                                       //   { "mills": ["whiterun.court", …] }
                                       //   { "hold": "Whiterun" } every mill in the hold
+                                      // and optionally "teller": form or name, whose own account
+                                      //   "text" is, in the first person (see Teller)
   "notability": 0.6,                  // 0–1, default 0.5: how far it travels and how long it stays fresh
   "secrecy": 0.0,                     // 0–1, default 0: how readily it is kept from outsiders
   "scope": "spread",                  // spread (default): hops on from the origin
@@ -319,6 +324,15 @@ RumourEngineAPI::RegisterListener("ready,retired", OnRumourEvent, nullptr);
   `versions`. With `retell_origin: true` they retell it too, as the first hop,
   when someone there first needs it. Then `text` can be a plain account, or
   even data, that RumourEngine turns into talk.
+- **Teller.** `"origin": { "mills": [...], "teller": "Skyrim.esm:0x01A694" }`
+  says `text` is that person's own account, in the first person ("I saw…").
+  They tell it themselves: the gossip starter picks them to tell it to
+  someone near the player, as something they were there for, whether or not
+  they're much of a gossip, and their bio has it as theirs. Every mill, their
+  own included, has it retold in the third person, as talk about what they
+  told, as if `retell_origin` were set. They're added to `known_better_by`,
+  so it never reaches them as talk. RumourEngine's harvest seeds every
+  rumour this way, from the memory's owner. *Added after 1.1.0.*
 - **Which origin.** A location gives the one mill whose talk it belongs to: a
   castle's court, a barracks' garrison, else the town's commons. A settlement
   gives every mill of that town at once (commons, court, garrison,
@@ -462,7 +476,9 @@ RumourEngineAPI::RegisterListener("ready,retired", OnRumourEvent, nullptr);
 ```
 
 A mill whose retelling isn't written yet shows the first telling as its
-`version`. `arrived` can be in the future, for a delay or a hop on its way.
+`version` (with its teller's name before it, for a first-person one).
+`arrived` can be in the future, for a delay or a hop on its way. A rumour
+with a teller also has `"teller": { "key", "form", "name" }`.
 
 `GetRumoursForActor(formId, max)` returns what the actor has heard of the talk
 going round their mills now: arrived, not stale, written, and got as far as

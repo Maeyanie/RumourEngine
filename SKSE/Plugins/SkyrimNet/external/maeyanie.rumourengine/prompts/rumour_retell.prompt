@@ -41,7 +41,10 @@ Answer with the tellings only, one per step in the order given, each on its own 
 Groups along the way:
 {{ retellGroups }}
 
-{% if retellFirst %}
+{% if retellFirst and retellTeller and retellTeller != "" %}
+What happened, as {{ retellTeller }} told it in their own words ("I" and "me" are {{ retellTeller }}; the groups pass it on as talk about what {{ retellTeller }} told them, in the third person):
+{{ retellTalk }}
+{% else if retellFirst %}
 What happened, as it was first told or reported (it may be a plain account rather than talk):
 {{ retellTalk }}
 {% else %}

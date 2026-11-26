@@ -60,6 +60,9 @@ namespace RumourEngine::Rumours {
         std::set<std::string>              givenFact;  // keys of `given` marked as_fact
         bool                               retellOrigin = false;  // the origin's version is written, not taken as given
         std::vector<Subject>               knownBetterBy;  // people a client gives a fuller account: left out of their talk
+        // Whose own account `text` is, in the first person (the harvest's, from their memory): they
+        // tell it themselves, and every mill has it retold. Kept in `origin` as "teller".
+        std::optional<Subject>             teller;
         // Kept as world knowledge once it retired (ADR-001, "Lifecycle").
         double                             promoted = -1.0;  // the game day it retired a candidate; <0 if not
         double                             lasting = -1.0;   // the decision model's answer, once asked; <0 before
@@ -81,6 +84,7 @@ namespace RumourEngine::Rumours {
         std::string              from;      // a mill with a version, or empty to start from the first telling
         std::string              fromText;
         std::vector<std::string> steps;     // in order; the last is the mill that needed one
+        std::string              teller;    // starting from the first telling, and it's this person's own account
     };
 
     /** One rumour as an NPC has heard it. */
@@ -95,6 +99,8 @@ namespace RumourEngine::Rumours {
         bool         fact = false;       // the caller's as_fact version
         bool         aboutThem = false;  // they are a subject this version still names
         std::vector<RE::FormID> named;   // subjects this version names, by form
+        bool         firstHand = false;  // they were there (FirstHand): not talk to them
+        bool         own = false;        // and `text` is their own account, in the first person
     };
 
     /** Read the save's live rumours. Call once its database is open and settled. */
@@ -147,8 +153,21 @@ namespace RumourEngine::Rumours {
     void CarryHome(std::int32_t id, const std::string& mill, const std::vector<RE::FormID>& carriers, double now);
 
     /** A witness's own memory of a live rumour: fresh again in their mills, and there first-hand
-     *  (the first telling) where it hadn't reached. They have certainly heard it. */
-    void Reinforce(std::int32_t id, const std::vector<std::string>& mills, RE::FormID witness, double now);
+     *  (the first telling) where it hadn't reached. They have certainly heard it. With `firstHand`
+     *  (their memory is of the happening itself, not of the talk reaching them) they also know it
+     *  better: it stays out of their own talk and gossip. */
+    void Reinforce(std::int32_t id, const std::vector<std::string>& mills, RE::FormID witness, double now, bool firstHand = false);
+
+    /** These people were there: add each to that live rumour's known_better_by, if they aren't on
+     *  it. Returns how many were added. Any thread. */
+    int AddKnownBetter(const std::vector<std::pair<std::int32_t, RE::FormID>>& who);
+
+    /** What they were there for and could tell first-hand: RumourEngine's own rumours whose
+     *  known_better_by lists them (whose memory it is, a witness, the party when a quest ended),
+     *  fresh in one of their mills, freshest first. Their own is told as they told it, in the first
+     *  person; anyone else's is their mill's version, once it's written. Any thread. */
+    std::vector<Heard> FirstHand(const std::vector<std::string>& mills, RE::FormID self, RE::FormID selfBase, double now,
+                                 std::size_t max);
 
     /** What someone could be talking about: the live rumours in their mills, and those they were in
      *  earshot of, as (id, the version they'd know). For screening's "is this the same talk". */

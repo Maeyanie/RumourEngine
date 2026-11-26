@@ -16,6 +16,27 @@
 - **The party at a quest's ending.** Whoever was with the player when a quest
   ended is left out of that rumour's talk, then and once they're dismissed.
   They were there, and have their own memories of it.
+- **Your own story, told by you.** When someone's memory became a rumour, it
+  went back into their own bio as the talk going round, in its third-person
+  telling, and they could be picked to pass it on, so they could tell their
+  own story back as something they'd heard. A dismissed follower's adventures
+  came back to them the same way. Now the first telling is theirs, in their
+  own words, and they're the one who tells it, to the people around them,
+  gossip or not. Everyone else, their own town included, has it retold as
+  talk about what they told. Witnesses, and those who were with the player
+  when a quest ended, tell it as people who were there, not as hearsay.
+  Rumours already going round in a save are put right when it's loaded.
+- **No turning away mid-conversation.** A bard talking with the player turned
+  to someone else to pass on some gossip. The gossip starter waited only for
+  20 seconds of quiet, which a player typing a reply can leave. Now it waits
+  for 30 seconds of quiet, and a minute after the player last spoke or was
+  spoken to. Whoever the player has talked with in the last three minutes is
+  left out, neither telling nor told. The "most on their mind" line in bios
+  now says to wait for a natural pause, not to cut into another subject, and
+  the line the GameMaster reads says to wait until nobody's mid-conversation.
+- **API: `origin.teller`.** Names whose own first-person account a rumour's
+  `text` is: they tell it themselves, and every mill has it retold. Rumours
+  with one show `teller` in `GetRumour`.
 
 ## 1.1.0
 

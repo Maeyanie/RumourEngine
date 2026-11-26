@@ -167,8 +167,10 @@ namespace RumourEngine::Retell {
             // Nobody should go without the talk for want of a model: pass the last version on as it was.
             logger::warn("Retell: rumour #{} for {} failed {} times ({}); passing on the version before unchanged", c.id,
                          c.steps.back(), kMaxAttempts, why);
+            // Someone's own first-person account isn't anyone else's to say as it stands.
+            const auto passed = c.from.empty() && !c.teller.empty() ? c.teller + " has been telling everyone: " + c.fromText : c.fromText;
             std::vector<std::pair<std::string, std::string>> texts;
-            for (const auto& s : c.steps) texts.emplace_back(s, c.fromText);
+            for (const auto& s : c.steps) texts.emplace_back(s, passed);
             Rumours::SetVersions(c.id, texts, "copied");
         }
 
@@ -195,6 +197,7 @@ namespace RumourEngine::Retell {
                 { "retellFrom", c.from.empty() ? std::string("the people where it started") : GroupName(LineOf(c.from)) },
                 { "retellTalk", c.fromText },
                 { "retellFirst", c.from.empty() },
+                { "retellTeller", c.from.empty() ? c.teller : std::string{} },
                 { "retellSteps", Trim(stepText) },
                 { "retellCount", c.steps.size() },
             };

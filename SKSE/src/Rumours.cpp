@@ -283,6 +283,49 @@ namespace RumourEngine::Rumours {
             return out;
         }
 
+        /** Someone by form, as the lists keep them: their key and name. */
+        Subject SubjectFor(RE::FormID formId) {
+            Subject s;
+            s.formId = formId;
+            s.key = ActorKey(formId);
+            if (auto* form = RE::TESForm::LookupByID(formId)) {
+                if (auto* actor = form->As<RE::Actor>()) s.name = Text::FromGame(actor->GetDisplayFullName());
+                else if (auto* npc = form->As<RE::TESNPC>()) s.name = Text::FromGame(npc->GetName());
+            }
+            return s;
+        }
+
+        /** On the list already, by key or by form. */
+        bool Listed(const std::vector<Subject>& list, const Subject& s) {
+            return std::any_of(list.begin(), list.end(),
+                               [&](const Subject& x) { return (!s.key.empty() && x.key == s.key) || (s.formId && x.formId == s.formId); });
+        }
+
+        /** The person by reference or base form. */
+        bool Is(const Subject& s, RE::FormID self, RE::FormID selfBase) { return s.formId && (s.formId == self || s.formId == selfBase); }
+
+        /** origin.teller: as stored ({key, form, name}), or as a request gives it (a form or a name). */
+        std::optional<Subject> TellerOf(const nlohmann::json& origin, const Mills::MillSet* set) {
+            if (!origin.is_object()) return std::nullopt;
+            const auto t = origin.find("teller");
+            if (t == origin.end() || t->is_null()) return std::nullopt;
+            if (t->is_object()) {
+                Subject s{ t->value("key", ""), t->value("form", RE::FormID(0)), t->value("name", "") };
+                if (s.key.empty() && !s.formId) return std::nullopt;
+                return s;
+            }
+            auto who = SubjectsOf(*t, set);
+            if (who.empty()) return std::nullopt;
+            return who.front();
+        }
+
+        /** The first telling as anyone but its teller should see it: a first-person account says
+         *  whose it is. */
+        std::string FirstTelling(const Rumour& r) {
+            if (!r.teller || r.teller->name.empty()) return r.text;
+            return fmt::format("{} has been telling everyone: {}", r.teller->name, r.text);
+        }
+
         /** The mills a request's origin names. */
         std::vector<std::string> OriginMills(const nlohmann::json& origin, const Mills::MillSet& set, std::string& error) {
             std::vector<std::string> out;
@@ -529,15 +572,17 @@ namespace RumourEngine::Rumours {
                                   { "notability", p.notability },
                                   { "hops", p.hops },
                                   { "airings", p.airings },
-                                  { "version", v != r.versions.end() ? v->second.text : r.text },
+                                  { "version", v != r.versions.end() ? v->second.text : FirstTelling(r) },
                                   { "fact", v != r.versions.end() && v->second.fact },
                                   { "names_subjects", v != r.versions.end() ? v->second.names : std::vector<std::string>{} } });
             }
-            return { { "id", r.id },         { "source", r.source },       { "key", r.key },
-                     { "text", r.text },     { "notability", r.notability }, { "secrecy", r.secrecy }, { "scope", ScopeName(r.scope) },
-                     { "retell_origin", r.retellOrigin }, { "known_better_by", KnownJson(r) },
-                     { "created", r.created }, { "topics", r.topics },     { "subjects", subjects },
-                     { "mills", mills } };
+            nlohmann::json out = { { "id", r.id },         { "source", r.source },       { "key", r.key },
+                                   { "text", r.text },     { "notability", r.notability }, { "secrecy", r.secrecy }, { "scope", ScopeName(r.scope) },
+                                   { "retell_origin", r.retellOrigin }, { "known_better_by", KnownJson(r) },
+                                   { "created", r.created }, { "topics", r.topics },     { "subjects", subjects },
+                                   { "mills", mills } };
+            if (r.teller) out["teller"] = { { "key", r.teller->key }, { "form", r.teller->formId }, { "name", r.teller->name } };
+            return out;
         }
 
         /** Write a rumour's subjects, presences and versions. Caller holds g_lock. */
@@ -683,6 +728,7 @@ namespace RumourEngine::Rumours {
                 x.source = r.S(1);
                 x.key = r.S(2);
                 x.origin = nlohmann::json::parse(r.S(3), nullptr, false);
+                x.teller = TellerOf(x.origin, nullptr);
                 x.text = r.S(4);
                 auto topics = nlohmann::json::parse(r.S(5), nullptr, false);
                 if (topics.is_array()) {
@@ -926,6 +972,20 @@ namespace RumourEngine::Rumours {
             }
         }
         r.origin = j.value("origin", nlohmann::json::object());
+        // Someone's own account in the first person: they tell it, and their own mills hear it
+        // retold, as everyone else does. Stored with the origin, as the lists keep people. They
+        // know it better than the talk, too.
+        if (r.origin.is_object() && r.origin.contains("teller")) {
+            r.teller = TellerOf(r.origin, set.get());
+            if (r.teller) {
+                r.origin["teller"] = { { "key", r.teller->key }, { "form", r.teller->formId }, { "name", r.teller->name } };
+                r.retellOrigin = true;
+                if (!Listed(r.knownBetterBy, *r.teller)) r.knownBetterBy.push_back(*r.teller);
+            } else {
+                logger::warn("AddRumour ({}): unknown teller {} (not a form, and nobody's name)", r.source, r.origin["teller"].dump());
+                r.origin.erase("teller");
+            }
+        }
         auto targets = OriginMills(r.origin, *set, error);
         if (targets.empty()) {
             if (error.empty()) error = "the origin names no mill";
@@ -1048,6 +1108,7 @@ namespace RumourEngine::Rumours {
             out.givenFact = r.givenFact;
             out.retellOrigin = r.retellOrigin;
             out.knownBetterBy = r.knownBetterBy;
+            out.teller = r.teller;
         } else if (!id) {
             out.created = start;
         }
@@ -1408,13 +1469,20 @@ namespace RumourEngine::Rumours {
         if (!out.empty()) AddArrivals(out);
     }
 
-    void Reinforce(std::int32_t id, const std::vector<std::string>& mills, RE::FormID witness, double now) {
+    void Reinforce(std::int32_t id, const std::vector<std::string>& mills, RE::FormID witness, double now, bool firstHand) {
         auto            set = Mills::Current();
         const auto      key = witness ? ActorKey(witness) : std::string{};
+        const Subject   was = firstHand && witness ? SubjectFor(witness) : Subject{};
         std::lock_guard lk(g_lock);
         auto            it = g_rumours.find(id);
         if (it == g_rumours.end()) return;
-        Rumour&                  r = it->second;
+        Rumour& r = it->second;
+        // They were there: their own memory of it, not the talk, is what they go by.
+        std::string knownJson;
+        if (firstHand && witness && !Listed(r.knownBetterBy, was)) {
+            r.knownBetterBy.push_back(was);
+            knownJson = KnownJson(r).dump();
+        }
         std::vector<std::string> refreshed, reached;
         for (const auto& m : mills) {
             auto p = r.mills.find(m);
@@ -1434,12 +1502,16 @@ namespace RumourEngine::Rumours {
             np.notability = r.notability;
             np.freshUntil = now + FreshDays(r, np.notability);
             r.mills[m] = np;
-            Version v;
-            bool    fact = false;
-            v.text = GivenFor(r, m, set.get(), &fact).value_or(r.text);
-            v.names = NamedSubjects(v.text, r.subjects);
-            v.fact = fact;
-            r.versions[m] = std::move(v);
+            bool fact = false;
+            auto given = GivenFor(r, m, set.get(), &fact);
+            // Someone's own first-person account is theirs alone to tell: the mill has it retold.
+            if (given || !r.teller) {
+                Version v;
+                v.text = given.value_or(r.text);
+                v.names = NamedSubjects(v.text, r.subjects);
+                v.fact = fact;
+                r.versions[m] = std::move(v);
+            }
             reached.push_back(m);
         }
         if (!key.empty()) {
@@ -1454,18 +1526,21 @@ namespace RumourEngine::Rumours {
             }
             for (const auto& m : reached) {
                 const auto& p = r.mills.at(m);
-                const auto& v = r.versions.at(m);
                 Stmt(db, "INSERT OR IGNORE INTO rumour_mills(rumour_id, mill, parent_mill, hops, notability, fresh_until, airings, "
                          "arrived, game_time) VALUES(?,?,NULL,0,?,?,0,?,?);")
                     .Bind(1, id).Bind(2, m).Bind(3, p.notability).Bind(4, p.freshUntil).Bind(5, p.arrived).Bind(6, p.decided).Run();
+                const auto v = r.versions.find(m);
+                if (v == r.versions.end()) continue;
                 Stmt(db, "INSERT OR REPLACE INTO versions(rumour_id, mill, text, names_subjects, model, game_time) VALUES(?,?,?,?,'witness',?);")
-                    .Bind(1, id).Bind(2, m).Bind(3, v.text).Bind(4, nlohmann::json(v.names).dump()).Bind(5, now).Run();
+                    .Bind(1, id).Bind(2, m).Bind(3, v->second.text).Bind(4, nlohmann::json(v->second.names).dump()).Bind(5, now).Run();
             }
             if (!key.empty()) {
                 Stmt(db, "INSERT OR IGNORE INTO heard(rumour_id, actor, game_time) VALUES(?,?,?);").Bind(1, id).Bind(2, key).Bind(3, now).Run();
             }
+            if (!knownJson.empty()) Stmt(db, "UPDATE rumours SET known_better_by = ? WHERE id = ?;").Bind(1, knownJson).Bind(2, id).Run();
             Stmt(db, "COMMIT;").Run();
         });
+        if (!knownJson.empty()) logger::info("Rumour #{}: {} was there, so it stays out of their own talk", id, was.name);
         for (const auto& m : reached) {
             logger::info("Rumour #{} reaches {} first-hand, through a witness", id, m);
             Api::DispatchEvent("arrived", nlohmann::json{ { "type", "arrived" }, { "id", id }, { "mill", m } }.dump());
@@ -1486,23 +1561,23 @@ namespace RumourEngine::Rumours {
         };
         std::vector<K> found;
         for (const auto& [id, r] : g_rumours) {
-            const std::string* text = nullptr;
-            double             arrived = 0.0;
-            const bool         certain = g_heard.contains({ id, key }) || CertainlyHeard(id, who);
+            std::optional<std::string> text;
+            double                     arrived = 0.0;
+            const bool                 certain = g_heard.contains({ id, key }) || CertainlyHeard(id, who);
             for (const auto& m : mills) {
                 auto p = r.mills.find(m);
                 if (p == r.mills.end() || p->second.arrived > now || Stale(p->second, now)) continue;
                 if (!certain && !HeardIn(r, m, p->second, who, set.get(), now)) continue;
                 auto v = r.versions.find(m);
-                text = v != r.versions.end() ? &v->second.text : &r.text;
+                text = v != r.versions.end() ? v->second.text : FirstTelling(r);
                 arrived = p->second.arrived;
                 break;
             }
             if (!text && certain) {
-                text = &r.text;
+                text = FirstTelling(r);
                 arrived = r.created;
             }
-            if (text) found.push_back({ id, *text, arrived });
+            if (text) found.push_back({ id, std::move(*text), arrived });
         }
         std::sort(found.begin(), found.end(), [](const K& a, const K& b) { return a.arrived > b.arrived; });
         std::vector<std::pair<std::int32_t, std::string>> out;
@@ -1516,6 +1591,95 @@ namespace RumourEngine::Rumours {
     bool IsLive(std::int32_t id) {
         std::lock_guard lk(g_lock);
         return g_rumours.contains(id);
+    }
+
+    int AddKnownBetter(const std::vector<std::pair<std::int32_t, RE::FormID>>& who) {
+        std::vector<std::pair<std::int32_t, Subject>> people;
+        for (const auto& [id, form] : who) {
+            if (id && form) people.emplace_back(id, SubjectFor(form));
+        }
+        const double    now = Now();
+        std::lock_guard lk(g_lock);
+        std::set<std::int32_t>                            changed;
+        std::vector<std::pair<std::int32_t, std::string>> heard;
+        int                                               added = 0;
+        for (const auto& [id, s] : people) {
+            auto it = g_rumours.find(id);
+            if (it == g_rumours.end() || Listed(it->second.knownBetterBy, s)) continue;
+            it->second.knownBetterBy.push_back(s);
+            changed.insert(id);
+            ++added;
+            if (!s.key.empty() && g_heard.insert({ id, s.key }).second) heard.emplace_back(id, s.key);
+            g_heardForms.insert({ id, s.formId });
+        }
+        if (changed.empty()) return 0;
+        Database::With([&](sqlite3* db) {
+            Stmt(db, "BEGIN;").Run();
+            for (auto id : changed) {
+                Stmt(db, "UPDATE rumours SET known_better_by = ? WHERE id = ?;").Bind(1, KnownJson(g_rumours.at(id)).dump()).Bind(2, id).Run();
+            }
+            for (const auto& [id, key] : heard) {
+                Stmt(db, "INSERT OR IGNORE INTO heard(rumour_id, actor, game_time) VALUES(?,?,?);").Bind(1, id).Bind(2, key).Bind(3, now).Run();
+            }
+            Stmt(db, "COMMIT;").Run();
+        });
+        return added;
+    }
+
+    std::vector<Heard> FirstHand(const std::vector<std::string>& mills, RE::FormID self, RE::FormID selfBase, double now,
+                                 std::size_t max) {
+        std::vector<Heard>                                out;
+        std::vector<std::pair<std::int32_t, std::string>> unwritten;
+        {
+            std::lock_guard lk(g_lock);
+            for (const auto& [id, r] : g_rumours) {
+                // The teller's own account is theirs to tell, whoever added it. Otherwise only
+                // RumourEngine's own lists are of people who were there; a client's are the people
+                // it tells more fully itself.
+                const bool own = r.teller && Is(*r.teller, self, selfBase);
+                if (!own && (r.source != "RumourEngine" || std::none_of(r.knownBetterBy.begin(), r.knownBetterBy.end(),
+                                                                        [&](const Subject& s) { return Is(s, self, selfBase); }))) {
+                    continue;
+                }
+                for (const auto& m : mills) {
+                    auto p = r.mills.find(m);
+                    if (p == r.mills.end() || p->second.arrived > now || Stale(p->second, now)) continue;
+                    // Their own, as they told it; anyone else's as their own people tell it, once written.
+                    std::string              text = r.text;
+                    std::vector<std::string> names;
+                    if (own) {
+                        names = NamedSubjects(r.text, r.subjects);
+                    } else if (auto v = r.versions.find(m); v != r.versions.end()) {
+                        text = v->second.text;
+                        names = v->second.names;
+                    } else {
+                        unwritten.emplace_back(id, m);
+                        break;
+                    }
+                    Heard h;
+                    h.id = id;
+                    h.mill = m;
+                    h.text = std::move(text);
+                    h.arrived = p->second.arrived;
+                    h.notability = p->second.notability;
+                    h.secrecy = r.secrecy;
+                    h.airings = p->second.airings;
+                    h.firstHand = true;
+                    h.own = own;
+                    for (const auto& s : r.subjects) {
+                        if (std::find(names.begin(), names.end(), s.key) == names.end()) continue;
+                        h.named.push_back(s.formId);
+                        if (Is(s, self, selfBase)) h.aboutThem = true;
+                    }
+                    out.push_back(std::move(h));
+                    break;
+                }
+            }
+        }
+        for (const auto& [id, m] : unwritten) Retell::Request(id, m);
+        std::sort(out.begin(), out.end(), [](const Heard& a, const Heard& b) { return a.arrived > b.arrived; });
+        if (out.size() > max) out.resize(max);
+        return out;
     }
 
     std::vector<Rumour> Snapshot() {
@@ -1631,7 +1795,10 @@ namespace RumourEngine::Rumours {
             }
             at = p->second.parent;
         }
-        if (c.from.empty()) c.fromText = r.text;  // lost the trail: start from the first telling
+        if (c.from.empty()) {  // lost the trail, or it's the origin's own: start from the first telling
+            c.fromText = r.text;
+            if (r.teller) c.teller = r.teller->name;
+        }
         c.id = id;
         c.steps.assign(back.rbegin(), back.rend());
         if (c.steps.size() > maxSteps) c.steps.resize(maxSteps);
@@ -1703,7 +1870,7 @@ namespace RumourEngine::Rumours {
             p.id = id;
             p.source = r.source;
             p.key = r.key;
-            p.text = r.text;
+            p.text = FirstTelling(r);
             p.promote = r.promote;
             p.lasting = r.lasting;
             p.promotedText = r.promotedText;

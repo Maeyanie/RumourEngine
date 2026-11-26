@@ -15,8 +15,10 @@ garbled version, and passes it on to the player.
 - **Harvesting.** Every couple of game hours, RumourEngine looks at the
   SkyrimNet memories people have formed lately. SkyrimNet's decision model
   judges whether the owner would pass each one on, and how much they would
-  tell, by who they are. What they would becomes a rumour in their mills,
-  and they remember telling it.
+  tell, by who they are. What they would becomes a rumour in their mills, in
+  their own words: they tell it themselves, and everyone else retells it as
+  talk about what they said. Those who were there go by their own memories
+  of it, so it never comes back to them as talk.
 - **Quest endings.** When one of your quests ends, the decision model reads
   its journal and judges whether word of how it ended would get out, and how
   far: Dawnstar freed of its nightmares is talk in the Pale, the Emperor
@@ -33,8 +35,9 @@ garbled version, and passes it on to the player.
   someone is comes from their job and a reading of their SkyrimNet bio.
 - **Telling.** NPCs have the talk going round their mills in their bio, as
   talk, not fact. Gossips bring it up, to each other and to the player (in
-  taverns, by default). Nobody gossips in the middle of an OStim or SexLab
-  scene.
+  taverns, by default), once the room has been quiet for a while. Nobody
+  turns away from a conversation with you to gossip, or gossips in the middle
+  of an OStim or SexLab scene.
 - **Going stale.** Talk fades after a few days, longer the more notable it
   is. The biggest news, the kind people still bring up a year later, is kept
   as SkyrimNet world knowledge for those it reached: a war breaking out, a
@@ -121,13 +124,15 @@ tried again at later harvests, and dropped after three tries.
 
 ### `rumour_seed`
 
-This call writes a rumour's first telling, and every retelling starts from
-it. Accuracy matters more than style here: the telling should say what
-happened, keep to the memory, and leave out what "only the gist" holds back.
-NPCs put it in their own words when they bring it up anyway.
+This call writes a rumour's first telling: the account of the person who
+remembers it, in their own words, which they tell themselves and every
+retelling starts from. Accuracy matters more than style here: the telling
+should say what happened, keep to the memory, and leave out what "only the
+gist" holds back. NPCs put it in their own words when they bring it up anyway.
 
 [`tools/panel/seed_panel.py`](tools/panel/seed_panel.py) gave each model 18
-memories from a play save, three to a call, as a harvest sends them.
+memories from a play save, three to a call, as a harvest sends them. The
+panel ran before tellings were in the first person.
 
 | Model | Reasoning | How it did | $/call | s/call |
 | --- | --- | --- | --- | --- |

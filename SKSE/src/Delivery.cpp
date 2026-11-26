@@ -242,23 +242,44 @@ namespace RumourEngine::Delivery {
 
     std::optional<Rumours::Heard> PickTelling(RE::Actor* actor, double now) {
         if (!actor || InPlayersCompany(actor) || InIntimateScene(actor)) return std::nullopt;
-        const double gossip = GossipScore(actor);
-        if (gossip < Settings::MinTellerScore()) return std::nullopt;
         auto set = Mills::Current();
         if (!set) return std::nullopt;
-        const auto  mills = set->MillsFor(actor);
-        const auto* base = actor->GetActorBase();
-        for (auto& h : Rumours::InMills(mills, actor->GetFormID(), base ? base->GetFormID() : 0, now, 8)) {
-            // Nobody gossips about themselves, and a story someone else has just told waits its turn.
-            if (h.aboutThem || Rumours::AiredByOtherRecently(h.id, actor->GetFormID())) continue;
-            // A secret is only passed on by someone who gossips more readily than it is kept, and
-            // nor is anything a close mill heard.
-            if (const double keep = std::max(h.secrecy, set->SecrecyOf(h.mill)); keep > 0.0 && gossip <= keep) continue;
-            // Told often enough in the player's hearing: still known, no longer pressed on anyone.
-            if (const int limit = Settings::AiringsUntilStale(); limit > 0 && h.airings >= limit) continue;
+        const double     gossip = GossipScore(actor);
+        const auto       mills = set->MillsFor(actor);
+        const auto*      base = actor->GetActorBase();
+        const RE::FormID self = actor->GetFormID(), selfBase = base ? base->GetFormID() : 0;
+        const int        limit = Settings::AiringsUntilStale();
+        // A secret is only passed on by someone who gossips more readily than it is kept, and nor is
+        // anything a close mill heard.
+        auto kept = [&](const Rumours::Heard& h) {
+            const double keep = std::max(h.secrecy, set->SecrecyOf(h.mill));
+            return keep > 0.0 && gossip <= keep;
+        };
+        // What they were there for comes first, gossip or not: it happened to them, or in front of
+        // them. Their own story may well be about themselves. A story someone else has just told
+        // waits its turn, and one told often enough in the player's hearing is still known but no
+        // longer pressed on anyone.
+        for (auto& h : Rumours::FirstHand(mills, self, selfBase, now, 4)) {
+            if (Rumours::AiredByOtherRecently(h.id, self) || kept(h) || (limit > 0 && h.airings >= limit)) continue;
+            return h;
+        }
+        if (gossip < Settings::MinTellerScore()) return std::nullopt;
+        for (auto& h : Rumours::InMills(mills, self, selfBase, now, 8)) {
+            // Nobody gossips about themselves.
+            if (h.aboutThem || Rumours::AiredByOtherRecently(h.id, self) || kept(h) || (limit > 0 && h.airings >= limit)) continue;
             return h;
         }
         return std::nullopt;
+    }
+
+    /** The bio's line for what they'd tell next. Every turn sees it, so it says when: "given the
+     *  chance" was taken as any turn, the middle of someone else's subject included. */
+    static std::string KeenLine(const std::string& name, const Rumours::Heard& h) {
+        const std::string keen = "Most on " + name + "'s mind just now, and worth ";
+        const std::string when = " when the conversation reaches a natural pause, not in the middle of another subject";
+        if (h.own) return keen + "telling" + when + ", as " + name + " remembers it: " + h.text;
+        if (h.firstHand) return keen + "telling" + when + ", since " + name + " was there and saw it: " + h.text;
+        return keen + "bringing up" + when + ": " + h.text;
     }
 
     std::string BuildTalk(RE::Actor* actor) {
@@ -279,18 +300,18 @@ namespace RumourEngine::Delivery {
             auto& list = h.fact ? facts : talk;
             if (list.size() < cap) list.push_back(std::move(h));
         }
-        if (facts.empty() && talk.empty()) return "";
 
         // The GameMaster can start a conversation without a topic, so the reason a
         // gossip was picked has to be in their own bio, or it never gets said. It is
-        // marked where it is listed, and only spelled out on its own when it isn't.
-        const auto        pick = PickTelling(actor, now);
-        const std::string keen = "Most on " + name + "'s mind just now, and worth bringing up given the chance: ";
-        bool              listed = false;
-        auto              line = [&](const Rumours::Heard& h) {
-            if (pick && h.id == pick->id) {
+        // marked where it is listed, and only spelled out on its own when it isn't:
+        // always, for what they were there for, which isn't talk to them.
+        const auto pick = PickTelling(actor, now);
+        if (facts.empty() && talk.empty() && !pick) return "";
+        bool listed = false;
+        auto line = [&](const Rumours::Heard& h) {
+            if (pick && h.id == pick->id && !pick->firstHand) {
                 listed = true;
-                return "- " + keen + h.text + "\n";
+                return "- " + KeenLine(name, h) + "\n";
             }
             return h.aboutThem ? "- People are saying this about " + name + ": " + h.text + "\n" : "- " + h.text + "\n";
         };
@@ -317,7 +338,7 @@ namespace RumourEngine::Delivery {
                   " knows that.\n";
             for (const auto& h : talk) md += line(h);
         }
-        if (pick && !listed) md += "\n" + keen + pick->text + "\n";
+        if (pick && !listed) md += (md.empty() ? "" : "\n") + KeenLine(name, *pick) + "\n";
         return md;
     }
 
@@ -325,7 +346,13 @@ namespace RumourEngine::Delivery {
         auto pick = PickTelling(actor, Rumours::Now());
         if (!pick) return "";
         // A pointer, not the story: the whole of it is in their bio.
-        return "Also keen to pass on the talk in " + PlaceOf(pick->mill) + ": " + Shorten(pick->text, 110);
+        // The GameMaster and the speaker selector read it: only once nobody's mid-conversation.
+        if (pick->firstHand) {
+            return "Also keen to tell about something they were there for, once nobody's in the middle of a conversation: " +
+                   Shorten(pick->text, 110);
+        }
+        return "Also keen to pass on the talk in " + PlaceOf(pick->mill) + ", once nobody's in the middle of a conversation: " +
+               Shorten(pick->text, 110);
     }
 
     void RegisterDecorators() {
