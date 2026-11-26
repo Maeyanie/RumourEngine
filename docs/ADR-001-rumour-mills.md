@@ -512,8 +512,18 @@ companion back from the road is exactly who would tell everyone about them
 once the follower has been dismissed and has settled.
 
 1. **Notice the dismissal.** The harvest tick checks party membership: the
-   teammate flag, `CurrentFollowerFaction`, and SeverActions' own state if it
-   exposes one. The time each follower joined and left is recorded.
+   teammate flag, `CurrentFollowerFaction`, and the follower mods' own
+   factions that `mills.ini` `[Party]` names. Someone seen following stays in
+   the party while they're within half a cell of the player and not in
+   `DismissedFollowerFaction`: Sofia clears her teammate flag while she idles
+   near a player who has stopped, and keeps her own faction rather than
+   `CurrentFollowerFaction`, so until 2026-11-26 she counted as a Whiterun
+   local whenever the player stood still. Everyone loaded is looked at every
+   4 s, so a follower is seen following while the game still marks them: in
+   the first test, Melana's flag was cleared before anything had asked about
+   her, and the grace had nothing to go on. Factions a quest alias gives count
+   (Melana's PlayerFollowerFaction, from her follower alias, matched a test
+   `[Party]` line). The time each follower joined and left is recorded.
 2. **Give them time to get home.** Vanilla followers walk back to a fixed
    home, but follower mods commonly send them elsewhere. A follower counts as
    settled once they have been in the same settlement for `settle_hours` of
@@ -659,6 +669,12 @@ makes them rumours. *Built 2026-11-21, the user's idea before 1.0.*
   `promote` left on auto so the lasting question decides world knowledge
   later. If the telling fails three times, the journal is seeded instead,
   with `retell_origin`.
+- **The party** when it ended goes in `known_better_by`: they were there and
+  have their own memories of it, so the talk never comes back to them as
+  something they heard, then or after they're dismissed. *Added 2026-11-26:*
+  a player's Sofia, travelling with them, told a caged prisoner at Fort
+  Greymoor that "people in Whiterun are saying" the player killed Sinding,
+  which they had done together.
 - **Where it ended.** The player's location, else their cell's. In the
   wilderness, where cells carry none, it's the nearest exterior cell with
   one, up to 8 cells away. Failing that, it's the last location they were
@@ -1509,7 +1525,9 @@ C++ exists.
      travelling with the player. Someone already following when first seen
      has no known join time, so all their history counts.
    - **Not done:** SeverActions' own follower state isn't read; the teammate
-     flag and `CurrentFollowerFaction` cover its followers. Shared-member
+     flag and `CurrentFollowerFaction` cover its followers. Follower mods with
+     a faction of their own are listed in `mills.ini` `[Party]` (Sofia's, from
+     2026-11-26). Shared-member
      edges between mills still use the built membership.
 
    [`docs/API.md`](API.md), drafted 2026-11-01, describes the API as built,

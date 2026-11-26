@@ -92,6 +92,7 @@ namespace RumourEngine::Mills {
         std::unordered_map<std::string, double>                   secrecy;  // mills.ini [Secrecy]: how close a mill keeps what it hears
         std::unordered_map<std::string, std::string>              lines;    // mills.ini [Lines]: each mill described to the retell prompt
         std::vector<std::string>                                  eager;    // mills.ini [Retell]: written as soon as a rumour arrives
+        std::vector<RE::FormID>                                   partyFactions;  // mills.ini [Party]: at rank 0 or more, following the player
         std::map<std::string, int>                                dropped;
         std::map<std::string, int>                                sources;
         std::string                                               reason;

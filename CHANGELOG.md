@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+- **Followers with a faction of their own.** Sofia, travelling with the
+  player, told a caged prisoner that "people in Whiterun are saying" the
+  player had killed Sinding, which she had done with them. Her mod keeps her
+  in its own faction rather than `CurrentFollowerFaction`, and clears her
+  teammate flag while she idles near a player who has stopped. So whenever the
+  player stood still she counted as a Whiterun local: given Whiterun's talk,
+  free to gossip, and her memories open to the harvest. `mills.ini` has a new
+  `[Party]` section for follower mods' own factions, with Sofia's in it, and
+  patches can add more. Someone seen following also stays in the party while
+  they're close to the player and not dismissed, whatever their mod does with
+  the flag.
+- **The party at a quest's ending.** Whoever was with the player when a quest
+  ended is left out of that rumour's talk, then and once they're dismissed.
+  They were there, and have their own memories of it.
+
 ## 1.1.0
 
 - **Skyrim 1.7.99 and 1.7.104.** RumourEngine now loads on them: it reads

@@ -152,6 +152,18 @@ the builder couldn't place who turns out to live somewhere. Going back home
 clears it. So ask for an actor's mills when you need them, rather than caching
 them for a whole session.
 
+**The player's party** is in no mill while it travels: its members aren't told
+the talk, don't tell it, and their memories wait until they're dismissed and
+settle. Someone is in the party when the game marks them as the player's
+teammate, or they're in `CurrentFollowerFaction` at rank 0 or more, or in a
+follower mod's own faction that `mills.ini` lists under `[Party]`
+(`mod = FactionEditorID, …`; Sofia's ships). Someone seen following also stays
+in the party while they're within half a cell of the player and not in
+`DismissedFollowerFaction`, since some follower mods clear the teammate flag
+while the follower idles. A follower mod with a faction of its own can ship
+`<Name>_mills.ini` with its `[Party]` line. When one of the player's quests
+ends, everyone in the party then is in that rumour's `known_better_by`.
+
 ## C API
 
 Copy `RumourEngineAPI.h` into your project. It's in the download at

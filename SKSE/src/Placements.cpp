@@ -481,6 +481,12 @@ namespace RumourEngine::Placements {
         return it != g_state.end() && !it->second.following && it->second.catchup;
     }
 
+    bool Following(RE::FormID base) {
+        std::lock_guard lk(g_lock);
+        auto            it = g_state.find(base);
+        return it != g_state.end() && it->second.following;
+    }
+
     std::vector<Catchup> TakeCatchups() {
         std::lock_guard lk(g_lock);
         return std::exchange(g_catchups, {});

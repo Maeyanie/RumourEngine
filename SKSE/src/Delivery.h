@@ -12,8 +12,18 @@ namespace RumourEngine::Delivery {
     /** Register the decorators. kDataLoaded, after SkyrimNet is bound. */
     void RegisterDecorators();
 
-    /** Following the player now: in no mill, told nothing from here. */
+    /** Following the player now: in no mill, told nothing from here. The teammate flag,
+     *  CurrentFollowerFaction or a mills.ini [Party] faction says so; and someone seen following
+     *  stays in the party while they're close to the player and not dismissed, as some follower
+     *  mods clear the flag while the follower idles near a player who has stopped. Any thread. */
     bool InPlayersCompany(RE::Actor* actor);
+
+    /** A save is loaded or closed: forget who was seen following. */
+    void ResetParty();
+
+    /** Main thread, every few seconds: ask about everyone loaded, so a follower is seen
+     *  following while the game still marks them, before their mod clears the flag. */
+    void WatchParty();
 
     /** In an OStim or SexLab scene: nobody starts a telling, or is told one, mid-scene. */
     bool InIntimateScene(RE::Actor* actor);

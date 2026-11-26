@@ -39,9 +39,11 @@ garbled version, and passes it on to the player.
   is. The biggest news, the kind people still bring up a year later, is kept
   as SkyrimNet world knowledge for those it reached: a war breaking out, a
   Jarl murdered, a dragon slain at a city's gates.
-- **Followers and moves.** A dismissed follower joins the mills of wherever
-  they settle, and their stories from the road get told there. NPCs that
-  other mods move to a new home are noticed the same way.
+- **Followers and moves.** The party belongs to no mill while it travels. A
+  dismissed follower joins the mills of wherever they settle, and their
+  stories from the road get told there. Those who were with you when a quest
+  ended never hear it back as talk, since they were there. NPCs that other
+  mods move to a new home are noticed the same way.
 
 Other mods can add and read rumours through a C++ API, a Papyrus API and a
 ModEvent; FactionEngine uses it for faction news. See
@@ -82,6 +84,9 @@ Install it with your mod manager. Then:
    and the gossips, and `quests.ini` says which quests are always or never
    told. Other mods can patch them with `<Name>_mills.ini`,
    `<Name>_gossips.ini` and `<Name>_quests.ini` files beside them.
+   Followers are recognised by the game's own follower markers. A follower
+   mod that keeps its own faction instead, as Sofia does, needs a line in
+   `mills.ini`'s `[Party]` section; Sofia's is there already.
 
 ## What it costs
 

@@ -31,6 +31,10 @@ namespace RumourEngine::Placements {
     /** Dismissed, and not settled anywhere yet: their memories wait. `base` is their base form. Any thread. */
     bool Unsettled(RE::FormID base);
 
+    /** Following the player when last looked at (each game hour, and as stored for the save).
+     *  `base` is their base form. Any thread. */
+    bool Following(RE::FormID base);
+
     /** Settled followers whose time away is due a harvest. Each is handed out once. */
     std::vector<Catchup> TakeCatchups();
 }

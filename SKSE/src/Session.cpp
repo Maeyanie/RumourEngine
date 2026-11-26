@@ -1,6 +1,7 @@
 #include "Session.h"
 #include "Api.h"
 #include "Database.h"
+#include "Delivery.h"
 #include "Gossip.h"
 #include "GossipStarter.h"
 #include "Harvest.h"
@@ -212,6 +213,7 @@ namespace RumourEngine::Session {
             Spread::Reset();
             Harvest::Reset();
             Placements::Reset();
+            Delivery::ResetParty();
             Gossip::Reset();
             Promote::Reset();
             Quests::Reset();
@@ -240,6 +242,7 @@ namespace RumourEngine::Session {
         Spread::Reset();
         Harvest::Reset();
         Placements::Reset();
+        Delivery::ResetParty();
         Gossip::Reset();
         Promote::Reset();
         Quests::Reset();

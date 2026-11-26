@@ -1,6 +1,7 @@
 #include "Delivery.h"
 #include "Gossip.h"
 #include "Mills.h"
+#include "Placements.h"
 #include "Runtime.h"
 #include "Settings.h"
 #include "SkyrimNet.h"
@@ -11,6 +12,20 @@ namespace RumourEngine::Delivery {
     namespace {
 
         constexpr RE::FormID kCurrentFollowerFaction = 0x0005C84E;
+        constexpr RE::FormID kDismissedFollowerFaction = 0x0005C84C;
+
+        // Someone last seen following stays in the party while this close to the player (half a
+        // cell): some follower mods clear the teammate flag while the follower idles around a
+        // player who has stopped (Sofia's sandbox), and they're no less in the party for it.
+        constexpr float kStillWithPlayer = 2048.0f;
+
+        /** Why someone counts as following: the game's own markers, a mills.ini [Party] faction
+         *  alone, or only being close to the player after one of those. */
+        enum class Why { Marked, Faction, Nearby };
+
+        std::mutex                                       g_partyLock;
+        std::unordered_map<RE::FormID, Why>              g_party;  // references seen following the player this session
+        std::set<std::pair<RE::FormID, Why>>             g_noted;  // logged once a session each
 
         // Who is in a scene, as SkyrimNet's own speaker selectors tell it. Local FormIDs.
         constexpr std::pair<RE::FormID, std::string_view> kSceneFactions[] = {
@@ -60,21 +75,134 @@ namespace RumourEngine::Delivery {
             logger::info("{} for {} ({:08X}):{}{}", what, NameOf(actor), actor->GetFormID(), text.empty() ? " (empty)" : "\n",
                          text);
         }
+
+        /** An actor's ranks in the factions that say whether they follow the player; -1 for none. */
+        struct FollowerRanks {
+            int current = -1;    // CurrentFollowerFaction
+            int dismissed = -1;  // DismissedFollowerFaction
+            int party = -1;      // the highest of the mills.ini [Party] factions
+        };
+
+        /** The base's factions come first and the reference's own changes after, so theirs win:
+         *  the Creation Kit puts anyone recruitable in CurrentFollowerFaction at -1, and recruiting
+         *  sets it to 0+. */
+        FollowerRanks RanksOf(RE::Actor* actor, const std::vector<RE::FormID>& partyFactions) {
+            FollowerRanks                           r;
+            std::vector<std::pair<RE::FormID, int>> party;
+            actor->VisitFactions([&](RE::TESFaction* f, std::int8_t rank) {
+                if (!f) return false;
+                const auto id = f->GetFormID();
+                if (id == kCurrentFollowerFaction) {
+                    r.current = rank;
+                } else if (id == kDismissedFollowerFaction) {
+                    r.dismissed = rank;
+                } else if (std::find(partyFactions.begin(), partyFactions.end(), id) != partyFactions.end()) {
+                    auto it = std::find_if(party.begin(), party.end(), [&](const auto& p) { return p.first == id; });
+                    if (it != party.end()) it->second = rank;
+                    else party.emplace_back(id, rank);
+                }
+                return false;
+            });
+            for (const auto& [id, rank] : party) r.party = std::max(r.party, rank);
+            return r;
+        }
+
+        /** How far from the player, in the same interior or worldspace; -1 if elsewhere, dead or disabled. */
+        float DistanceToPlayer(RE::Actor* actor) {
+            auto* player = RE::PlayerCharacter::GetSingleton();
+            if (!player || actor->IsDead() || actor->IsDisabled()) return -1.0f;
+            auto* here = player->GetParentCell();
+            auto* there = actor->GetParentCell();
+            if (!here || !there) return -1.0f;
+            if (here->IsInteriorCell() || there->IsInteriorCell()) {
+                if (here != there) return -1.0f;
+            } else if (player->GetWorldspace() != actor->GetWorldspace()) {
+                return -1.0f;
+            }
+            return player->GetPosition().GetDistance(actor->GetPosition());
+        }
+
+        /** Note why someone counts as following, the first time in a session it's for that reason. */
+        void NoteWhy(RE::Actor* actor, Why why, float distance) {
+            if (why == Why::Marked) return;
+            {
+                std::lock_guard lk(g_partyLock);
+                if (!g_noted.insert({ actor->GetFormID(), why }).second) return;
+            }
+            if (why == Why::Faction) {
+                logger::info("Party: {} ({:08X}) is following the player by a mills.ini [Party] faction", NameOf(actor), actor->GetFormID());
+            } else {
+                logger::info("Party: {} ({:08X}) has nothing marking them as following now, but is still in the party while close to "
+                             "the player ({:.0f} units away)",
+                             NameOf(actor), actor->GetFormID(), distance);
+            }
+        }
     }
 
     bool InPlayersCompany(RE::Actor* actor) {
-        if (!actor) return false;
-        if (actor->IsPlayerTeammate()) return true;
-        // The reference's own faction changes win: the Creation Kit puts anyone
-        // recruitable in CurrentFollowerFaction at -1, and recruiting sets it to 0+.
-        auto* follower = RE::TESForm::LookupByID<RE::TESFaction>(kCurrentFollowerFaction);
-        if (!follower) return false;
-        bool following = false;
-        actor->VisitFactions([&](RE::TESFaction* f, std::int8_t rank) {
-            if (f == follower) following = rank >= 0;
-            return false;
-        });
-        return following;
+        if (!actor || actor->IsPlayerRef()) return false;
+        static const std::vector<RE::FormID> kNone;
+        const auto set = Mills::Current();
+        const auto ranks = RanksOf(actor, set ? set->partyFactions : kNone);
+        const auto ref = actor->GetFormID();
+        // What the game and the follower mods say now: the teammate flag, CurrentFollowerFaction,
+        // or a follower mod's own faction from mills.ini [Party].
+        if (actor->IsPlayerTeammate() || ranks.current >= 0 || ranks.party >= 0) {
+            const auto why = actor->IsPlayerTeammate() || ranks.current >= 0 ? Why::Marked : Why::Faction;
+            {
+                std::lock_guard lk(g_partyLock);
+                g_party[ref] = why;
+            }
+            NoteWhy(actor, why, 0.0f);
+            return true;
+        }
+        // Seen following, this session or (as the last hourly look found) before it, and still
+        // close by: idling while the player has stopped, not dismissed. Dismissed for certain
+        // (the game's DismissedFollowerFaction), or gone off, ends it.
+        bool seen;
+        {
+            std::lock_guard lk(g_partyLock);
+            seen = g_party.contains(ref);
+        }
+        const auto* base = actor->GetActorBase();
+        if (!seen && !(base && Placements::Following(base->GetFormID()))) return false;
+        const float distance = DistanceToPlayer(actor);
+        if (ranks.dismissed < 0 && distance >= 0.0f && distance <= kStillWithPlayer) {
+            {
+                std::lock_guard lk(g_partyLock);
+                g_party[ref] = Why::Nearby;
+            }
+            NoteWhy(actor, Why::Nearby, distance);
+            return true;
+        }
+        bool was;
+        {
+            std::lock_guard lk(g_partyLock);
+            was = g_party.erase(ref) > 0;
+        }
+        if (was) {
+            logger::info("Party: {} ({:08X}) has left the player's company: {}", NameOf(actor), ref,
+                         ranks.dismissed >= 0 ? std::string("dismissed")
+                         : distance < 0.0f    ? std::string("not where the player is")
+                                              : fmt::format("{:.0f} units away, and nothing marks them as following", distance));
+        }
+        return false;
+    }
+
+    void ResetParty() {
+        std::lock_guard lk(g_partyLock);
+        g_party.clear();
+        g_noted.clear();
+    }
+
+    void WatchParty() {
+        auto* lists = RE::ProcessLists::GetSingleton();
+        auto* player = RE::PlayerCharacter::GetSingleton();
+        if (!lists || !player || !player->Is3DLoaded()) return;
+        for (auto& handle : lists->highActorHandles) {
+            auto a = handle.get();
+            if (a && !a->IsDead()) InPlayersCompany(a.get());
+        }
     }
 
     bool InIntimateScene(RE::Actor* actor) {

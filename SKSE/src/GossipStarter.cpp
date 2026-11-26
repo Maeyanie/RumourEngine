@@ -243,8 +243,13 @@ namespace RumourEngine::GossipStarter {
                     Promote::Pump();
                     Quests::Pump();
                     if (++polls % kSweepEvery == 0) Rumours::Sweep(Rumours::Now());
+                    auto* task = SKSE::GetTaskInterface();
+                    if (!task) continue;
+                    // Who is following, whatever the starter is doing: the harvest, the bios and
+                    // quest endings all go by it.
+                    task->AddTask([]() { Delivery::WatchParty(); });
                     if (!Settings::StarterEnabled() || CoolingDown() || !RoomIsQuiet()) continue;
-                    if (auto* task = SKSE::GetTaskInterface()) task->AddTask([]() { Tick(); });
+                    task->AddTask([]() { Tick(); });
                 } catch (const std::exception& e) {
                     static int failures = 0;
                     if (++failures <= 20) logger::error("RumourEngine: a pass of its worker failed and was skipped: {}", e.what());

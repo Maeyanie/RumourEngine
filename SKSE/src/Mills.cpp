@@ -234,6 +234,36 @@ namespace RumourEngine::Mills {
             return out;
         }
 
+        // mills.ini [Party]: "mod = FactionEditorID, ...". Followers in one of these factions at
+        // rank 0 or more are with the player, for follower mods that keep a faction of their own
+        // instead of CurrentFollowerFaction and don't keep the teammate flag set throughout (Sofia
+        // clears it while she idles near a player who has stopped). A faction whose plugin isn't
+        // loaded is passed over quietly, so the shipped lines cost nothing without their mods.
+        void LoadPartyFactions(const Ini::Files& ini, const PluginScan::Result& scan, MillSet& out) {
+            std::unordered_map<std::string, RE::FormID> byEditorID;
+            for (const auto& [id, edid] : scan.factionEditorIDs) byEditorID.emplace(Lower(edid), id);
+            std::string found, absent;
+            for (const auto& [key, value, file] : Ini::Keyed(ini, "party")) {
+                std::string_view rest = value;
+                while (!rest.empty()) {
+                    const auto comma = rest.find(',');
+                    if (const auto name = Trim(rest.substr(0, comma)); !name.empty()) {
+                        if (auto it = byEditorID.find(Lower(name)); it != byEditorID.end()) {
+                            if (std::find(out.partyFactions.begin(), out.partyFactions.end(), it->second) == out.partyFactions.end()) {
+                                out.partyFactions.push_back(it->second);
+                            }
+                            found += fmt::format("{}{} ({}, {:08X})", found.empty() ? "" : ", ", name, key, it->second);
+                        } else {
+                            absent += fmt::format("{}{} ({})", absent.empty() ? "" : ", ", name, key);
+                        }
+                    }
+                    rest = comma == std::string_view::npos ? std::string_view{} : rest.substr(comma + 1);
+                }
+            }
+            if (!found.empty()) logger::info("Mills: following the player, as well as by the game's own signs, while in: {}", found);
+            if (!absent.empty()) logger::info("Mills: party factions not in the load order: {}", absent);
+        }
+
         constexpr double kCellUnits = 4096.0;
         constexpr RE::FormID kPlayerBase = 0x7;
 
@@ -1130,6 +1160,7 @@ namespace RumourEngine::Mills {
             }
             for (const auto& e : Ini::Keyed(ini, "lines")) out->lines[e.key] = e.value;
             logger::info("Mills: {} mill lines for the retell prompt", out->lines.size());
+            LoadPartyFactions(ini, W.scan_, *out);
 
             // ---- Output ----
 

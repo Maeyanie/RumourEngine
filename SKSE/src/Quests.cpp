@@ -1,5 +1,6 @@
 #include "Quests.h"
 #include "Database.h"
+#include "Delivery.h"
 #include "Ini.h"
 #include "Mills.h"
 #include "Rumours.h"
@@ -50,6 +51,7 @@ namespace RumourEngine::Quests {
             std::string place;    // "Nightcaller Temple, in the Pale"
             std::string player;   // "<their name>, a Breton man"
             std::string origin;   // the location form it starts from, in hex
+            std::vector<std::string> party;  // who was with the player, in hex: they were there, so they know it better
             double      day = 0.0;
             std::string state;  // asking, telling
             double      heard = -1.0, far = -1.0, notability = -1.0;
@@ -375,8 +377,8 @@ namespace RumourEngine::Quests {
         // ---- Rows ----
 
         json Detail(const Ending& e) {
-            return { { "name", e.name },   { "journal", e.journal }, { "place", e.place },
-                     { "player", e.player }, { "origin", e.origin }, { "notability", e.notability } };
+            return { { "name", e.name },     { "journal", e.journal }, { "place", e.place },        { "player", e.player },
+                     { "origin", e.origin }, { "party", e.party },     { "notability", e.notability } };
         }
 
         /** The ending's row. It replaces a `before` row whole, day and stage too, so that a reload's
@@ -601,6 +603,20 @@ namespace RumourEngine::Quests {
                 return;
             }
             e.origin = fmt::format("0x{:08X}", loc->GetFormID());
+            // Who was with the player: they were there and have their own memories of it, so the
+            // talk never comes back to them as something they heard, even once they're dismissed.
+            std::string partyNames;
+            if (auto* lists = RE::ProcessLists::GetSingleton()) {
+                for (auto& handle : lists->highActorHandles) {
+                    auto a = handle.get();
+                    if (!a || a->IsDead() || !Delivery::InPlayersCompany(a.get())) continue;
+                    e.party.push_back(fmt::format("0x{:08X}", a->GetFormID()));
+                    partyNames += (partyNames.empty() ? "" : ", ") + NameOf(a.get());
+                }
+            }
+            if (!partyNames.empty()) {
+                logger::info("Quests: {}{} ended with {} in the party", preview ? "preview: " : "", e.name, partyNames);
+            }
             e.place = (nearby ? "near " : "") + NameOf(loc);
             if (set) {
                 if (auto h = set->holdNames.find(set->HoldOf(loc->GetFormID())); h != set->holdNames.end() && h->second != e.place) {
@@ -815,16 +831,17 @@ namespace RumourEngine::Quests {
                 g_pending.erase(e.key);
                 return;
             }
-            const json request = { { "source", "RumourEngine" },
-                                   { "key", "quest:" + e.key },
-                                   { "text", text },
-                                   { "origin", { { "location", e.origin } } },
-                                   { "notability", e.notability },
-                                   { "subjects", json::array({ "0x14" }) },
-                                   { "topics", json::array({ "the_player" }) },
-                                   { "happened", e.day },
-                                   { "retell_origin", retellOrigin },
-                                   { "if_absent", true } };
+            json request = { { "source", "RumourEngine" },
+                             { "key", "quest:" + e.key },
+                             { "text", text },
+                             { "origin", { { "location", e.origin } } },
+                             { "notability", e.notability },
+                             { "subjects", json::array({ "0x14" }) },
+                             { "topics", json::array({ "the_player" }) },
+                             { "happened", e.day },
+                             { "retell_origin", retellOrigin },
+                             { "if_absent", true } };
+            if (!e.party.empty()) request["known_better_by"] = e.party;
             std::string error;
             const auto  rid = Rumours::Add(Text::Dump(request), error);
             if (!rid) {
@@ -995,6 +1012,11 @@ namespace RumourEngine::Quests {
                 e.place = d.value("place", "");
                 e.player = d.value("player", "");
                 e.origin = d.value("origin", "");
+                if (const auto p = d.find("party"); p != d.end() && p->is_array()) {
+                    for (const auto& f : *p) {
+                        if (f.is_string()) e.party.push_back(f.get<std::string>());
+                    }
+                }
                 e.notability = d.value("notability", -1.0);
                 e.day = sqlite3_column_double(st, 7);
                 pending[e.key] = std::move(e);
