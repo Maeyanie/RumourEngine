@@ -1,6 +1,6 @@
 plugin:
   name: RumourEngine
-  version: "1.1.0"
+  version: "1.2.0"
   description: "Rumour mills: groups of people rumours spread between, retold as they go"
   icon: "\U0001F5E3"
 

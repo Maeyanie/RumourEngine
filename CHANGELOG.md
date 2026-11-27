@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.0
 
 - **Followers with a faction of their own.** Sofia, travelling with the
   player, told a caged prisoner that "people in Whiterun are saying" the
